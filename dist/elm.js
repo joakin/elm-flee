@@ -9212,7 +9212,7 @@ var $author$project$Main$main = A3(
 	$author$project$Main$update,
 	{
 		aa: {
-			a: {K: 0, L: 0},
+			a: {K: 100, L: -100},
 			z: $author$project$Main$defaultSize,
 			A: $author$project$Main$defaultSpeed * 1.3
 		},
@@ -9222,7 +9222,7 @@ var $author$project$Main$main = A3(
 			A: $author$project$Main$defaultSpeed / 3
 		},
 		ah: {
-			a: {K: 0, L: 0},
+			a: {K: -100, L: -100},
 			z: $author$project$Main$defaultSize / 2,
 			A: $author$project$Main$defaultSpeed
 		}

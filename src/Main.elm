@@ -31,9 +31,9 @@ main =
     game
         view
         update
-        { attacker = { pos = { x = 0, y = 0 }, size = defaultSize, speed = defaultSpeed * 1.3 }
+        { attacker = { pos = { x = 100, y = -100 }, size = defaultSize, speed = defaultSpeed * 1.3 }
         , guardian = { pos = { x = 0, y = 0 }, size = defaultSize * 2, speed = defaultSpeed / 3 }
-        , prey = { pos = { x = 0, y = 0 }, size = defaultSize / 2, speed = defaultSpeed }
+        , prey = { pos = { x = -100, y = -100 }, size = defaultSize / 2, speed = defaultSpeed }
         }
 
 
