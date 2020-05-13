@@ -77,7 +77,272 @@ function A9(fun, a, b, c, d, e, f, g, h, i) {
   return fun.a === 9 ? fun.f(a, b, c, d, e, f, g, h, i) : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
 }
 
-console.warn('Compiled in DEV mode. Follow the advice at https://elm-lang.org/0.19.1/optimize for better performance and smaller assets.');
+
+
+
+// EQUALITY
+
+function _Utils_eq(x, y)
+{
+	for (
+		var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack);
+		isEqual && (pair = stack.pop());
+		isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)
+		)
+	{}
+
+	return isEqual;
+}
+
+function _Utils_eqHelp(x, y, depth, stack)
+{
+	if (x === y)
+	{
+		return true;
+	}
+
+	if (typeof x !== 'object' || x === null || y === null)
+	{
+		typeof x === 'function' && _Debug_crash(5);
+		return false;
+	}
+
+	if (depth > 100)
+	{
+		stack.push(_Utils_Tuple2(x,y));
+		return true;
+	}
+
+	/**_UNUSED/
+	if (x.$ === 'Set_elm_builtin')
+	{
+		x = $elm$core$Set$toList(x);
+		y = $elm$core$Set$toList(y);
+	}
+	if (x.$ === 'RBNode_elm_builtin' || x.$ === 'RBEmpty_elm_builtin')
+	{
+		x = $elm$core$Dict$toList(x);
+		y = $elm$core$Dict$toList(y);
+	}
+	//*/
+
+	/**/
+	if (x.$ < 0)
+	{
+		x = $elm$core$Dict$toList(x);
+		y = $elm$core$Dict$toList(y);
+	}
+	//*/
+
+	for (var key in x)
+	{
+		if (!_Utils_eqHelp(x[key], y[key], depth + 1, stack))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+var _Utils_equal = F2(_Utils_eq);
+var _Utils_notEqual = F2(function(a, b) { return !_Utils_eq(a,b); });
+
+
+
+// COMPARISONS
+
+// Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
+// the particular integer values assigned to LT, EQ, and GT.
+
+function _Utils_cmp(x, y, ord)
+{
+	if (typeof x !== 'object')
+	{
+		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
+	}
+
+	/**_UNUSED/
+	if (x instanceof String)
+	{
+		var a = x.valueOf();
+		var b = y.valueOf();
+		return a === b ? 0 : a < b ? -1 : 1;
+	}
+	//*/
+
+	/**/
+	if (typeof x.$ === 'undefined')
+	//*/
+	/**_UNUSED/
+	if (x.$[0] === '#')
+	//*/
+	{
+		return (ord = _Utils_cmp(x.a, y.a))
+			? ord
+			: (ord = _Utils_cmp(x.b, y.b))
+				? ord
+				: _Utils_cmp(x.c, y.c);
+	}
+
+	// traverse conses until end of a list or a mismatch
+	for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) {} // WHILE_CONSES
+	return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
+}
+
+var _Utils_lt = F2(function(a, b) { return _Utils_cmp(a, b) < 0; });
+var _Utils_le = F2(function(a, b) { return _Utils_cmp(a, b) < 1; });
+var _Utils_gt = F2(function(a, b) { return _Utils_cmp(a, b) > 0; });
+var _Utils_ge = F2(function(a, b) { return _Utils_cmp(a, b) >= 0; });
+
+var _Utils_compare = F2(function(x, y)
+{
+	var n = _Utils_cmp(x, y);
+	return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
+});
+
+
+// COMMON VALUES
+
+var _Utils_Tuple0 = 0;
+var _Utils_Tuple0_UNUSED = { $: '#0' };
+
+function _Utils_Tuple2(a, b) { return { a: a, b: b }; }
+function _Utils_Tuple2_UNUSED(a, b) { return { $: '#2', a: a, b: b }; }
+
+function _Utils_Tuple3(a, b, c) { return { a: a, b: b, c: c }; }
+function _Utils_Tuple3_UNUSED(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
+
+function _Utils_chr(c) { return c; }
+function _Utils_chr_UNUSED(c) { return new String(c); }
+
+
+// RECORDS
+
+function _Utils_update(oldRecord, updatedFields)
+{
+	var newRecord = {};
+
+	for (var key in oldRecord)
+	{
+		newRecord[key] = oldRecord[key];
+	}
+
+	for (var key in updatedFields)
+	{
+		newRecord[key] = updatedFields[key];
+	}
+
+	return newRecord;
+}
+
+
+// APPEND
+
+var _Utils_append = F2(_Utils_ap);
+
+function _Utils_ap(xs, ys)
+{
+	// append Strings
+	if (typeof xs === 'string')
+	{
+		return xs + ys;
+	}
+
+	// append Lists
+	if (!xs.b)
+	{
+		return ys;
+	}
+	var root = _List_Cons(xs.a, ys);
+	xs = xs.b
+	for (var curr = root; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		curr = curr.b = _List_Cons(xs.a, ys);
+	}
+	return root;
+}
+
+
+
+var _List_Nil = { $: 0 };
+var _List_Nil_UNUSED = { $: '[]' };
+
+function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
+function _List_Cons_UNUSED(hd, tl) { return { $: '::', a: hd, b: tl }; }
+
+
+var _List_cons = F2(_List_Cons);
+
+function _List_fromArray(arr)
+{
+	var out = _List_Nil;
+	for (var i = arr.length; i--; )
+	{
+		out = _List_Cons(arr[i], out);
+	}
+	return out;
+}
+
+function _List_toArray(xs)
+{
+	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		out.push(xs.a);
+	}
+	return out;
+}
+
+var _List_map2 = F3(function(f, xs, ys)
+{
+	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
+	{
+		arr.push(A2(f, xs.a, ys.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map3 = F4(function(f, xs, ys, zs)
+{
+	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A3(f, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map4 = F5(function(f, ws, xs, ys, zs)
+{
+	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
+{
+	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_sortBy = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		return _Utils_cmp(f(a), f(b));
+	}));
+});
+
+var _List_sortWith = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		var ord = A2(f, a, b);
+		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
+	}));
+});
+
 
 
 var _JsArray_empty = [];
@@ -234,12 +499,12 @@ var _JsArray_appendN = F3(function(n, dest, source)
 
 // LOG
 
-var _Debug_log_UNUSED = F2(function(tag, value)
+var _Debug_log = F2(function(tag, value)
 {
 	return value;
 });
 
-var _Debug_log = F2(function(tag, value)
+var _Debug_log_UNUSED = F2(function(tag, value)
 {
 	console.log(tag + ': ' + _Debug_toString(value));
 	return value;
@@ -265,12 +530,12 @@ function _Debug_todoCase(moduleName, region, value)
 
 // TO STRING
 
-function _Debug_toString_UNUSED(value)
+function _Debug_toString(value)
 {
 	return '<internals>';
 }
 
-function _Debug_toString(value)
+function _Debug_toString_UNUSED(value)
 {
 	return _Debug_toAnsiString(false, value);
 }
@@ -455,13 +720,13 @@ function _Debug_toHexDigit(n)
 // CRASH
 
 
-function _Debug_crash_UNUSED(identifier)
+function _Debug_crash(identifier)
 {
 	throw new Error('https://github.com/elm/core/blob/1.0.0/hints/' + identifier + '.md');
 }
 
 
-function _Debug_crash(identifier, fact1, fact2, fact3, fact4)
+function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 {
 	switch(identifier)
 	{
@@ -519,277 +784,12 @@ function _Debug_crash(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.start.line === region.end.line)
+	if (region.aM.af === region.aX.af)
 	{
-		return 'on line ' + region.start.line;
+		return 'on line ' + region.aM.af;
 	}
-	return 'on lines ' + region.start.line + ' through ' + region.end.line;
+	return 'on lines ' + region.aM.af + ' through ' + region.aX.af;
 }
-
-
-
-// EQUALITY
-
-function _Utils_eq(x, y)
-{
-	for (
-		var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack);
-		isEqual && (pair = stack.pop());
-		isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)
-		)
-	{}
-
-	return isEqual;
-}
-
-function _Utils_eqHelp(x, y, depth, stack)
-{
-	if (x === y)
-	{
-		return true;
-	}
-
-	if (typeof x !== 'object' || x === null || y === null)
-	{
-		typeof x === 'function' && _Debug_crash(5);
-		return false;
-	}
-
-	if (depth > 100)
-	{
-		stack.push(_Utils_Tuple2(x,y));
-		return true;
-	}
-
-	/**/
-	if (x.$ === 'Set_elm_builtin')
-	{
-		x = $elm$core$Set$toList(x);
-		y = $elm$core$Set$toList(y);
-	}
-	if (x.$ === 'RBNode_elm_builtin' || x.$ === 'RBEmpty_elm_builtin')
-	{
-		x = $elm$core$Dict$toList(x);
-		y = $elm$core$Dict$toList(y);
-	}
-	//*/
-
-	/**_UNUSED/
-	if (x.$ < 0)
-	{
-		x = $elm$core$Dict$toList(x);
-		y = $elm$core$Dict$toList(y);
-	}
-	//*/
-
-	for (var key in x)
-	{
-		if (!_Utils_eqHelp(x[key], y[key], depth + 1, stack))
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-var _Utils_equal = F2(_Utils_eq);
-var _Utils_notEqual = F2(function(a, b) { return !_Utils_eq(a,b); });
-
-
-
-// COMPARISONS
-
-// Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
-// the particular integer values assigned to LT, EQ, and GT.
-
-function _Utils_cmp(x, y, ord)
-{
-	if (typeof x !== 'object')
-	{
-		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
-	}
-
-	/**/
-	if (x instanceof String)
-	{
-		var a = x.valueOf();
-		var b = y.valueOf();
-		return a === b ? 0 : a < b ? -1 : 1;
-	}
-	//*/
-
-	/**_UNUSED/
-	if (typeof x.$ === 'undefined')
-	//*/
-	/**/
-	if (x.$[0] === '#')
-	//*/
-	{
-		return (ord = _Utils_cmp(x.a, y.a))
-			? ord
-			: (ord = _Utils_cmp(x.b, y.b))
-				? ord
-				: _Utils_cmp(x.c, y.c);
-	}
-
-	// traverse conses until end of a list or a mismatch
-	for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) {} // WHILE_CONSES
-	return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
-}
-
-var _Utils_lt = F2(function(a, b) { return _Utils_cmp(a, b) < 0; });
-var _Utils_le = F2(function(a, b) { return _Utils_cmp(a, b) < 1; });
-var _Utils_gt = F2(function(a, b) { return _Utils_cmp(a, b) > 0; });
-var _Utils_ge = F2(function(a, b) { return _Utils_cmp(a, b) >= 0; });
-
-var _Utils_compare = F2(function(x, y)
-{
-	var n = _Utils_cmp(x, y);
-	return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
-});
-
-
-// COMMON VALUES
-
-var _Utils_Tuple0_UNUSED = 0;
-var _Utils_Tuple0 = { $: '#0' };
-
-function _Utils_Tuple2_UNUSED(a, b) { return { a: a, b: b }; }
-function _Utils_Tuple2(a, b) { return { $: '#2', a: a, b: b }; }
-
-function _Utils_Tuple3_UNUSED(a, b, c) { return { a: a, b: b, c: c }; }
-function _Utils_Tuple3(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
-
-function _Utils_chr_UNUSED(c) { return c; }
-function _Utils_chr(c) { return new String(c); }
-
-
-// RECORDS
-
-function _Utils_update(oldRecord, updatedFields)
-{
-	var newRecord = {};
-
-	for (var key in oldRecord)
-	{
-		newRecord[key] = oldRecord[key];
-	}
-
-	for (var key in updatedFields)
-	{
-		newRecord[key] = updatedFields[key];
-	}
-
-	return newRecord;
-}
-
-
-// APPEND
-
-var _Utils_append = F2(_Utils_ap);
-
-function _Utils_ap(xs, ys)
-{
-	// append Strings
-	if (typeof xs === 'string')
-	{
-		return xs + ys;
-	}
-
-	// append Lists
-	if (!xs.b)
-	{
-		return ys;
-	}
-	var root = _List_Cons(xs.a, ys);
-	xs = xs.b
-	for (var curr = root; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		curr = curr.b = _List_Cons(xs.a, ys);
-	}
-	return root;
-}
-
-
-
-var _List_Nil_UNUSED = { $: 0 };
-var _List_Nil = { $: '[]' };
-
-function _List_Cons_UNUSED(hd, tl) { return { $: 1, a: hd, b: tl }; }
-function _List_Cons(hd, tl) { return { $: '::', a: hd, b: tl }; }
-
-
-var _List_cons = F2(_List_Cons);
-
-function _List_fromArray(arr)
-{
-	var out = _List_Nil;
-	for (var i = arr.length; i--; )
-	{
-		out = _List_Cons(arr[i], out);
-	}
-	return out;
-}
-
-function _List_toArray(xs)
-{
-	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		out.push(xs.a);
-	}
-	return out;
-}
-
-var _List_map2 = F3(function(f, xs, ys)
-{
-	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
-	{
-		arr.push(A2(f, xs.a, ys.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map3 = F4(function(f, xs, ys, zs)
-{
-	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A3(f, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map4 = F5(function(f, ws, xs, ys, zs)
-{
-	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
-{
-	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_sortBy = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		return _Utils_cmp(f(a), f(b));
-	}));
-});
-
-var _List_sortWith = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		var ord = A2(f, a, b);
-		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
-	}));
-});
 
 
 
@@ -1212,7 +1212,7 @@ function _Char_toLocaleLower(char)
 
 
 
-/**/
+/**_UNUSED/
 function _Json_errorToString(error)
 {
 	return $elm$json$Json$Decode$errorToString(error);
@@ -1616,11 +1616,11 @@ var _Json_encode = F2(function(indentLevel, value)
 	return JSON.stringify(_Json_unwrap(value), null, indentLevel) + '';
 });
 
-function _Json_wrap(value) { return { $: 0, a: value }; }
-function _Json_unwrap(value) { return value.a; }
+function _Json_wrap_UNUSED(value) { return { $: 0, a: value }; }
+function _Json_unwrap_UNUSED(value) { return value.a; }
 
-function _Json_wrap_UNUSED(value) { return value; }
-function _Json_unwrap_UNUSED(value) { return value; }
+function _Json_wrap(value) { return value; }
+function _Json_unwrap(value) { return value; }
 
 function _Json_emptyArray() { return []; }
 function _Json_emptyObject() { return {}; }
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.init,
-		impl.update,
-		impl.subscriptions,
+		impl.U,
+		impl.Y,
+		impl.aO,
 		function() { return function() {} }
 	);
 });
@@ -1872,7 +1872,7 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 function _Platform_initialize(flagDecoder, args, init, update, subscriptions, stepperBuilder)
 {
 	var result = A2(_Json_run, flagDecoder, _Json_wrap(args ? args['flags'] : undefined));
-	$elm$core$Result$isOk(result) || _Debug_crash(2 /**/, _Json_errorToString(result.a) /**/);
+	$elm$core$Result$isOk(result) || _Debug_crash(2 /**_UNUSED/, _Json_errorToString(result.a) /**/);
 	var managers = {};
 	var initPair = init(result.a);
 	var model = initPair.a;
@@ -2316,7 +2316,7 @@ function _Platform_setupIncomingPort(name, sendToApp)
 //
 
 
-function _Platform_export_UNUSED(exports)
+function _Platform_export(exports)
 {
 	scope['Elm']
 		? _Platform_mergeExportsProd(scope['Elm'], exports)
@@ -2337,7 +2337,7 @@ function _Platform_mergeExportsProd(obj, exports)
 }
 
 
-function _Platform_export(exports)
+function _Platform_export_UNUSED(exports)
 {
 	scope['Elm']
 		? _Platform_mergeExportsDebug('Elm', scope['Elm'], exports)
@@ -2391,7 +2391,7 @@ var _Texture_load = F6(function (magnify, mininify, horizontalWrap, verticalWrap
       if (isSizeValid) {
         callback(_Scheduler_succeed({
           $: 0,
-          createTexture: createTexture,
+          bL: createTexture,
           a: width,
           b: height
         }));
@@ -2470,11 +2470,11 @@ var _MJS_v2setY = F2(function(y, a) {
 });
 
 var _MJS_v2toRecord = function(a) {
-    return { x: a[0], y: a[1] };
+    return { K: a[0], L: a[1] };
 };
 
 var _MJS_v2fromRecord = function(r) {
-    return new Float64Array([r.x, r.y]);
+    return new Float64Array([r.K, r.L]);
 };
 
 var _MJS_v2add = F2(function(a, b) {
@@ -2583,11 +2583,11 @@ var _MJS_v3setZ = F2(function(z, a) {
 });
 
 var _MJS_v3toRecord = function(a) {
-    return { x: a[0], y: a[1], z: a[2] };
+    return { K: a[0], L: a[1], ce: a[2] };
 };
 
 var _MJS_v3fromRecord = function(r) {
-    return new Float64Array([r.x, r.y, r.z]);
+    return new Float64Array([r.K, r.L, r.ce]);
 };
 
 var _MJS_v3add = F2(function(a, b) {
@@ -2743,11 +2743,11 @@ var _MJS_v4setW = F2(function(w, a) {
 });
 
 var _MJS_v4toRecord = function(a) {
-    return { x: a[0], y: a[1], z: a[2], w: a[3] };
+    return { K: a[0], L: a[1], ce: a[2], bD: a[3] };
 };
 
 var _MJS_v4fromRecord = function(r) {
-    return new Float64Array([r.x, r.y, r.z, r.w]);
+    return new Float64Array([r.K, r.L, r.ce, r.bD]);
 };
 
 var _MJS_v4add = F2(function(a, b) {
@@ -2853,31 +2853,31 @@ var _MJS_m4x4identity = new Float64Array([
 
 var _MJS_m4x4fromRecord = function(r) {
     var m = new Float64Array(16);
-    m[0] = r.m11;
-    m[1] = r.m21;
-    m[2] = r.m31;
-    m[3] = r.m41;
-    m[4] = r.m12;
-    m[5] = r.m22;
-    m[6] = r.m32;
-    m[7] = r.m42;
-    m[8] = r.m13;
-    m[9] = r.m23;
-    m[10] = r.m33;
-    m[11] = r.m43;
-    m[12] = r.m14;
-    m[13] = r.m24;
-    m[14] = r.m34;
-    m[15] = r.m44;
+    m[0] = r.a4;
+    m[1] = r.a8;
+    m[2] = r.bc;
+    m[3] = r.bg;
+    m[4] = r.a5;
+    m[5] = r.a9;
+    m[6] = r.bd;
+    m[7] = r.bh;
+    m[8] = r.a6;
+    m[9] = r.ba;
+    m[10] = r.be;
+    m[11] = r.bi;
+    m[12] = r.a7;
+    m[13] = r.bb;
+    m[14] = r.bf;
+    m[15] = r.bj;
     return m;
 };
 
 var _MJS_m4x4toRecord = function(m) {
     return {
-        m11: m[0], m21: m[1], m31: m[2], m41: m[3],
-        m12: m[4], m22: m[5], m32: m[6], m42: m[7],
-        m13: m[8], m23: m[9], m33: m[10], m43: m[11],
-        m14: m[12], m24: m[13], m34: m[14], m44: m[15]
+        a4: m[0], a8: m[1], bc: m[2], bg: m[3],
+        a5: m[4], a9: m[5], bd: m[6], bh: m[7],
+        a6: m[8], ba: m[9], be: m[10], bi: m[11],
+        a7: m[12], bb: m[13], bf: m[14], bj: m[15]
     };
 };
 
@@ -3452,10 +3452,10 @@ var _VirtualDom_init = F4(function(virtualNode, flagDecoder, debugMetadata, args
 {
 	// NOTE: this function needs _Platform_export available to work
 
-	/**_UNUSED/
+	/**/
 	var node = args['node'];
 	//*/
-	/**/
+	/**_UNUSED/
 	var node = args && args['node'] ? args['node'] : _Debug_crash(0);
 	//*/
 
@@ -3710,24 +3710,24 @@ function _VirtualDom_noInnerHtmlOrFormAction(key)
 	return key == 'innerHTML' || key == 'formAction' ? 'data-' + key : key;
 }
 
-function _VirtualDom_noJavaScriptUri_UNUSED(value)
+function _VirtualDom_noJavaScriptUri(value)
 {
 	return /^javascript:/i.test(value.replace(/\s/g,'')) ? '' : value;
 }
 
-function _VirtualDom_noJavaScriptUri(value)
+function _VirtualDom_noJavaScriptUri_UNUSED(value)
 {
 	return /^javascript:/i.test(value.replace(/\s/g,''))
 		? 'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'
 		: value;
 }
 
-function _VirtualDom_noJavaScriptOrHtmlUri_UNUSED(value)
+function _VirtualDom_noJavaScriptOrHtmlUri(value)
 {
 	return /^\s*(javascript:|data:text\/html)/i.test(value) ? '' : value;
 }
 
-function _VirtualDom_noJavaScriptOrHtmlUri(value)
+function _VirtualDom_noJavaScriptOrHtmlUri_UNUSED(value)
 {
 	return /^\s*(javascript:|data:text\/html)/i.test(value)
 		? 'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'
@@ -3779,9 +3779,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		message: func(record.message),
-		stopPropagation: record.stopPropagation,
-		preventDefault: record.preventDefault
+		H: func(record.H),
+		aN: record.aN,
+		aH: record.aH
 	}
 });
 
@@ -4049,11 +4049,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.message;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.stopPropagation;
+		var message = !tag ? value : tag < 3 ? value.a : value.H;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.aN;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.preventDefault) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.aH) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -5003,15 +5003,15 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.init,
-		impl.update,
-		impl.subscriptions,
+		impl.U,
+		impl.Y,
+		impl.aO,
 		function(sendToApp, initialModel) {
-			var view = impl.view;
-			/**_UNUSED/
+			var view = impl.aQ;
+			/**/
 			var domNode = args['node'];
 			//*/
-			/**/
+			/**_UNUSED/
 			var domNode = args && args['node'] ? args['node'] : _Debug_crash(0);
 			//*/
 			var currNode = _VirtualDom_virtualize(domNode);
@@ -5039,12 +5039,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.init,
-		impl.update,
-		impl.subscriptions,
+		impl.U,
+		impl.Y,
+		impl.aO,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.setup && impl.setup(sendToApp)
-			var view = impl.view;
+			var divertHrefToApp = impl.aL && impl.aL(sendToApp)
+			var view = impl.aQ;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -5052,12 +5052,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.body);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.az);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.title) && (_VirtualDom_doc.title = title = doc.title);
+				(title !== doc.aP) && (_VirtualDom_doc.title = title = doc.aP);
 			});
 		}
 	);
@@ -5113,12 +5113,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.onUrlChange;
-	var onUrlRequest = impl.onUrlRequest;
+	var onUrlChange = impl.b_;
+	var onUrlRequest = impl.b$;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		setup: function(sendToApp)
+		aL: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -5134,9 +5134,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.protocol === next.protocol
-							&& curr.host === next.host
-							&& curr.port_.a === next.port_.a
+							&& curr.bt === next.bt
+							&& curr.a_ === next.a_
+							&& curr.bq.a === next.bq.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -5144,13 +5144,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		init: function(flags)
+		U: function(flags)
 		{
-			return A3(impl.init, flags, _Browser_getUrl(), key);
+			return A3(impl.U, flags, _Browser_getUrl(), key);
 		},
-		view: impl.view,
-		update: impl.update,
-		subscriptions: impl.subscriptions
+		aQ: impl.aQ,
+		Y: impl.Y,
+		aO: impl.aO
 	});
 }
 
@@ -5216,17 +5216,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { hidden: 'hidden', change: 'visibilitychange' }
+		? { bS: 'hidden', bI: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { hidden: 'mozHidden', change: 'mozvisibilitychange' }
+		? { bS: 'mozHidden', bI: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { hidden: 'msHidden', change: 'msvisibilitychange' }
+		? { bS: 'msHidden', bI: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { hidden: 'webkitHidden', change: 'webkitvisibilitychange' }
-		: { hidden: 'hidden', change: 'visibilitychange' };
+		? { bS: 'webkitHidden', bI: 'webkitvisibilitychange' }
+		: { bS: 'hidden', bI: 'visibilitychange' };
 }
 
 
@@ -5307,12 +5307,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		scene: _Browser_getScene(),
-		viewport: {
-			x: _Browser_window.pageXOffset,
-			y: _Browser_window.pageYOffset,
-			width: _Browser_doc.documentElement.clientWidth,
-			height: _Browser_doc.documentElement.clientHeight
+		bx: _Browser_getScene(),
+		cb: {
+			K: _Browser_window.pageXOffset,
+			L: _Browser_window.pageYOffset,
+			cc: _Browser_doc.documentElement.clientWidth,
+			bR: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -5322,8 +5322,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		width: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		height: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		cc: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		bR: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -5346,15 +5346,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			scene: {
-				width: node.scrollWidth,
-				height: node.scrollHeight
+			bx: {
+				cc: node.scrollWidth,
+				bR: node.scrollHeight
 			},
-			viewport: {
-				x: node.scrollLeft,
-				y: node.scrollTop,
-				width: node.clientWidth,
-				height: node.clientHeight
+			cb: {
+				K: node.scrollLeft,
+				L: node.scrollTop,
+				cc: node.clientWidth,
+				bR: node.clientHeight
 			}
 		};
 	});
@@ -5384,18 +5384,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			scene: _Browser_getScene(),
-			viewport: {
-				x: x,
-				y: y,
-				width: _Browser_doc.documentElement.clientWidth,
-				height: _Browser_doc.documentElement.clientHeight
+			bx: _Browser_getScene(),
+			cb: {
+				K: x,
+				L: y,
+				cc: _Browser_doc.documentElement.clientWidth,
+				bR: _Browser_doc.documentElement.clientHeight
 			},
-			element: {
-				x: x + rect.left,
-				y: y + rect.top,
-				width: rect.width,
-				height: rect.height
+			bM: {
+				K: x + rect.left,
+				L: y + rect.top,
+				cc: rect.width,
+				bR: rect.height
 			}
 		};
 	});
@@ -5691,7 +5691,7 @@ function _WebGL_doBindAttribute(gl, attribute, mesh, attributes) {
   // The length of the number of vertices that
   // complete one 'thing' based on the drawing mode.
   // ie, 2 for Lines, 3 for Triangles, etc.
-  var elemSize = mesh.a.elemSize;
+  var elemSize = mesh.a.aW;
 
   var idxKeys = [];
   for (var i = 0; i < elemSize; i++) {
@@ -5754,10 +5754,10 @@ function _WebGL_doBindAttribute(gl, attribute, mesh, attributes) {
  *  @return {Object} buffer.buffers - will be used to buffer attributes
  */
 function _WebGL_doBindSetup(gl, mesh) {
-  if (mesh.a.indexSize > 0) {
+  if (mesh.a.a0 > 0) {
     _WebGL_log('Created index buffer');
     var indexBuffer = gl.createBuffer();
-    var indices = _WebGL_makeIndexedBuffer(mesh.c, mesh.a.indexSize);
+    var indices = _WebGL_makeIndexedBuffer(mesh.c, mesh.a.a0);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
     return {
@@ -5767,7 +5767,7 @@ function _WebGL_doBindSetup(gl, mesh) {
     };
   } else {
     return {
-      numIndices: mesh.a.elemSize * _WebGL_listLength(mesh.b),
+      numIndices: mesh.a.aW * _WebGL_listLength(mesh.b),
       indexBuffer: null,
       buffers: {}
     };
@@ -5913,9 +5913,9 @@ var _WebGL_drawGL = F2(function (model, domNode) {
 
     if (buffer.indexBuffer) {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBuffer);
-      gl.drawElements(entity.d.a.mode, buffer.numIndices, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(entity.d.a.bk, buffer.numIndices, gl.UNSIGNED_SHORT, 0);
     } else {
-      gl.drawArrays(entity.d.a.mode, 0, buffer.numIndices);
+      gl.drawArrays(entity.d.a.bk, 0, buffer.numIndices);
     }
 
     _WebGL_listEach($elm_explorations$webgl$WebGL$Internal$disableSetting(model.f), entity.a);
@@ -5962,7 +5962,7 @@ function _WebGL_createUniformSetters(gl, model, program, uniformsMap) {
           var tex = model.f.textures.get(texture);
           if (!tex) {
             _WebGL_log('Created texture');
-            tex = texture.createTexture(gl);
+            tex = texture.bL(gl);
             model.f.textures.set(texture, tex);
           }
           gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -6118,36 +6118,17 @@ function _WebGL_diff(oldModel, newModel) {
   newModel.f = oldModel.f;
   return _WebGL_drawGL(newModel);
 }
+var $author$project$Main$defaultSize = 40;
+var $author$project$Main$defaultSpeed = 6;
+var $elm$core$Basics$EQ = 1;
+var $elm$core$Basics$GT = 2;
+var $elm$core$Basics$LT = 0;
 var $elm$core$List$cons = _List_cons;
-var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
-var $elm$core$Array$foldr = F3(
-	function (func, baseCase, _v0) {
-		var tree = _v0.c;
-		var tail = _v0.d;
-		var helper = F2(
-			function (node, acc) {
-				if (node.$ === 'SubTree') {
-					var subTree = node.a;
-					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
-				} else {
-					var values = node.a;
-					return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
-				}
-			});
-		return A3(
-			$elm$core$Elm$JsArray$foldr,
-			helper,
-			A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail),
-			tree);
-	});
-var $elm$core$Array$toList = function (array) {
-	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
-};
 var $elm$core$Dict$foldr = F3(
 	function (func, acc, t) {
 		foldr:
 		while (true) {
-			if (t.$ === 'RBEmpty_elm_builtin') {
+			if (t.$ === -2) {
 				return acc;
 			} else {
 				var key = t.b;
@@ -6192,42 +6173,64 @@ var $elm$core$Dict$keys = function (dict) {
 		dict);
 };
 var $elm$core$Set$toList = function (_v0) {
-	var dict = _v0.a;
+	var dict = _v0;
 	return $elm$core$Dict$keys(dict);
 };
-var $elm$core$Basics$EQ = {$: 'EQ'};
-var $elm$core$Basics$GT = {$: 'GT'};
-var $elm$core$Basics$LT = {$: 'LT'};
-var $justgook$webgl_playground$Playground$Internal$VisibilityChanged = function (a) {
-	return {$: 'VisibilityChanged', a: a};
+var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
+var $elm$core$Array$foldr = F3(
+	function (func, baseCase, _v0) {
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var helper = F2(
+			function (node, acc) {
+				if (!node.$) {
+					var subTree = node.a;
+					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
+				} else {
+					var values = node.a;
+					return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
+				}
+			});
+		return A3(
+			$elm$core$Elm$JsArray$foldr,
+			helper,
+			A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail),
+			tree);
+	});
+var $elm$core$Array$toList = function (array) {
+	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
+};
+var $elm$core$Basics$fdiv = _Basics_fdiv;
+var $author$project$Playground$Internal$VisibilityChanged = function (a) {
+	return {$: 5, a: a};
 };
 var $elm$core$Result$Err = function (a) {
-	return {$: 'Err', a: a};
+	return {$: 1, a: a};
 };
 var $elm$json$Json$Decode$Failure = F2(
 	function (a, b) {
-		return {$: 'Failure', a: a, b: b};
+		return {$: 3, a: a, b: b};
 	});
 var $elm$json$Json$Decode$Field = F2(
 	function (a, b) {
-		return {$: 'Field', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm$json$Json$Decode$Index = F2(
 	function (a, b) {
-		return {$: 'Index', a: a, b: b};
+		return {$: 1, a: a, b: b};
 	});
 var $elm$core$Result$Ok = function (a) {
-	return {$: 'Ok', a: a};
+	return {$: 0, a: a};
 };
 var $elm$json$Json$Decode$OneOf = function (a) {
-	return {$: 'OneOf', a: a};
+	return {$: 2, a: a};
 };
-var $elm$core$Basics$False = {$: 'False'};
+var $elm$core$Basics$False = 1;
 var $elm$core$Basics$add = _Basics_add;
 var $elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
+	return {$: 0, a: a};
 };
-var $elm$core$Maybe$Nothing = {$: 'Nothing'};
+var $elm$core$Maybe$Nothing = {$: 1};
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$core$Basics$append = _Utils_append;
@@ -6352,12 +6355,12 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 		errorToStringHelp:
 		while (true) {
 			switch (error.$) {
-				case 'Field':
+				case 0:
 					var f = error.a;
 					var err = error.b;
 					var isSimple = function () {
 						var _v1 = $elm$core$String$uncons(f);
-						if (_v1.$ === 'Nothing') {
+						if (_v1.$ === 1) {
 							return false;
 						} else {
 							var _v2 = _v1.a;
@@ -6372,7 +6375,7 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 					error = $temp$error;
 					context = $temp$context;
 					continue errorToStringHelp;
-				case 'Index':
+				case 1:
 					var i = error.a;
 					var err = error.b;
 					var indexName = '[' + ($elm$core$String$fromInt(i) + ']');
@@ -6381,7 +6384,7 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 					error = $temp$error;
 					context = $temp$context;
 					continue errorToStringHelp;
-				case 'OneOf':
+				case 2:
 					var errors = error.a;
 					if (!errors.b) {
 						return 'Ran into a Json.Decode.oneOf with no possibilities' + function () {
@@ -6445,11 +6448,10 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 var $elm$core$Array$branchFactor = 32;
 var $elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
-		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
+		return {$: 0, a: a, b: b, c: c, d: d};
 	});
 var $elm$core$Elm$JsArray$empty = _JsArray_empty;
 var $elm$core$Basics$ceiling = _Basics_ceiling;
-var $elm$core$Basics$fdiv = _Basics_fdiv;
 var $elm$core$Basics$logBase = F2(
 	function (base, number) {
 		return _Basics_log(number) / _Basics_log(base);
@@ -6460,7 +6462,7 @@ var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling(
 var $elm$core$Array$empty = A4($elm$core$Array$Array_elm_builtin, 0, $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, $elm$core$Elm$JsArray$empty);
 var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
 var $elm$core$Array$Leaf = function (a) {
-	return {$: 'Leaf', a: a};
+	return {$: 1, a: a};
 };
 var $elm$core$Basics$apL = F2(
 	function (f, x) {
@@ -6480,7 +6482,7 @@ var $elm$core$Basics$max = F2(
 	});
 var $elm$core$Basics$mul = _Basics_mul;
 var $elm$core$Array$SubTree = function (a) {
-	return {$: 'SubTree', a: a};
+	return {$: 0, a: a};
 };
 var $elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
 var $elm$core$Array$compressNodes = F2(
@@ -6527,25 +6529,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.nodeListSize) {
+		if (!builder.g) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.tail),
+				$elm$core$Elm$JsArray$length(builder.i),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.tail);
+				builder.i);
 		} else {
-			var treeLen = builder.nodeListSize * $elm$core$Array$branchFactor;
+			var treeLen = builder.g * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.nodeList) : builder.nodeList;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.nodeListSize);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.j) : builder.j;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.g);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.tail) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.i) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.tail);
+				builder.i);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -6558,7 +6560,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{nodeList: nodeList, nodeListSize: (len / $elm$core$Array$branchFactor) | 0, tail: tail});
+					{j: nodeList, g: (len / $elm$core$Array$branchFactor) | 0, i: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -6588,49 +6590,45 @@ var $elm$core$Array$initialize = F2(
 			return A5($elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
-var $elm$core$Basics$True = {$: 'True'};
+var $elm$core$Basics$True = 0;
 var $elm$core$Result$isOk = function (result) {
-	if (result.$ === 'Ok') {
+	if (!result.$) {
 		return true;
 	} else {
 		return false;
 	}
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $justgook$webgl_playground$Playground$Internal$GotViewport = function (a) {
-	return {$: 'GotViewport', a: a};
+var $author$project$Playground$Internal$GotViewport = function (a) {
+	return {$: 3, a: a};
 };
-var $justgook$webgl_playground$Playground$Internal$InitTime = function (a) {
-	return {$: 'InitTime', a: a};
+var $author$project$Playground$Internal$InitTime = function (a) {
+	return {$: 2, a: a};
 };
 var $elm$core$Basics$identity = function (x) {
 	return x;
 };
-var $justgook$webgl_playground$Playground$Internal$Playground = function (a) {
-	return {$: 'Playground', a: a};
-};
-var $elm$browser$Browser$Events$Visible = {$: 'Visible'};
+var $author$project$Playground$Internal$Playground = $elm$core$Basics$identity;
+var $elm$browser$Browser$Events$Visible = 0;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $elm$core$Set$Set_elm_builtin = function (a) {
-	return {$: 'Set_elm_builtin', a: a};
-};
-var $elm$core$Set$empty = $elm$core$Set$Set_elm_builtin($elm$core$Dict$empty);
-var $justgook$webgl_playground$Playground$Internal$Mouse = F4(
+var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
+var $elm$core$Set$empty = $elm$core$Dict$empty;
+var $author$project$Playground$Internal$Mouse = F4(
 	function (x, y, down, click) {
-		return {click: click, down: down, x: x, y: y};
+		return {aU: click, aA: down, K: x, L: y};
 	});
-var $justgook$webgl_playground$Playground$Internal$emptyKeyboard = {backspace: false, down: false, enter: false, keys: $elm$core$Set$empty, left: false, right: false, shift: false, space: false, up: false};
+var $author$project$Playground$Internal$emptyKeyboard = {bG: false, aA: false, bN: false, a3: $elm$core$Set$empty, aD: false, aK: false, b2: false, b3: false, bC: false};
 var $elm$core$Dict$isEmpty = function (dict) {
-	if (dict.$ === 'RBEmpty_elm_builtin') {
+	if (dict.$ === -2) {
 		return true;
 	} else {
 		return false;
 	}
 };
 var $elm$core$Set$isEmpty = function (_v0) {
-	var dict = _v0.a;
+	var dict = _v0;
 	return $elm$core$Dict$isEmpty(dict);
 };
 var $elm$core$Tuple$mapFirst = F2(
@@ -6641,22 +6639,20 @@ var $elm$core$Tuple$mapFirst = F2(
 			func(x),
 			y);
 	});
-var $justgook$webgl_playground$Playground$Internal$mouseClick = F2(
+var $author$project$Playground$Internal$mouseClick = F2(
 	function (bool, mouse) {
 		return _Utils_update(
 			mouse,
-			{click: bool});
+			{aU: bool});
 	});
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $justgook$webgl_playground$Playground$Internal$GotTexture = function (a) {
-	return {$: 'GotTexture', a: a};
+var $author$project$Playground$Internal$GotTexture = function (a) {
+	return {$: 9, a: a};
 };
-var $elm$core$Task$Perform = function (a) {
-	return {$: 'Perform', a: a};
-};
+var $elm$core$Task$Perform = $elm$core$Basics$identity;
 var $elm$core$Task$andThen = _Scheduler_andThen;
 var $elm$core$Task$succeed = _Scheduler_succeed;
-var $elm$core$Task$init = $elm$core$Task$succeed(_Utils_Tuple0);
+var $elm$core$Task$init = $elm$core$Task$succeed(0);
 var $elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -6761,7 +6757,7 @@ var $elm$core$Task$sequence = function (tasks) {
 var $elm$core$Platform$sendToApp = _Platform_sendToApp;
 var $elm$core$Task$spawnCmd = F2(
 	function (router, _v0) {
-		var task = _v0.a;
+		var task = _v0;
 		return _Scheduler_spawn(
 			A2(
 				$elm$core$Task$andThen,
@@ -6773,7 +6769,7 @@ var $elm$core$Task$onEffects = F3(
 		return A2(
 			$elm$core$Task$map,
 			function (_v0) {
-				return _Utils_Tuple0;
+				return 0;
 			},
 			$elm$core$Task$sequence(
 				A2(
@@ -6783,13 +6779,12 @@ var $elm$core$Task$onEffects = F3(
 	});
 var $elm$core$Task$onSelfMsg = F3(
 	function (_v0, _v1, _v2) {
-		return $elm$core$Task$succeed(_Utils_Tuple0);
+		return $elm$core$Task$succeed(0);
 	});
 var $elm$core$Task$cmdMap = F2(
 	function (tagger, _v0) {
-		var task = _v0.a;
-		return $elm$core$Task$Perform(
-			A2($elm$core$Task$map, tagger, task));
+		var task = _v0;
+		return A2($elm$core$Task$map, tagger, task);
 	});
 _Platform_effectManagers['Task'] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
 var $elm$core$Task$command = _Platform_leaf('Task');
@@ -6802,26 +6797,25 @@ var $elm$core$Task$onError = _Scheduler_onError;
 var $elm$core$Task$attempt = F2(
 	function (resultToMessage, task) {
 		return $elm$core$Task$command(
-			$elm$core$Task$Perform(
+			A2(
+				$elm$core$Task$onError,
 				A2(
-					$elm$core$Task$onError,
+					$elm$core$Basics$composeL,
+					A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+					$elm$core$Result$Err),
+				A2(
+					$elm$core$Task$andThen,
 					A2(
 						$elm$core$Basics$composeL,
 						A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
-						$elm$core$Result$Err),
-					A2(
-						$elm$core$Task$andThen,
-						A2(
-							$elm$core$Basics$composeL,
-							A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
-							$elm$core$Result$Ok),
-						task))));
+						$elm$core$Result$Ok),
+					task)));
 	});
 var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
 		foldl:
 		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
+			if (dict.$ === -2) {
 				return acc;
 			} else {
 				var key = dict.b;
@@ -6844,7 +6838,7 @@ var $elm$core$Dict$foldl = F3(
 	});
 var $elm$core$Set$foldl = F3(
 	function (func, initialState, _v0) {
-		var dict = _v0.a;
+		var dict = _v0;
 		return A3(
 			$elm$core$Dict$foldl,
 			F3(
@@ -6854,21 +6848,21 @@ var $elm$core$Set$foldl = F3(
 			initialState,
 			dict);
 	});
-var $elm$core$Dict$Black = {$: 'Black'};
+var $elm$core$Dict$Black = 1;
 var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
-		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
+		return {$: -1, a: a, b: b, c: c, d: d, e: e};
 	});
-var $elm$core$Dict$Red = {$: 'Red'};
+var $elm$core$Dict$Red = 0;
 var $elm$core$Dict$balance = F5(
 	function (color, key, value, left, right) {
-		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
+		if ((right.$ === -1) && (!right.a)) {
 			var _v1 = right.a;
 			var rK = right.b;
 			var rV = right.c;
 			var rLeft = right.d;
 			var rRight = right.e;
-			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+			if ((left.$ === -1) && (!left.a)) {
 				var _v3 = left.a;
 				var lK = left.b;
 				var lV = left.c;
@@ -6876,22 +6870,22 @@ var $elm$core$Dict$balance = F5(
 				var lRight = left.e;
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
+					0,
 					key,
 					value,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rLeft, rRight));
 			} else {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
 					color,
 					rK,
 					rV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, left, rLeft),
 					rRight);
 			}
 		} else {
-			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
+			if ((((left.$ === -1) && (!left.a)) && (left.d.$ === -1)) && (!left.d.a)) {
 				var _v5 = left.a;
 				var lK = left.b;
 				var lV = left.c;
@@ -6904,11 +6898,11 @@ var $elm$core$Dict$balance = F5(
 				var lRight = left.e;
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
+					0,
 					lK,
 					lV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, key, value, lRight, right));
 			} else {
 				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
 			}
@@ -6917,8 +6911,8 @@ var $elm$core$Dict$balance = F5(
 var $elm$core$Basics$compare = _Utils_compare;
 var $elm$core$Dict$insertHelp = F3(
 	function (key, value, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+		if (dict.$ === -2) {
+			return A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
 		} else {
 			var nColor = dict.a;
 			var nKey = dict.b;
@@ -6926,8 +6920,8 @@ var $elm$core$Dict$insertHelp = F3(
 			var nLeft = dict.d;
 			var nRight = dict.e;
 			var _v1 = A2($elm$core$Basics$compare, key, nKey);
-			switch (_v1.$) {
-				case 'LT':
+			switch (_v1) {
+				case 0:
 					return A5(
 						$elm$core$Dict$balance,
 						nColor,
@@ -6935,7 +6929,7 @@ var $elm$core$Dict$insertHelp = F3(
 						nValue,
 						A3($elm$core$Dict$insertHelp, key, value, nLeft),
 						nRight);
-				case 'EQ':
+				case 1:
 					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
 				default:
 					return A5(
@@ -6951,13 +6945,13 @@ var $elm$core$Dict$insertHelp = F3(
 var $elm$core$Dict$insert = F3(
 	function (key, value, dict) {
 		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
-		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
+		if ((_v0.$ === -1) && (!_v0.a)) {
 			var _v1 = _v0.a;
 			var k = _v0.b;
 			var v = _v0.c;
 			var l = _v0.d;
 			var r = _v0.e;
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
 		} else {
 			var x = _v0;
 			return x;
@@ -6965,28 +6959,27 @@ var $elm$core$Dict$insert = F3(
 	});
 var $elm$core$Set$insert = F2(
 	function (key, _v0) {
-		var dict = _v0.a;
-		return $elm$core$Set$Set_elm_builtin(
-			A3($elm$core$Dict$insert, key, _Utils_Tuple0, dict));
+		var dict = _v0;
+		return A3($elm$core$Dict$insert, key, 0, dict);
 	});
-var $elm_explorations$webgl$WebGL$Texture$LoadError = {$: 'LoadError'};
+var $elm_explorations$webgl$WebGL$Texture$LoadError = {$: 0};
 var $elm_explorations$webgl$WebGL$Texture$SizeError = F2(
 	function (a, b) {
-		return {$: 'SizeError', a: a, b: b};
+		return {$: 1, a: a, b: b};
 	});
 var $elm_explorations$webgl$WebGL$Texture$loadWith = F2(
 	function (_v0, url) {
-		var magnify = _v0.magnify;
-		var minify = _v0.minify;
-		var horizontalWrap = _v0.horizontalWrap;
-		var verticalWrap = _v0.verticalWrap;
-		var flipY = _v0.flipY;
+		var magnify = _v0.bV;
+		var minify = _v0.bW;
+		var horizontalWrap = _v0.bT;
+		var verticalWrap = _v0.ca;
+		var flipY = _v0.bP;
 		var expand = F4(
 			function (_v1, _v2, _v3, _v4) {
-				var mag = _v1.a;
-				var min = _v2.a;
-				var hor = _v3.a;
-				var vert = _v4.a;
+				var mag = _v1;
+				var min = _v2;
+				var hor = _v3;
+				var vert = _v4;
 				return A6(_Texture_load, mag, min, hor, vert, flipY, url);
 			});
 		return A4(expand, magnify, minify, horizontalWrap, verticalWrap);
@@ -7011,7 +7004,7 @@ var $elm$core$Dict$get = F2(
 	function (targetKey, dict) {
 		get:
 		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
+			if (dict.$ === -2) {
 				return $elm$core$Maybe$Nothing;
 			} else {
 				var key = dict.b;
@@ -7019,14 +7012,14 @@ var $elm$core$Dict$get = F2(
 				var left = dict.d;
 				var right = dict.e;
 				var _v1 = A2($elm$core$Basics$compare, targetKey, key);
-				switch (_v1.$) {
-					case 'LT':
+				switch (_v1) {
+					case 0:
 						var $temp$targetKey = targetKey,
 							$temp$dict = left;
 						targetKey = $temp$targetKey;
 						dict = $temp$dict;
 						continue get;
-					case 'EQ':
+					case 1:
 						return $elm$core$Maybe$Just(value);
 					default:
 						var $temp$targetKey = targetKey,
@@ -7041,7 +7034,7 @@ var $elm$core$Dict$get = F2(
 var $elm$core$Dict$member = F2(
 	function (key, dict) {
 		var _v0 = A2($elm$core$Dict$get, key, dict);
-		if (_v0.$ === 'Just') {
+		if (!_v0.$) {
 			return true;
 		} else {
 			return false;
@@ -7049,23 +7042,19 @@ var $elm$core$Dict$member = F2(
 	});
 var $elm$core$Set$member = F2(
 	function (key, _v0) {
-		var dict = _v0.a;
+		var dict = _v0;
 		return A2($elm$core$Dict$member, key, dict);
 	});
 var $elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
 	});
-var $elm_explorations$webgl$WebGL$Texture$Wrap = function (a) {
-	return {$: 'Wrap', a: a};
-};
-var $elm_explorations$webgl$WebGL$Texture$clampToEdge = $elm_explorations$webgl$WebGL$Texture$Wrap(33071);
-var $elm_explorations$webgl$WebGL$Texture$Resize = function (a) {
-	return {$: 'Resize', a: a};
-};
-var $elm_explorations$webgl$WebGL$Texture$linear = $elm_explorations$webgl$WebGL$Texture$Resize(9729);
-var $justgook$webgl_playground$Playground$Internal$textureOption = {flipY: true, horizontalWrap: $elm_explorations$webgl$WebGL$Texture$clampToEdge, magnify: $elm_explorations$webgl$WebGL$Texture$linear, minify: $elm_explorations$webgl$WebGL$Texture$linear, verticalWrap: $elm_explorations$webgl$WebGL$Texture$clampToEdge};
-var $justgook$webgl_playground$Playground$Internal$requestTexture = F2(
+var $elm_explorations$webgl$WebGL$Texture$Wrap = $elm$core$Basics$identity;
+var $elm_explorations$webgl$WebGL$Texture$clampToEdge = 33071;
+var $elm_explorations$webgl$WebGL$Texture$Resize = $elm$core$Basics$identity;
+var $elm_explorations$webgl$WebGL$Texture$linear = 9729;
+var $author$project$Playground$Internal$textureOption = {bP: true, bT: $elm_explorations$webgl$WebGL$Texture$clampToEdge, bV: $elm_explorations$webgl$WebGL$Texture$linear, bW: $elm_explorations$webgl$WebGL$Texture$linear, ca: $elm_explorations$webgl$WebGL$Texture$clampToEdge};
+var $author$project$Playground$Internal$requestTexture = F2(
 	function (missing, textures) {
 		return A2(
 			$elm$core$Tuple$mapSecond,
@@ -7074,54 +7063,54 @@ var $justgook$webgl_playground$Playground$Internal$requestTexture = F2(
 				$elm$core$Set$foldl,
 				F2(
 					function (url, acc) {
-						var done = acc.a.done;
-						var loading = acc.a.loading;
+						var done = acc.a.M;
+						var loading = acc.a.V;
 						var acc2 = acc.b;
 						return A2($elm$core$Set$member, url, loading) ? acc : _Utils_Tuple2(
 							{
-								done: done,
-								loading: A2($elm$core$Set$insert, url, loading)
+								M: done,
+								V: A2($elm$core$Set$insert, url, loading)
 							},
 							A2(
 								$elm$core$List$cons,
 								A2(
 									$elm$core$Task$attempt,
-									$justgook$webgl_playground$Playground$Internal$GotTexture,
+									$author$project$Playground$Internal$GotTexture,
 									A2(
 										$elm$core$Task$mapError,
 										$elm$core$Tuple$pair(url),
 										A2(
 											$elm$core$Task$map,
 											$elm$core$Tuple$pair(url),
-											A2($elm_explorations$webgl$WebGL$Texture$loadWith, $justgook$webgl_playground$Playground$Internal$textureOption, url)))),
+											A2($elm_explorations$webgl$WebGL$Texture$loadWith, $author$project$Playground$Internal$textureOption, url)))),
 								acc2));
 					}),
 				_Utils_Tuple2(textures, _List_Nil),
 				missing));
 	});
-var $justgook$webgl_shape$WebGL$Shape2d$Transformation$identity = {a11: 1, a12: 0, a13: 0, a21: 0, a22: 1, a23: 0};
+var $justgook$webgl_shape$WebGL$Shape2d$Transformation$identity = {m: 1, n: 0, t: 0, o: 0, p: 1, u: 0};
 var $justgook$webgl_shape$WebGL$Shape2d$Transformation$apply = F2(
 	function (a, b) {
-		return {a11: (a.a11 * b.a11) + (a.a12 * b.a21), a12: (a.a11 * b.a12) + (a.a12 * b.a22), a13: ((a.a11 * b.a13) + (a.a12 * b.a23)) + a.a13, a21: (a.a21 * b.a11) + (a.a22 * b.a21), a22: (a.a21 * b.a12) + (a.a22 * b.a22), a23: ((a.a21 * b.a13) + (a.a22 * b.a23)) + a.a23};
+		return {m: (a.m * b.m) + (a.n * b.o), n: (a.m * b.n) + (a.n * b.p), t: ((a.m * b.t) + (a.n * b.u)) + a.t, o: (a.o * b.m) + (a.p * b.o), p: (a.o * b.n) + (a.p * b.p), u: ((a.o * b.t) + (a.p * b.u)) + a.u};
 	});
 var $justgook$webgl_shape$WebGL$Shape2d$Transformation$scale = F3(
 	function (sx, sy, b) {
-		return {a11: sx * b.a11, a12: sx * b.a12, a13: sx * b.a13, a21: sy * b.a21, a22: sy * b.a22, a23: sy * b.a23};
+		return {m: sx * b.m, n: sx * b.n, t: sx * b.t, o: sy * b.o, p: sy * b.p, u: sy * b.u};
 	});
 var $elm_explorations$linear_algebra$Math$Vector2$fromRecord = _MJS_v2fromRecord;
 var $elm_explorations$linear_algebra$Math$Vector4$fromRecord = _MJS_v4fromRecord;
 var $justgook$webgl_shape$WebGL$Shape2d$Transformation$toGL = function (_v0) {
-	var a11 = _v0.a11;
-	var a12 = _v0.a12;
-	var a13 = _v0.a13;
-	var a21 = _v0.a21;
-	var a22 = _v0.a22;
-	var a23 = _v0.a23;
+	var a11 = _v0.m;
+	var a12 = _v0.n;
+	var a13 = _v0.t;
+	var a21 = _v0.o;
+	var a22 = _v0.p;
+	var a23 = _v0.u;
 	return _Utils_Tuple2(
 		$elm_explorations$linear_algebra$Math$Vector4$fromRecord(
-			{w: a22, x: a11, y: a12, z: a21}),
+			{bD: a22, K: a11, L: a12, ce: a21}),
 		$elm_explorations$linear_algebra$Math$Vector2$fromRecord(
-			{x: a13, y: a23}));
+			{K: a13, L: a23}));
 };
 var $elm$core$Basics$cos = _Basics_cos;
 var $elm$core$Basics$negate = function (n) {
@@ -7131,25 +7120,25 @@ var $elm$core$Basics$sin = _Basics_sin;
 var $justgook$webgl_shape$WebGL$Shape2d$Transformation$transform = F5(
 	function (tx, ty, sx, sy, angle) {
 		return {
-			a11: $elm$core$Basics$cos(angle) * sx,
-			a12: $elm$core$Basics$sin(angle) * (-sy),
-			a13: tx,
-			a21: $elm$core$Basics$sin(angle) * sx,
-			a22: $elm$core$Basics$cos(angle) * sy,
-			a23: ty
+			m: $elm$core$Basics$cos(angle) * sx,
+			n: $elm$core$Basics$sin(angle) * (-sy),
+			t: tx,
+			o: $elm$core$Basics$sin(angle) * sx,
+			p: $elm$core$Basics$cos(angle) * sy,
+			u: ty
 		};
 	});
 var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F6(
 	function (screen, textures, parent, parentOpacity, _v0, acc) {
 		renderShape:
 		while (true) {
-			var x = _v0.a.x;
-			var y = _v0.a.y;
-			var a = _v0.a.a;
-			var sx = _v0.a.sx;
-			var sy = _v0.a.sy;
-			var o = _v0.a.o;
-			var form = _v0.a.form;
+			var x = _v0.K;
+			var y = _v0.L;
+			var a = _v0.d;
+			var sx = _v0.b;
+			var sy = _v0.c;
+			var o = _v0.e;
+			var form = _v0.f;
 			var entities = acc.a;
 			var missing = acc.b;
 			var opacity = o * parentOpacity;
@@ -7161,15 +7150,15 @@ var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F6(
 						A5($justgook$webgl_shape$WebGL$Shape2d$Transformation$transform, tx, ty, sx_, sy_, a_));
 				});
 			switch (form.$) {
-				case 'Form':
+				case 0:
 					var width = form.a;
 					var height = form.b;
 					var fn = form.c;
 					var _v2 = $justgook$webgl_shape$WebGL$Shape2d$Transformation$toGL(
 						A3(
 							$justgook$webgl_shape$WebGL$Shape2d$Transformation$scale,
-							1 / screen.width,
-							1 / screen.height,
+							1 / screen.cc,
+							1 / screen.bR,
 							A5(createTrans, x * 2, y * 2, width * sx, height * sy, a)));
 					var t1 = _v2.a;
 					var t2 = _v2.b;
@@ -7179,11 +7168,11 @@ var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F6(
 							A3(fn, t2, t1, opacity),
 							entities),
 						missing);
-				case 'Textured':
+				case 1:
 					var src = form.a;
 					var fn = form.b;
 					var _v3 = A2($elm$core$Dict$get, src, textures);
-					if (_v3.$ === 'Just') {
+					if (!_v3.$) {
 						var texture = _v3.a;
 						var $temp$screen = screen,
 							$temp$textures = textures,
@@ -7226,43 +7215,41 @@ var $justgook$webgl_shape$WebGL$Shape2d$toEntities = F3(
 			_Utils_Tuple2(_List_Nil, $elm$core$Set$empty),
 			shapes);
 	});
-var $justgook$webgl_playground$Playground$Internal$gameTick = F3(
+var $author$project$Playground$Internal$gameTick = F3(
 	function (viewMemory, updateMemory, model) {
-		var computer = model.computer;
-		var memory = model.memory;
-		var textures = model.textures;
+		var computer = model.ac;
+		var memory = model.ag;
+		var textures = model.X;
 		var newMemory = A2(updateMemory, computer, memory);
-		var newComputer = computer.mouse.click ? _Utils_update(
+		var newComputer = computer.bm.aU ? _Utils_update(
 			computer,
 			{
-				mouse: A2($justgook$webgl_playground$Playground$Internal$mouseClick, false, computer.mouse)
+				bm: A2($author$project$Playground$Internal$mouseClick, false, computer.bm)
 			}) : computer;
 		var _v0 = A3(
 			$justgook$webgl_shape$WebGL$Shape2d$toEntities,
-			textures.done,
-			computer.screen,
+			textures.M,
+			computer.aw,
 			A2(viewMemory, newComputer, newMemory));
 		var entities = _v0.a;
 		var missing = _v0.b;
 		return $elm$core$Set$isEmpty(missing) ? _Utils_Tuple2(
-			$justgook$webgl_playground$Playground$Internal$Playground(
-				_Utils_update(
-					model,
-					{computer: newComputer, entities: entities, memory: newMemory})),
+			_Utils_update(
+				model,
+				{ac: newComputer, aB: entities, ag: newMemory}),
 			$elm$core$Platform$Cmd$none) : A2(
 			$elm$core$Tuple$mapFirst,
 			function (loadingTextures) {
-				return $justgook$webgl_playground$Playground$Internal$Playground(
-					_Utils_update(
-						model,
-						{computer: newComputer, entities: entities, memory: newMemory, textures: loadingTextures}));
+				return _Utils_update(
+					model,
+					{ac: newComputer, aB: entities, ag: newMemory, X: loadingTextures});
 			},
-			A2($justgook$webgl_playground$Playground$Internal$requestTexture, missing, textures));
+			A2($author$project$Playground$Internal$requestTexture, missing, textures));
 	});
 var $elm$core$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
-		if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
+		if ((dict.$ === -1) && (dict.d.$ === -1)) {
 			var left = dict.d;
 			var $temp$dict = left;
 			dict = $temp$dict;
@@ -7273,8 +7260,8 @@ var $elm$core$Dict$getMin = function (dict) {
 	}
 };
 var $elm$core$Dict$moveRedLeft = function (dict) {
-	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
-		if ((dict.e.d.$ === 'RBNode_elm_builtin') && (dict.e.d.a.$ === 'Red')) {
+	if (((dict.$ === -1) && (dict.d.$ === -1)) && (dict.e.$ === -1)) {
+		if ((dict.e.d.$ === -1) && (!dict.e.d.a)) {
 			var clr = dict.a;
 			var k = dict.b;
 			var v = dict.c;
@@ -7297,17 +7284,17 @@ var $elm$core$Dict$moveRedLeft = function (dict) {
 			var rRight = _v2.e;
 			return A5(
 				$elm$core$Dict$RBNode_elm_builtin,
-				$elm$core$Dict$Red,
+				0,
 				rlK,
 				rlV,
 				A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
 					rlL),
-				A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rlR, rRight));
+				A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rlR, rRight));
 		} else {
 			var clr = dict.a;
 			var k = dict.b;
@@ -7324,22 +7311,22 @@ var $elm$core$Dict$moveRedLeft = function (dict) {
 			var rV = _v5.c;
 			var rLeft = _v5.d;
 			var rRight = _v5.e;
-			if (clr.$ === 'Black') {
+			if (clr === 1) {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
 			} else {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
 			}
 		}
 	} else {
@@ -7347,8 +7334,8 @@ var $elm$core$Dict$moveRedLeft = function (dict) {
 	}
 };
 var $elm$core$Dict$moveRedRight = function (dict) {
-	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
-		if ((dict.d.d.$ === 'RBNode_elm_builtin') && (dict.d.d.a.$ === 'Red')) {
+	if (((dict.$ === -1) && (dict.d.$ === -1)) && (dict.e.$ === -1)) {
+		if ((dict.d.d.$ === -1) && (!dict.d.d.a)) {
 			var clr = dict.a;
 			var k = dict.b;
 			var v = dict.c;
@@ -7371,17 +7358,17 @@ var $elm$core$Dict$moveRedRight = function (dict) {
 			var rRight = _v4.e;
 			return A5(
 				$elm$core$Dict$RBNode_elm_builtin,
-				$elm$core$Dict$Red,
+				0,
 				lK,
 				lV,
-				A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
+				A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
 				A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
 					lRight,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight)));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight)));
 		} else {
 			var clr = dict.a;
 			var k = dict.b;
@@ -7398,22 +7385,22 @@ var $elm$core$Dict$moveRedRight = function (dict) {
 			var rV = _v6.c;
 			var rLeft = _v6.d;
 			var rRight = _v6.e;
-			if (clr.$ === 'Black') {
+			if (clr === 1) {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
 			} else {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
 			}
 		}
 	} else {
@@ -7422,7 +7409,7 @@ var $elm$core$Dict$moveRedRight = function (dict) {
 };
 var $elm$core$Dict$removeHelpPrepEQGT = F7(
 	function (targetKey, dict, color, key, value, left, right) {
-		if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+		if ((left.$ === -1) && (!left.a)) {
 			var _v1 = left.a;
 			var lK = left.b;
 			var lV = left.c;
@@ -7434,13 +7421,13 @@ var $elm$core$Dict$removeHelpPrepEQGT = F7(
 				lK,
 				lV,
 				lLeft,
-				A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, lRight, right));
+				A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, lRight, right));
 		} else {
 			_v2$2:
 			while (true) {
-				if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Black')) {
-					if (right.d.$ === 'RBNode_elm_builtin') {
-						if (right.d.a.$ === 'Black') {
+				if ((right.$ === -1) && (right.a === 1)) {
+					if (right.d.$ === -1) {
+						if (right.d.a === 1) {
 							var _v3 = right.a;
 							var _v4 = right.d;
 							var _v5 = _v4.a;
@@ -7461,7 +7448,7 @@ var $elm$core$Dict$removeHelpPrepEQGT = F7(
 		}
 	});
 var $elm$core$Dict$removeMin = function (dict) {
-	if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
+	if ((dict.$ === -1) && (dict.d.$ === -1)) {
 		var color = dict.a;
 		var key = dict.b;
 		var value = dict.c;
@@ -7469,8 +7456,8 @@ var $elm$core$Dict$removeMin = function (dict) {
 		var lColor = left.a;
 		var lLeft = left.d;
 		var right = dict.e;
-		if (lColor.$ === 'Black') {
-			if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
+		if (lColor === 1) {
+			if ((lLeft.$ === -1) && (!lLeft.a)) {
 				var _v3 = lLeft.a;
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
@@ -7481,7 +7468,7 @@ var $elm$core$Dict$removeMin = function (dict) {
 					right);
 			} else {
 				var _v4 = $elm$core$Dict$moveRedLeft(dict);
-				if (_v4.$ === 'RBNode_elm_builtin') {
+				if (_v4.$ === -1) {
 					var nColor = _v4.a;
 					var nKey = _v4.b;
 					var nValue = _v4.c;
@@ -7513,7 +7500,7 @@ var $elm$core$Dict$removeMin = function (dict) {
 };
 var $elm$core$Dict$removeHelp = F2(
 	function (targetKey, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
+		if (dict.$ === -2) {
 			return $elm$core$Dict$RBEmpty_elm_builtin;
 		} else {
 			var color = dict.a;
@@ -7522,10 +7509,10 @@ var $elm$core$Dict$removeHelp = F2(
 			var left = dict.d;
 			var right = dict.e;
 			if (_Utils_cmp(targetKey, key) < 0) {
-				if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Black')) {
+				if ((left.$ === -1) && (left.a === 1)) {
 					var _v4 = left.a;
 					var lLeft = left.d;
-					if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
+					if ((lLeft.$ === -1) && (!lLeft.a)) {
 						var _v6 = lLeft.a;
 						return A5(
 							$elm$core$Dict$RBNode_elm_builtin,
@@ -7536,7 +7523,7 @@ var $elm$core$Dict$removeHelp = F2(
 							right);
 					} else {
 						var _v7 = $elm$core$Dict$moveRedLeft(dict);
-						if (_v7.$ === 'RBNode_elm_builtin') {
+						if (_v7.$ === -1) {
 							var nColor = _v7.a;
 							var nKey = _v7.b;
 							var nValue = _v7.c;
@@ -7572,7 +7559,7 @@ var $elm$core$Dict$removeHelp = F2(
 	});
 var $elm$core$Dict$removeHelpEQGT = F2(
 	function (targetKey, dict) {
-		if (dict.$ === 'RBNode_elm_builtin') {
+		if (dict.$ === -1) {
 			var color = dict.a;
 			var key = dict.b;
 			var value = dict.c;
@@ -7580,7 +7567,7 @@ var $elm$core$Dict$removeHelpEQGT = F2(
 			var right = dict.e;
 			if (_Utils_eq(targetKey, key)) {
 				var _v1 = $elm$core$Dict$getMin(right);
-				if (_v1.$ === 'RBNode_elm_builtin') {
+				if (_v1.$ === -1) {
 					var minKey = _v1.b;
 					var minValue = _v1.c;
 					return A5(
@@ -7609,13 +7596,13 @@ var $elm$core$Dict$removeHelpEQGT = F2(
 var $elm$core$Dict$remove = F2(
 	function (key, dict) {
 		var _v0 = A2($elm$core$Dict$removeHelp, key, dict);
-		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
+		if ((_v0.$ === -1) && (!_v0.a)) {
 			var _v1 = _v0.a;
 			var k = _v0.b;
 			var v = _v0.c;
 			var l = _v0.d;
 			var r = _v0.e;
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
 		} else {
 			var x = _v0;
 			return x;
@@ -7623,21 +7610,20 @@ var $elm$core$Dict$remove = F2(
 	});
 var $elm$core$Set$remove = F2(
 	function (key, _v0) {
-		var dict = _v0.a;
-		return $elm$core$Set$Set_elm_builtin(
-			A2($elm$core$Dict$remove, key, dict));
+		var dict = _v0;
+		return A2($elm$core$Dict$remove, key, dict);
 	});
-var $justgook$webgl_playground$Playground$Internal$gotTextures = F2(
+var $author$project$Playground$Internal$gotTextures = F2(
 	function (r, textures) {
-		var done = textures.done;
-		var loading = textures.loading;
-		if (r.$ === 'Ok') {
+		var done = textures.M;
+		var loading = textures.V;
+		if (!r.$) {
 			var _v1 = r.a;
 			var name = _v1.a;
 			var t = _v1.b;
 			return {
-				done: A3($elm$core$Dict$insert, name, t, done),
-				loading: A2($elm$core$Set$remove, name, loading)
+				M: A3($elm$core$Dict$insert, name, t, done),
+				V: A2($elm$core$Set$remove, name, loading)
 			};
 		} else {
 			var _v2 = r.a;
@@ -7646,230 +7632,221 @@ var $justgook$webgl_playground$Playground$Internal$gotTextures = F2(
 			return textures;
 		}
 	});
-var $justgook$webgl_playground$Playground$Internal$mouseDown = F2(
+var $author$project$Playground$Internal$mouseDown = F2(
 	function (bool, mouse) {
 		return _Utils_update(
 			mouse,
-			{down: bool});
+			{aA: bool});
 	});
-var $justgook$webgl_playground$Playground$Internal$mouseMove = F3(
+var $author$project$Playground$Internal$mouseMove = F3(
 	function (x, y, mouse) {
 		return _Utils_update(
 			mouse,
-			{x: x, y: y});
+			{K: x, L: y});
 	});
 var $elm$time$Time$posixToMillis = function (_v0) {
-	var millis = _v0.a;
+	var millis = _v0;
 	return millis;
 };
-var $justgook$webgl_playground$Playground$Internal$toScreen = F2(
+var $author$project$Playground$Internal$toScreen = F2(
 	function (width, height) {
-		return {bottom: (-height) / 2, height: height, left: (-width) / 2, right: width / 2, top: height / 2, width: width};
+		return {bH: (-height) / 2, bR: height, aD: (-width) / 2, aK: width / 2, b6: height / 2, cc: width};
 	});
-var $justgook$webgl_playground$Playground$Internal$updateKeyboard = F3(
+var $author$project$Playground$Internal$updateKeyboard = F3(
 	function (isDown, key, keyboard) {
-		var keys = isDown ? A2($elm$core$Set$insert, key, keyboard.keys) : A2($elm$core$Set$remove, key, keyboard.keys);
+		var keys = isDown ? A2($elm$core$Set$insert, key, keyboard.a3) : A2($elm$core$Set$remove, key, keyboard.a3);
 		switch (key) {
 			case 'Space':
 				return _Utils_update(
 					keyboard,
-					{keys: keys, space: isDown});
+					{a3: keys, b3: isDown});
 			case 'Enter':
 				return _Utils_update(
 					keyboard,
-					{enter: isDown, keys: keys});
+					{bN: isDown, a3: keys});
 			case 'ShiftLeft':
 				return _Utils_update(
 					keyboard,
-					{keys: keys, shift: isDown});
+					{a3: keys, b2: isDown});
 			case 'ShiftRight':
 				return _Utils_update(
 					keyboard,
-					{keys: keys, shift: isDown});
+					{a3: keys, b2: isDown});
 			case 'Backspace':
 				return _Utils_update(
 					keyboard,
-					{backspace: isDown, keys: keys});
+					{bG: isDown, a3: keys});
 			case 'ArrowUp':
 				return _Utils_update(
 					keyboard,
-					{keys: keys, up: isDown});
+					{a3: keys, bC: isDown});
 			case 'ArrowDown':
 				return _Utils_update(
 					keyboard,
-					{down: isDown, keys: keys});
+					{aA: isDown, a3: keys});
 			case 'ArrowLeft':
 				return _Utils_update(
 					keyboard,
-					{keys: keys, left: isDown});
+					{a3: keys, aD: isDown});
 			case 'ArrowRight':
 				return _Utils_update(
 					keyboard,
-					{keys: keys, right: isDown});
+					{a3: keys, aK: isDown});
 			default:
 				return _Utils_update(
 					keyboard,
-					{keys: keys});
+					{a3: keys});
 		}
 	});
-var $justgook$webgl_playground$Playground$Internal$gameUpdate = F4(
+var $author$project$Playground$Internal$gameUpdate = F4(
 	function (viewMemory, updateMemory, msg, _v0) {
-		var model = _v0.a;
-		var visibility = model.visibility;
-		var memory = model.memory;
-		var textures = model.textures;
-		var computer = model.computer;
+		var model = _v0;
+		var visibility = model.ay;
+		var memory = model.ag;
+		var textures = model.X;
+		var computer = model.ac;
 		switch (msg.$) {
-			case 'Tick':
+			case 1:
 				var time = msg.a;
 				var now = $elm$time$Time$posixToMillis(time);
-				var d = now - computer.time.now;
+				var d = now - computer.b5.bZ;
 				return A3(
-					$justgook$webgl_playground$Playground$Internal$gameTick,
+					$author$project$Playground$Internal$gameTick,
 					viewMemory,
 					updateMemory,
 					_Utils_update(
 						model,
 						{
-							computer: _Utils_update(
+							ac: _Utils_update(
 								computer,
 								{
-									time: {delta: d, now: now}
+									b5: {S: d, bZ: now}
 								})
 						}));
-			case 'GotViewport':
-				var viewport = msg.a.viewport;
+			case 3:
+				var viewport = msg.a.cb;
 				return _Utils_Tuple2(
-					$justgook$webgl_playground$Playground$Internal$Playground(
-						_Utils_update(
-							model,
-							{
-								computer: _Utils_update(
-									computer,
-									{
-										screen: A2($justgook$webgl_playground$Playground$Internal$toScreen, viewport.width, viewport.height)
-									})
-							})),
+					_Utils_update(
+						model,
+						{
+							ac: _Utils_update(
+								computer,
+								{
+									aw: A2($author$project$Playground$Internal$toScreen, viewport.cc, viewport.bR)
+								})
+						}),
 					$elm$core$Platform$Cmd$none);
-			case 'Resized':
+			case 4:
 				var newScreen = msg.a;
 				return _Utils_Tuple2(
-					$justgook$webgl_playground$Playground$Internal$Playground(
-						_Utils_update(
-							model,
-							{
-								computer: _Utils_update(
-									computer,
-									{screen: newScreen})
-							})),
+					_Utils_update(
+						model,
+						{
+							ac: _Utils_update(
+								computer,
+								{aw: newScreen})
+						}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeyChanged':
+			case 0:
 				var isDown = msg.a;
 				var key = msg.b;
 				return _Utils_Tuple2(
-					$justgook$webgl_playground$Playground$Internal$Playground(
-						_Utils_update(
-							model,
-							{
-								computer: _Utils_update(
-									computer,
-									{
-										keyboard: A3($justgook$webgl_playground$Playground$Internal$updateKeyboard, isDown, key, computer.keyboard)
-									})
-							})),
+					_Utils_update(
+						model,
+						{
+							ac: _Utils_update(
+								computer,
+								{
+									a2: A3($author$project$Playground$Internal$updateKeyboard, isDown, key, computer.a2)
+								})
+						}),
 					$elm$core$Platform$Cmd$none);
-			case 'MouseMove':
+			case 6:
 				var pageX = msg.a;
 				var pageY = msg.b;
-				var y = computer.screen.top - pageY;
-				var x = computer.screen.left + pageX;
+				var y = computer.aw.b6 - pageY;
+				var x = computer.aw.aD + pageX;
 				return _Utils_Tuple2(
-					$justgook$webgl_playground$Playground$Internal$Playground(
-						_Utils_update(
-							model,
-							{
-								computer: _Utils_update(
-									computer,
-									{
-										mouse: A3($justgook$webgl_playground$Playground$Internal$mouseMove, x, y, computer.mouse)
-									})
-							})),
+					_Utils_update(
+						model,
+						{
+							ac: _Utils_update(
+								computer,
+								{
+									bm: A3($author$project$Playground$Internal$mouseMove, x, y, computer.bm)
+								})
+						}),
 					$elm$core$Platform$Cmd$none);
-			case 'MouseClick':
+			case 7:
 				return _Utils_Tuple2(
-					$justgook$webgl_playground$Playground$Internal$Playground(
-						_Utils_update(
-							model,
-							{
-								computer: _Utils_update(
-									computer,
-									{
-										mouse: A2($justgook$webgl_playground$Playground$Internal$mouseClick, true, computer.mouse)
-									})
-							})),
+					_Utils_update(
+						model,
+						{
+							ac: _Utils_update(
+								computer,
+								{
+									bm: A2($author$project$Playground$Internal$mouseClick, true, computer.bm)
+								})
+						}),
 					$elm$core$Platform$Cmd$none);
-			case 'MouseButton':
+			case 8:
 				var isDown = msg.a;
 				return _Utils_Tuple2(
-					$justgook$webgl_playground$Playground$Internal$Playground(
-						_Utils_update(
-							model,
-							{
-								computer: _Utils_update(
-									computer,
-									{
-										mouse: A2($justgook$webgl_playground$Playground$Internal$mouseDown, isDown, computer.mouse)
-									})
-							})),
+					_Utils_update(
+						model,
+						{
+							ac: _Utils_update(
+								computer,
+								{
+									bm: A2($author$project$Playground$Internal$mouseDown, isDown, computer.bm)
+								})
+						}),
 					$elm$core$Platform$Cmd$none);
-			case 'VisibilityChanged':
+			case 5:
 				var vis = msg.a;
 				return _Utils_Tuple2(
-					$justgook$webgl_playground$Playground$Internal$Playground(
-						_Utils_update(
-							model,
-							{
-								computer: _Utils_update(
-									computer,
-									{
-										keyboard: $justgook$webgl_playground$Playground$Internal$emptyKeyboard,
-										mouse: A4($justgook$webgl_playground$Playground$Internal$Mouse, computer.mouse.x, computer.mouse.y, false, false),
-										time: {delta: 0, now: computer.time.now}
-									}),
-								visibility: vis
-							})),
+					_Utils_update(
+						model,
+						{
+							ac: _Utils_update(
+								computer,
+								{
+									a2: $author$project$Playground$Internal$emptyKeyboard,
+									bm: A4($author$project$Playground$Internal$Mouse, computer.bm.K, computer.bm.L, false, false),
+									b5: {S: 0, bZ: computer.b5.bZ}
+								}),
+							ay: vis
+						}),
 					$elm$core$Platform$Cmd$none);
-			case 'GotTexture':
+			case 9:
 				var r = msg.a;
 				return _Utils_Tuple2(
-					$justgook$webgl_playground$Playground$Internal$Playground(
-						_Utils_update(
-							model,
-							{
-								computer: _Utils_update(
-									computer,
-									{
-										time: {delta: 0, now: computer.time.now}
-									}),
-								textures: A2($justgook$webgl_playground$Playground$Internal$gotTextures, r, model.textures)
-							})),
+					_Utils_update(
+						model,
+						{
+							ac: _Utils_update(
+								computer,
+								{
+									b5: {S: 0, bZ: computer.b5.bZ}
+								}),
+							X: A2($author$project$Playground$Internal$gotTextures, r, model.X)
+						}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				var time = msg.a;
 				return _Utils_Tuple2(
-					$justgook$webgl_playground$Playground$Internal$Playground(
-						_Utils_update(
-							model,
-							{
-								computer: _Utils_update(
-									computer,
-									{
-										time: {
-											delta: 0,
-											now: $elm$time$Time$posixToMillis(time)
-										}
-									})
-							})),
+					_Utils_update(
+						model,
+						{
+							ac: _Utils_update(
+								computer,
+								{
+									b5: {
+										S: 0,
+										bZ: $elm$time$Time$posixToMillis(time)
+									}
+								})
+						}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -7878,30 +7855,28 @@ var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$json$Json$Decode$succeed = _Json_succeed;
 var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
-		case 'Normal':
+		case 0:
 			return 0;
-		case 'MayStopPropagation':
+		case 1:
 			return 1;
-		case 'MayPreventDefault':
+		case 2:
 			return 2;
 		default:
 			return 3;
 	}
 };
 var $elm$browser$Browser$External = function (a) {
-	return {$: 'External', a: a};
+	return {$: 1, a: a};
 };
 var $elm$browser$Browser$Internal = function (a) {
-	return {$: 'Internal', a: a};
+	return {$: 0, a: a};
 };
-var $elm$browser$Browser$Dom$NotFound = function (a) {
-	return {$: 'NotFound', a: a};
-};
-var $elm$url$Url$Http = {$: 'Http'};
-var $elm$url$Url$Https = {$: 'Https'};
+var $elm$browser$Browser$Dom$NotFound = $elm$core$Basics$identity;
+var $elm$url$Url$Http = 0;
+var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {fragment: fragment, host: host, path: path, port_: port_, protocol: protocol, query: query};
+		return {aZ: fragment, a_: host, bo: path, bq: port_, bt: protocol, bu: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -7937,7 +7912,7 @@ var $elm$url$Url$chompBeforePath = F5(
 					var i = _v0.a;
 					var _v1 = $elm$core$String$toInt(
 						A2($elm$core$String$dropLeft, i + 1, str));
-					if (_v1.$ === 'Nothing') {
+					if (_v1.$ === 1) {
 						return $elm$core$Maybe$Nothing;
 					} else {
 						var port_ = _v1;
@@ -8020,16 +7995,16 @@ var $elm$core$String$startsWith = _String_startsWith;
 var $elm$url$Url$fromString = function (str) {
 	return A2($elm$core$String$startsWith, 'http://', str) ? A2(
 		$elm$url$Url$chompAfterProtocol,
-		$elm$url$Url$Http,
+		0,
 		A2($elm$core$String$dropLeft, 7, str)) : (A2($elm$core$String$startsWith, 'https://', str) ? A2(
 		$elm$url$Url$chompAfterProtocol,
-		$elm$url$Url$Https,
+		1,
 		A2($elm$core$String$dropLeft, 8, str)) : $elm$core$Maybe$Nothing);
 };
 var $elm$core$Basics$never = function (_v0) {
 	never:
 	while (true) {
-		var nvr = _v0.a;
+		var nvr = _v0;
 		var $temp$_v0 = nvr;
 		_v0 = $temp$_v0;
 		continue never;
@@ -8038,75 +8013,71 @@ var $elm$core$Basics$never = function (_v0) {
 var $elm$core$Task$perform = F2(
 	function (toMessage, task) {
 		return $elm$core$Task$command(
-			$elm$core$Task$Perform(
-				A2($elm$core$Task$map, toMessage, task)));
+			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$Dom$getViewport = _Browser_withWindow(_Browser_getViewport);
-var $justgook$webgl_playground$Playground$Internal$initialComputer = {
-	keyboard: $justgook$webgl_playground$Playground$Internal$emptyKeyboard,
-	mouse: A4($justgook$webgl_playground$Playground$Internal$Mouse, 0, 0, false, false),
-	screen: A2($justgook$webgl_playground$Playground$Internal$toScreen, 600, 600),
-	time: {delta: 0, now: 0}
+var $author$project$Playground$Internal$initialComputer = {
+	a2: $author$project$Playground$Internal$emptyKeyboard,
+	bm: A4($author$project$Playground$Internal$Mouse, 0, 0, false, false),
+	aw: A2($author$project$Playground$Internal$toScreen, 600, 600),
+	b5: {S: 0, bZ: 0}
 };
 var $elm$time$Time$Name = function (a) {
-	return {$: 'Name', a: a};
+	return {$: 0, a: a};
 };
 var $elm$time$Time$Offset = function (a) {
-	return {$: 'Offset', a: a};
+	return {$: 1, a: a};
 };
 var $elm$time$Time$Zone = F2(
 	function (a, b) {
-		return {$: 'Zone', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm$time$Time$customZone = $elm$time$Time$Zone;
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $elm$time$Time$Posix = $elm$core$Basics$identity;
+var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
 var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
-var $justgook$webgl_playground$Playground$Internal$create = F3(
+var $author$project$Playground$Internal$create = F3(
 	function (viewMemory, updateMemory, initialMemory) {
 		var view = function (_v0) {
-			var entities = _v0.a.entities;
+			var entities = _v0.aB;
 			return entities;
 		};
 		var init = _Utils_Tuple2(
-			$justgook$webgl_playground$Playground$Internal$Playground(
-				{
-					computer: $justgook$webgl_playground$Playground$Internal$initialComputer,
-					entities: _List_Nil,
-					memory: initialMemory,
-					textures: {done: $elm$core$Dict$empty, loading: $elm$core$Set$empty},
-					visibility: $elm$browser$Browser$Events$Visible
-				}),
+			{
+				ac: $author$project$Playground$Internal$initialComputer,
+				aB: _List_Nil,
+				ag: initialMemory,
+				X: {M: $elm$core$Dict$empty, V: $elm$core$Set$empty},
+				ay: 0
+			},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
 					[
-						A2($elm$core$Task$perform, $justgook$webgl_playground$Playground$Internal$GotViewport, $elm$browser$Browser$Dom$getViewport),
-						A2($elm$core$Task$perform, $justgook$webgl_playground$Playground$Internal$InitTime, $elm$time$Time$now)
+						A2($elm$core$Task$perform, $author$project$Playground$Internal$GotViewport, $elm$browser$Browser$Dom$getViewport),
+						A2($elm$core$Task$perform, $author$project$Playground$Internal$InitTime, $elm$time$Time$now)
 					])));
 		return {
-			init: init,
-			update: A2($justgook$webgl_playground$Playground$Internal$gameUpdate, viewMemory, updateMemory),
-			view: view
+			U: init,
+			Y: A2($author$project$Playground$Internal$gameUpdate, viewMemory, updateMemory),
+			aQ: view
 		};
 	});
 var $elm$browser$Browser$document = _Browser_document;
-var $elm$browser$Browser$Events$Document = {$: 'Document'};
+var $elm$browser$Browser$Events$Document = 0;
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$browser$Browser$Events$MySub = F3(
 	function (a, b, c) {
-		return {$: 'MySub', a: a, b: b, c: c};
+		return {$: 0, a: a, b: b, c: c};
 	});
 var $elm$browser$Browser$Events$State = F2(
 	function (subs, pids) {
-		return {pids: pids, subs: subs};
+		return {bp: pids, bz: subs};
 	});
 var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
 	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
 var $elm$browser$Browser$Events$nodeToKey = function (node) {
-	if (node.$ === 'Document') {
+	if (!node) {
 		return 'd_';
 	} else {
 		return 'w_';
@@ -8197,7 +8168,7 @@ var $elm$core$Dict$merge = F6(
 	});
 var $elm$browser$Browser$Events$Event = F2(
 	function (key, event) {
-		return {event: event, key: key};
+		return {aY: event, a1: key};
 	});
 var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$browser$Browser$Events$spawn = F3(
@@ -8205,7 +8176,7 @@ var $elm$browser$Browser$Events$spawn = F3(
 		var node = _v0.a;
 		var name = _v0.b;
 		var actualNode = function () {
-			if (node.$ === 'Document') {
+			if (!node) {
 				return _Browser_doc;
 			} else {
 				return _Browser_window;
@@ -8272,7 +8243,7 @@ var $elm$browser$Browser$Events$onEffects = F3(
 			stepLeft,
 			stepBoth,
 			stepRight,
-			state.pids,
+			state.bp,
 			$elm$core$Dict$fromList(newSubs),
 			_Utils_Tuple3(_List_Nil, $elm$core$Dict$empty, _List_Nil));
 		var deadPids = _v0.a;
@@ -8301,7 +8272,7 @@ var $elm$browser$Browser$Events$onEffects = F3(
 var $elm$core$List$maybeCons = F3(
 	function (f, mx, xs) {
 		var _v0 = f(mx);
-		if (_v0.$ === 'Just') {
+		if (!_v0.$) {
 			var x = _v0.a;
 			return A2($elm$core$List$cons, x, xs);
 		} else {
@@ -8318,8 +8289,8 @@ var $elm$core$List$filterMap = F2(
 	});
 var $elm$browser$Browser$Events$onSelfMsg = F3(
 	function (router, _v0, state) {
-		var key = _v0.key;
-		var event = _v0.event;
+		var key = _v0.a1;
+		var event = _v0.aY;
 		var toMessage = function (_v2) {
 			var subKey = _v2.a;
 			var _v3 = _v2.b;
@@ -8328,7 +8299,7 @@ var $elm$browser$Browser$Events$onSelfMsg = F3(
 			var decoder = _v3.c;
 			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
 		};
-		var messages = A2($elm$core$List$filterMap, toMessage, state.subs);
+		var messages = A2($elm$core$List$filterMap, toMessage, state.bz);
 		return A2(
 			$elm$core$Task$andThen,
 			function (_v1) {
@@ -8358,65 +8329,65 @@ var $elm$browser$Browser$Events$on = F3(
 		return $elm$browser$Browser$Events$subscription(
 			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
 	});
-var $elm$browser$Browser$Events$Hidden = {$: 'Hidden'};
+var $elm$browser$Browser$Events$Hidden = 1;
 var $elm$browser$Browser$Events$withHidden = F2(
 	function (func, isHidden) {
 		return func(
-			isHidden ? $elm$browser$Browser$Events$Hidden : $elm$browser$Browser$Events$Visible);
+			isHidden ? 1 : 0);
 	});
 var $elm$browser$Browser$Events$onVisibilityChange = function (func) {
-	var info = _Browser_visibilityInfo(_Utils_Tuple0);
+	var info = _Browser_visibilityInfo(0);
 	return A3(
 		$elm$browser$Browser$Events$on,
-		$elm$browser$Browser$Events$Document,
-		info.change,
+		0,
+		info.bI,
 		A2(
 			$elm$json$Json$Decode$map,
 			$elm$browser$Browser$Events$withHidden(func),
 			A2(
 				$elm$json$Json$Decode$field,
 				'target',
-				A2($elm$json$Json$Decode$field, info.hidden, $elm$json$Json$Decode$bool))));
+				A2($elm$json$Json$Decode$field, info.bS, $elm$json$Json$Decode$bool))));
 };
-var $justgook$webgl_playground$Playground$Internal$KeyChanged = F2(
+var $author$project$Playground$Internal$KeyChanged = F2(
 	function (a, b) {
-		return {$: 'KeyChanged', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
-var $justgook$webgl_playground$Playground$Internal$MouseButton = function (a) {
-	return {$: 'MouseButton', a: a};
+var $author$project$Playground$Internal$MouseButton = function (a) {
+	return {$: 8, a: a};
 };
-var $justgook$webgl_playground$Playground$Internal$MouseClick = {$: 'MouseClick'};
-var $justgook$webgl_playground$Playground$Internal$MouseMove = F2(
+var $author$project$Playground$Internal$MouseClick = {$: 7};
+var $author$project$Playground$Internal$MouseMove = F2(
 	function (a, b) {
-		return {$: 'MouseMove', a: a, b: b};
+		return {$: 6, a: a, b: b};
 	});
-var $justgook$webgl_playground$Playground$Internal$Resized = function (a) {
-	return {$: 'Resized', a: a};
+var $author$project$Playground$Internal$Resized = function (a) {
+	return {$: 4, a: a};
 };
-var $justgook$webgl_playground$Playground$Internal$Tick = function (a) {
-	return {$: 'Tick', a: a};
+var $author$project$Playground$Internal$Tick = function (a) {
+	return {$: 1, a: a};
 };
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$browser$Browser$AnimationManager$Time = function (a) {
-	return {$: 'Time', a: a};
+	return {$: 0, a: a};
 };
 var $elm$browser$Browser$AnimationManager$State = F3(
 	function (subs, request, oldTime) {
-		return {oldTime: oldTime, request: request, subs: subs};
+		return {aG: oldTime, bw: request, bz: subs};
 	});
 var $elm$browser$Browser$AnimationManager$init = $elm$core$Task$succeed(
 	A3($elm$browser$Browser$AnimationManager$State, _List_Nil, $elm$core$Maybe$Nothing, 0));
-var $elm$browser$Browser$AnimationManager$now = _Browser_now(_Utils_Tuple0);
-var $elm$browser$Browser$AnimationManager$rAF = _Browser_rAF(_Utils_Tuple0);
+var $elm$browser$Browser$AnimationManager$now = _Browser_now(0);
+var $elm$browser$Browser$AnimationManager$rAF = _Browser_rAF(0);
 var $elm$core$Process$spawn = _Scheduler_spawn;
 var $elm$browser$Browser$AnimationManager$onEffects = F3(
 	function (router, subs, _v0) {
-		var request = _v0.request;
-		var oldTime = _v0.oldTime;
+		var request = _v0.bw;
+		var oldTime = _v0.aG;
 		var _v1 = _Utils_Tuple2(request, subs);
-		if (_v1.a.$ === 'Nothing') {
+		if (_v1.a.$ === 1) {
 			if (!_v1.b.b) {
 				var _v2 = _v1.a;
 				return $elm$browser$Browser$AnimationManager$init;
@@ -8460,10 +8431,10 @@ var $elm$browser$Browser$AnimationManager$onEffects = F3(
 	});
 var $elm$browser$Browser$AnimationManager$onSelfMsg = F3(
 	function (router, newTime, _v0) {
-		var subs = _v0.subs;
-		var oldTime = _v0.oldTime;
+		var subs = _v0.bz;
+		var oldTime = _v0.aG;
 		var send = function (sub) {
-			if (sub.$ === 'Time') {
+			if (!sub.$) {
 				var tagger = sub.a;
 				return A2(
 					$elm$core$Platform$sendToApp,
@@ -8501,11 +8472,11 @@ var $elm$browser$Browser$AnimationManager$onSelfMsg = F3(
 					$elm$browser$Browser$AnimationManager$rAF)));
 	});
 var $elm$browser$Browser$AnimationManager$Delta = function (a) {
-	return {$: 'Delta', a: a};
+	return {$: 1, a: a};
 };
 var $elm$browser$Browser$AnimationManager$subMap = F2(
 	function (func, sub) {
-		if (sub.$ === 'Time') {
+		if (!sub.$) {
 			var tagger = sub.a;
 			return $elm$browser$Browser$AnimationManager$Time(
 				A2($elm$core$Basics$composeL, func, tagger));
@@ -8522,18 +8493,18 @@ var $elm$browser$Browser$AnimationManager$onAnimationFrame = function (tagger) {
 		$elm$browser$Browser$AnimationManager$Time(tagger));
 };
 var $elm$browser$Browser$Events$onAnimationFrame = $elm$browser$Browser$AnimationManager$onAnimationFrame;
-var $elm$browser$Browser$Events$onClick = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'click');
-var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
-var $elm$browser$Browser$Events$onKeyUp = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keyup');
-var $elm$browser$Browser$Events$onMouseDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'mousedown');
-var $elm$browser$Browser$Events$onMouseMove = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'mousemove');
-var $elm$browser$Browser$Events$onMouseUp = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'mouseup');
-var $elm$browser$Browser$Events$Window = {$: 'Window'};
+var $elm$browser$Browser$Events$onClick = A2($elm$browser$Browser$Events$on, 0, 'click');
+var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, 0, 'keydown');
+var $elm$browser$Browser$Events$onKeyUp = A2($elm$browser$Browser$Events$on, 0, 'keyup');
+var $elm$browser$Browser$Events$onMouseDown = A2($elm$browser$Browser$Events$on, 0, 'mousedown');
+var $elm$browser$Browser$Events$onMouseMove = A2($elm$browser$Browser$Events$on, 0, 'mousemove');
+var $elm$browser$Browser$Events$onMouseUp = A2($elm$browser$Browser$Events$on, 0, 'mouseup');
+var $elm$browser$Browser$Events$Window = 1;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$browser$Browser$Events$onResize = function (func) {
 	return A3(
 		$elm$browser$Browser$Events$on,
-		$elm$browser$Browser$Events$Window,
+		1,
 		'resize',
 		A2(
 			$elm$json$Json$Decode$field,
@@ -8545,26 +8516,26 @@ var $elm$browser$Browser$Events$onResize = function (func) {
 				A2($elm$json$Json$Decode$field, 'innerHeight', $elm$json$Json$Decode$int))));
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $justgook$webgl_playground$Playground$Internal$subscriptions = {
-	click: $elm$core$Platform$Sub$batch(
+var $author$project$Playground$Internal$subscriptions = {
+	aU: $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
 				$elm$browser$Browser$Events$onClick(
-				$elm$json$Json$Decode$succeed($justgook$webgl_playground$Playground$Internal$MouseClick)),
+				$elm$json$Json$Decode$succeed($author$project$Playground$Internal$MouseClick)),
 				$elm$browser$Browser$Events$onMouseDown(
 				$elm$json$Json$Decode$succeed(
-					$justgook$webgl_playground$Playground$Internal$MouseButton(true))),
+					$author$project$Playground$Internal$MouseButton(true))),
 				$elm$browser$Browser$Events$onMouseUp(
 				$elm$json$Json$Decode$succeed(
-					$justgook$webgl_playground$Playground$Internal$MouseButton(false)))
+					$author$project$Playground$Internal$MouseButton(false)))
 			])),
-	keys: $elm$core$Platform$Sub$batch(
+	a3: $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
 				$elm$browser$Browser$Events$onKeyUp(
 				A2(
 					$elm$json$Json$Decode$map,
-					$justgook$webgl_playground$Playground$Internal$KeyChanged(false),
+					$author$project$Playground$Internal$KeyChanged(false),
 					A2($elm$json$Json$Decode$field, 'code', $elm$json$Json$Decode$string))),
 				$elm$browser$Browser$Events$onKeyDown(
 				A2(
@@ -8572,25 +8543,25 @@ var $justgook$webgl_playground$Playground$Internal$subscriptions = {
 					function (repeat) {
 						return repeat ? $elm$json$Json$Decode$fail('') : A2(
 							$elm$json$Json$Decode$map,
-							$justgook$webgl_playground$Playground$Internal$KeyChanged(true),
+							$author$project$Playground$Internal$KeyChanged(true),
 							A2($elm$json$Json$Decode$field, 'code', $elm$json$Json$Decode$string));
 					},
 					A2($elm$json$Json$Decode$field, 'repeat', $elm$json$Json$Decode$bool)))
 			])),
-	mouse: $elm$browser$Browser$Events$onMouseMove(
+	bm: $elm$browser$Browser$Events$onMouseMove(
 		A3(
 			$elm$json$Json$Decode$map2,
-			$justgook$webgl_playground$Playground$Internal$MouseMove,
+			$author$project$Playground$Internal$MouseMove,
 			A2($elm$json$Json$Decode$field, 'pageX', $elm$json$Json$Decode$float),
 			A2($elm$json$Json$Decode$field, 'pageY', $elm$json$Json$Decode$float))),
-	resize: $elm$browser$Browser$Events$onResize(
+	aJ: $elm$browser$Browser$Events$onResize(
 		F2(
 			function (w, h) {
-				return $justgook$webgl_playground$Playground$Internal$Resized(
-					A2($justgook$webgl_playground$Playground$Internal$toScreen, w, h));
+				return $author$project$Playground$Internal$Resized(
+					A2($author$project$Playground$Internal$toScreen, w, h));
 			})),
-	time: $elm$browser$Browser$Events$onAnimationFrame($justgook$webgl_playground$Playground$Internal$Tick),
-	visibility: $elm$browser$Browser$Events$onVisibilityChange($justgook$webgl_playground$Playground$Internal$VisibilityChanged)
+	b5: $elm$browser$Browser$Events$onAnimationFrame($author$project$Playground$Internal$Tick),
+	ay: $elm$browser$Browser$Events$onVisibilityChange($author$project$Playground$Internal$VisibilityChanged)
 };
 var $elm$virtual_dom$VirtualDom$node = function (tag) {
 	return _VirtualDom_node(
@@ -8599,7 +8570,7 @@ var $elm$virtual_dom$VirtualDom$node = function (tag) {
 var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $justgook$webgl_playground$Playground$Internal$canvasStyle = A3(
+var $author$project$Playground$Internal$canvasStyle = A3(
 	$elm$html$Html$node,
 	'style',
 	_List_Nil,
@@ -8617,21 +8588,21 @@ var $elm$core$Basics$round = _Basics_round;
 var $elm_explorations$webgl$WebGL$Internal$disableSetting = F2(
 	function (cache, setting) {
 		switch (setting.$) {
-			case 'Blend':
+			case 0:
 				return _WebGL_disableBlend(cache);
-			case 'DepthTest':
+			case 1:
 				return _WebGL_disableDepthTest(cache);
-			case 'StencilTest':
+			case 2:
 				return _WebGL_disableStencilTest(cache);
-			case 'Scissor':
+			case 3:
 				return _WebGL_disableScissor(cache);
-			case 'ColorMask':
+			case 4:
 				return _WebGL_disableColorMask(cache);
-			case 'CullFace':
+			case 5:
 				return _WebGL_disableCullFace(cache);
-			case 'PolygonOffset':
+			case 6:
 				return _WebGL_disablePolygonOffset(cache);
-			case 'SampleCoverage':
+			case 7:
 				return _WebGL_disableSampleCoverage(cache);
 			default:
 				return _WebGL_disableSampleAlphaToCoverage(cache);
@@ -8640,15 +8611,15 @@ var $elm_explorations$webgl$WebGL$Internal$disableSetting = F2(
 var $elm_explorations$webgl$WebGL$Internal$enableOption = F2(
 	function (ctx, option) {
 		switch (option.$) {
-			case 'Alpha':
+			case 0:
 				return A2(_WebGL_enableAlpha, ctx, option);
-			case 'Depth':
+			case 1:
 				return A2(_WebGL_enableDepth, ctx, option);
-			case 'Stencil':
+			case 2:
 				return A2(_WebGL_enableStencil, ctx, option);
-			case 'Antialias':
+			case 3:
 				return A2(_WebGL_enableAntialias, ctx, option);
-			case 'ClearColor':
+			case 4:
 				return A2(_WebGL_enableClearColor, ctx, option);
 			default:
 				return A2(_WebGL_enablePreserveDrawingBuffer, ctx, option);
@@ -8657,21 +8628,21 @@ var $elm_explorations$webgl$WebGL$Internal$enableOption = F2(
 var $elm_explorations$webgl$WebGL$Internal$enableSetting = F2(
 	function (gl, setting) {
 		switch (setting.$) {
-			case 'Blend':
+			case 0:
 				return A2(_WebGL_enableBlend, gl, setting);
-			case 'DepthTest':
+			case 1:
 				return A2(_WebGL_enableDepthTest, gl, setting);
-			case 'StencilTest':
+			case 2:
 				return A2(_WebGL_enableStencilTest, gl, setting);
-			case 'Scissor':
+			case 3:
 				return A2(_WebGL_enableScissor, gl, setting);
-			case 'ColorMask':
+			case 4:
 				return A2(_WebGL_enableColorMask, gl, setting);
-			case 'CullFace':
+			case 5:
 				return A2(_WebGL_enableCullFace, gl, setting);
-			case 'PolygonOffset':
+			case 6:
 				return A2(_WebGL_enablePolygonOffset, gl, setting);
-			case 'SampleCoverage':
+			case 7:
 				return A2(_WebGL_enableSampleCoverage, gl, setting);
 			default:
 				return A2(_WebGL_enableSampleAlphaToCoverage, gl, setting);
@@ -8682,19 +8653,19 @@ var $elm_explorations$webgl$WebGL$toHtmlWith = F3(
 		return A3(_WebGL_toHtml, options, attributes, entities);
 	});
 var $elm_explorations$webgl$WebGL$Internal$Alpha = function (a) {
-	return {$: 'Alpha', a: a};
+	return {$: 0, a: a};
 };
 var $elm_explorations$webgl$WebGL$alpha = $elm_explorations$webgl$WebGL$Internal$Alpha;
 var $elm_explorations$webgl$WebGL$Internal$ClearColor = F4(
 	function (a, b, c, d) {
-		return {$: 'ClearColor', a: a, b: b, c: c, d: d};
+		return {$: 4, a: a, b: b, c: c, d: d};
 	});
 var $elm_explorations$webgl$WebGL$clearColor = $elm_explorations$webgl$WebGL$Internal$ClearColor;
 var $elm_explorations$webgl$WebGL$Internal$Depth = function (a) {
-	return {$: 'Depth', a: a};
+	return {$: 1, a: a};
 };
 var $elm_explorations$webgl$WebGL$depth = $elm_explorations$webgl$WebGL$Internal$Depth;
-var $justgook$webgl_playground$Playground$Internal$webGLOption = _List_fromArray(
+var $author$project$Playground$Internal$webGLOption = _List_fromArray(
 	[
 		$elm_explorations$webgl$WebGL$alpha(false),
 		$elm_explorations$webgl$WebGL$depth(1),
@@ -8706,93 +8677,167 @@ var $elm$html$Html$Attributes$width = function (n) {
 		'width',
 		$elm$core$String$fromInt(n));
 };
-var $justgook$webgl_playground$Playground$Internal$viewWrap = F2(
+var $author$project$Playground$Internal$viewWrap = F2(
 	function (screen, entities) {
 		return _List_fromArray(
 			[
-				$justgook$webgl_playground$Playground$Internal$canvasStyle,
+				$author$project$Playground$Internal$canvasStyle,
 				A3(
 				$elm_explorations$webgl$WebGL$toHtmlWith,
-				$justgook$webgl_playground$Playground$Internal$webGLOption,
+				$author$project$Playground$Internal$webGLOption,
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$width(
-						$elm$core$Basics$round(screen.width)),
+						$elm$core$Basics$round(screen.cc)),
 						$elm$html$Html$Attributes$height(
-						$elm$core$Basics$round(screen.height))
+						$elm$core$Basics$round(screen.bR))
 					]),
 				entities)
 			]);
 	});
-var $justgook$webgl_playground$Playground$game = F3(
+var $author$project$Playground$game = F3(
 	function (viewMemory, updateMemory, initialMemory) {
 		var view = function (_v4) {
-			var computer = _v4.a.computer;
-			var entities = _v4.a.entities;
+			var computer = _v4.ac;
+			var entities = _v4.aB;
 			return {
-				body: A2($justgook$webgl_playground$Playground$Internal$viewWrap, computer.screen, entities),
-				title: 'Playground'
+				az: A2($author$project$Playground$Internal$viewWrap, computer.aw, entities),
+				aP: 'Playground'
 			};
 		};
 		var subs = function (_v3) {
-			var visibility = _v3.a.visibility;
-			var computer = _v3.a.computer;
-			if (visibility.$ === 'Hidden') {
-				return $elm$browser$Browser$Events$onVisibilityChange($justgook$webgl_playground$Playground$Internal$VisibilityChanged);
+			var visibility = _v3.ay;
+			var computer = _v3.ac;
+			if (visibility === 1) {
+				return $elm$browser$Browser$Events$onVisibilityChange($author$project$Playground$Internal$VisibilityChanged);
 			} else {
 				return $elm$core$Platform$Sub$batch(
 					_List_fromArray(
-						[$justgook$webgl_playground$Playground$Internal$subscriptions.keys, $justgook$webgl_playground$Playground$Internal$subscriptions.time, $justgook$webgl_playground$Playground$Internal$subscriptions.visibility, $justgook$webgl_playground$Playground$Internal$subscriptions.click, $justgook$webgl_playground$Playground$Internal$subscriptions.mouse, $justgook$webgl_playground$Playground$Internal$subscriptions.resize]));
+						[$author$project$Playground$Internal$subscriptions.a3, $author$project$Playground$Internal$subscriptions.b5, $author$project$Playground$Internal$subscriptions.ay, $author$project$Playground$Internal$subscriptions.aU, $author$project$Playground$Internal$subscriptions.bm, $author$project$Playground$Internal$subscriptions.aJ]));
 			}
 		};
-		var _v0 = A3($justgook$webgl_playground$Playground$Internal$create, viewMemory, updateMemory, initialMemory);
-		var init = _v0.init;
-		var update = _v0.update;
+		var _v0 = A3($author$project$Playground$Internal$create, viewMemory, updateMemory, initialMemory);
+		var init = _v0.U;
+		var update = _v0.Y;
 		return $elm$browser$Browser$document(
 			{
-				init: function (_v1) {
+				U: function (_v1) {
 					return init;
 				},
-				subscriptions: subs,
-				update: update,
-				view: view
+				aO: subs,
+				Y: update,
+				aQ: view
 			});
 	});
-var $justgook$webgl_playground$Playground$toX = function (keyboard) {
-	return (keyboard.right ? 1 : 0) - (keyboard.left ? 1 : 0);
+var $justgook$alt_linear_algebra$AltMath$Vector2$add = F2(
+	function (a, b) {
+		return {K: a.K + b.K, L: a.L + b.L};
+	});
+var $justgook$alt_linear_algebra$AltMath$Vector2$scale = F2(
+	function (s, v2) {
+		return {K: s * v2.K, L: s * v2.L};
+	});
+var $justgook$alt_linear_algebra$AltMath$Vector2$sub = F2(
+	function (a, b) {
+		return {K: a.K - b.K, L: a.L - b.L};
+	});
+var $author$project$Main$between = F2(
+	function (a, b) {
+		return A2(
+			$justgook$alt_linear_algebra$AltMath$Vector2$add,
+			a,
+			A2(
+				$justgook$alt_linear_algebra$AltMath$Vector2$scale,
+				0.5,
+				A2($justgook$alt_linear_algebra$AltMath$Vector2$sub, b, a)));
+	});
+var $elm$core$Basics$sqrt = _Basics_sqrt;
+var $justgook$alt_linear_algebra$AltMath$Vector2$direction = F2(
+	function (a, b) {
+		var c = {K: a.K - b.K, L: a.L - b.L};
+		var len = $elm$core$Basics$sqrt((c.K * c.K) + (c.L * c.L));
+		return {K: c.K / len, L: c.L / len};
+	});
+var $justgook$alt_linear_algebra$AltMath$Vector2$distanceSquared = F2(
+	function (a, b) {
+		var c = {K: a.K - b.K, L: a.L - b.L};
+		return (c.K * c.K) + (c.L * c.L);
+	});
+var $author$project$Main$setPos = F2(
+	function (pos, player) {
+		return {a: pos, z: player.z, A: player.A};
+	});
+var $author$project$Main$squared = function (x) {
+	return x * x;
 };
-var $justgook$webgl_playground$Playground$toY = function (keyboard) {
-	return (keyboard.up ? 1 : 0) - (keyboard.down ? 1 : 0);
+var $author$project$Main$fleeFrom = F2(
+	function (target, thing) {
+		if (A2($justgook$alt_linear_algebra$AltMath$Vector2$distanceSquared, target.a, thing.a) > 0) {
+			var squareSize = $author$project$Main$squared(target.z);
+			var maxForce = thing.A * 2;
+			var pos = A2(
+				$justgook$alt_linear_algebra$AltMath$Vector2$add,
+				thing.a,
+				A2(
+					$justgook$alt_linear_algebra$AltMath$Vector2$scale,
+					(maxForce * squareSize) / A2(
+						$elm$core$Basics$max,
+						squareSize,
+						A2($justgook$alt_linear_algebra$AltMath$Vector2$distanceSquared, target.a, thing.a)),
+					A2($justgook$alt_linear_algebra$AltMath$Vector2$direction, thing.a, target.a)));
+			return A2($author$project$Main$setPos, pos, thing);
+		} else {
+			return thing;
+		}
+	});
+var $author$project$Main$followPoint = F2(
+	function (target, thing) {
+		return (A2($justgook$alt_linear_algebra$AltMath$Vector2$distanceSquared, target, thing.a) > 0) ? A2(
+			$author$project$Main$setPos,
+			A2(
+				$justgook$alt_linear_algebra$AltMath$Vector2$add,
+				thing.a,
+				A2(
+					$justgook$alt_linear_algebra$AltMath$Vector2$scale,
+					thing.A,
+					A2($justgook$alt_linear_algebra$AltMath$Vector2$direction, target, thing.a))),
+			thing) : thing;
+	});
+var $author$project$Main$follow = F2(
+	function (target, thing) {
+		return A2($author$project$Main$followPoint, target.a, thing);
+	});
+var $author$project$Playground$toX = function (keyboard) {
+	return (keyboard.aK ? 1 : 0) - (keyboard.aD ? 1 : 0);
+};
+var $author$project$Playground$toY = function (keyboard) {
+	return (keyboard.bC ? 1 : 0) - (keyboard.aA ? 1 : 0);
 };
 var $author$project$Main$update = F2(
 	function (computer, _v0) {
-		var x = _v0.x;
-		var y = _v0.y;
+		var attacker = _v0.aa;
+		var guardian = _v0.ae;
+		var prey = _v0.ah;
 		return {
-			x: x + ($justgook$webgl_playground$Playground$toX(computer.keyboard) * 5),
-			y: y + ($justgook$webgl_playground$Playground$toY(computer.keyboard) * 5)
+			aa: A2(
+				$author$project$Main$fleeFrom,
+				guardian,
+				A2($author$project$Main$follow, prey, attacker)),
+			ae: A2(
+				$author$project$Main$followPoint,
+				A2($author$project$Main$between, attacker.a, prey.a),
+				guardian),
+			ah: A2(
+				$author$project$Main$setPos,
+				{
+					K: prey.a.K + ($author$project$Playground$toX(computer.a2) * prey.A),
+					L: prey.a.L + ($author$project$Playground$toY(computer.a2) * prey.A)
+				},
+				prey)
 		};
 	});
-var $justgook$webgl_shape$WebGL$Shape2d$Shape2d = function (a) {
-	return {$: 'Shape2d', a: a};
-};
-var $justgook$webgl_playground$Playground$move = F3(
-	function (dx, dy, _v0) {
-		var shape = _v0.a;
-		var x = shape.x;
-		var y = shape.y;
-		var a = shape.a;
-		var sx = shape.sx;
-		var sy = shape.sy;
-		var o = shape.o;
-		var form = shape.form;
-		return $justgook$webgl_shape$WebGL$Shape2d$Shape2d(
-			_Utils_update(
-				shape,
-				{x: x + dx, y: y + dy}));
-	});
-var $justgook$webgl_playground$Playground$intFromHexChar = function (s) {
-	switch (s.valueOf()) {
+var $author$project$Playground$intFromHexChar = function (s) {
+	switch (s) {
 		case '0':
 			return $elm$core$Maybe$Just(0);
 		case '1':
@@ -8829,29 +8874,29 @@ var $justgook$webgl_playground$Playground$intFromHexChar = function (s) {
 			return $elm$core$Maybe$Nothing;
 	}
 };
-var $justgook$webgl_playground$Playground$maybeMap6 = F7(
+var $author$project$Playground$maybeMap6 = F7(
 	function (func, ma, mb, mc, md, me, mf) {
-		if (ma.$ === 'Nothing') {
+		if (ma.$ === 1) {
 			return $elm$core$Maybe$Nothing;
 		} else {
 			var a = ma.a;
-			if (mb.$ === 'Nothing') {
+			if (mb.$ === 1) {
 				return $elm$core$Maybe$Nothing;
 			} else {
 				var b = mb.a;
-				if (mc.$ === 'Nothing') {
+				if (mc.$ === 1) {
 					return $elm$core$Maybe$Nothing;
 				} else {
 					var c = mc.a;
-					if (md.$ === 'Nothing') {
+					if (md.$ === 1) {
 						return $elm$core$Maybe$Nothing;
 					} else {
 						var d = md.a;
-						if (me.$ === 'Nothing') {
+						if (me.$ === 1) {
 							return $elm$core$Maybe$Nothing;
 						} else {
 							var e = me.a;
-							if (mf.$ === 'Nothing') {
+							if (mf.$ === 1) {
 								return $elm$core$Maybe$Nothing;
 							} else {
 								var f = mf.a;
@@ -8869,7 +8914,7 @@ var $elm$core$String$toList = function (string) {
 	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
 };
 var $elm_explorations$linear_algebra$Math$Vector3$vec3 = _MJS_v3;
-var $justgook$webgl_playground$Playground$hexColor2Vec3 = function (str) {
+var $author$project$Playground$hexColor2Vec3 = function (str) {
 	var withoutHash = A2($elm$core$String$startsWith, '#', str) ? A2($elm$core$String$dropLeft, 1, str) : str;
 	var _v0 = $elm$core$String$toList(withoutHash);
 	if ((((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && _v0.b.b.b.b.b) && _v0.b.b.b.b.b.b) && (!_v0.b.b.b.b.b.b.b)) {
@@ -8885,59 +8930,81 @@ var $justgook$webgl_playground$Playground$hexColor2Vec3 = function (str) {
 		var _v5 = _v4.b;
 		var b2 = _v5.a;
 		return A7(
-			$justgook$webgl_playground$Playground$maybeMap6,
+			$author$project$Playground$maybeMap6,
 			F6(
 				function (a, b, c, d, e, f) {
 					return A3($elm_explorations$linear_algebra$Math$Vector3$vec3, ((a * 16) + b) / 255, ((c * 16) + d) / 255, ((e * 16) + f) / 255);
 				}),
-			$justgook$webgl_playground$Playground$intFromHexChar(r1),
-			$justgook$webgl_playground$Playground$intFromHexChar(r2),
-			$justgook$webgl_playground$Playground$intFromHexChar(g1),
-			$justgook$webgl_playground$Playground$intFromHexChar(g2),
-			$justgook$webgl_playground$Playground$intFromHexChar(b1),
-			$justgook$webgl_playground$Playground$intFromHexChar(b2));
+			$author$project$Playground$intFromHexChar(r1),
+			$author$project$Playground$intFromHexChar(r2),
+			$author$project$Playground$intFromHexChar(g1),
+			$author$project$Playground$intFromHexChar(g2),
+			$author$project$Playground$intFromHexChar(b1),
+			$author$project$Playground$intFromHexChar(b2));
 	} else {
 		return $elm$core$Maybe$Nothing;
 	}
 };
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
+		if (!maybe.$) {
 			var value = maybe.a;
 			return value;
 		} else {
 			return _default;
 		}
 	});
-var $justgook$webgl_playground$Playground$red = A2(
+var $author$project$Playground$blue = A2(
 	$elm$core$Maybe$withDefault,
 	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
-	$justgook$webgl_playground$Playground$hexColor2Vec3('#cc0000'));
+	$author$project$Playground$hexColor2Vec3('#3465a4'));
+var $author$project$Playground$green = A2(
+	$elm$core$Maybe$withDefault,
+	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
+	$author$project$Playground$hexColor2Vec3('#73d216'));
+var $justgook$webgl_shape$WebGL$Shape2d$Shape2d = $elm$core$Basics$identity;
+var $author$project$Playground$move = F3(
+	function (dx, dy, _v0) {
+		var shape = _v0;
+		var x = shape.K;
+		var y = shape.L;
+		var a = shape.d;
+		var sx = shape.b;
+		var sy = shape.c;
+		var o = shape.e;
+		var form = shape.f;
+		return _Utils_update(
+			shape,
+			{K: x + dx, L: y + dy});
+	});
+var $author$project$Playground$red = A2(
+	$elm$core$Maybe$withDefault,
+	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
+	$author$project$Playground$hexColor2Vec3('#cc0000'));
 var $elm$core$Basics$pi = _Basics_pi;
 var $elm$core$Basics$degrees = function (angleInDegrees) {
 	return (angleInDegrees * $elm$core$Basics$pi) / 180;
 };
-var $justgook$webgl_playground$Playground$rotate = F2(
+var $author$project$Playground$rotate = F2(
 	function (da, _v0) {
-		var shape = _v0.a;
-		var x = shape.x;
-		var y = shape.y;
-		var a = shape.a;
-		var sx = shape.sx;
-		var sy = shape.sy;
-		var o = shape.o;
-		var form = shape.form;
-		return $justgook$webgl_shape$WebGL$Shape2d$Shape2d(
-			_Utils_update(
-				shape,
-				{
-					a: a + $elm$core$Basics$degrees(da)
-				}));
+		var shape = _v0;
+		var x = shape.K;
+		var y = shape.L;
+		var a = shape.d;
+		var sx = shape.b;
+		var sy = shape.c;
+		var o = shape.e;
+		var form = shape.f;
+		return _Utils_update(
+			shape,
+			{
+				d: a + $elm$core$Basics$degrees(da)
+			});
 	});
 var $elm$core$Basics$modBy = _Basics_modBy;
-var $justgook$webgl_playground$Playground$toFrac = F2(
+var $author$project$Playground$toFrac = F2(
 	function (period, _v0) {
-		var now = _v0.now;
+		var now = _v0.bZ;
 		var p = period * 1000;
 		var ms = now;
 		return A2(
@@ -8945,13 +9012,13 @@ var $justgook$webgl_playground$Playground$toFrac = F2(
 			$elm$core$Basics$round(p),
 			ms) / p;
 	});
-var $justgook$webgl_playground$Playground$spin = F2(
+var $author$project$Playground$spin = F2(
 	function (period, time) {
-		return 360 * A2($justgook$webgl_playground$Playground$toFrac, period, time);
+		return 360 * A2($author$project$Playground$toFrac, period, time);
 	});
 var $justgook$webgl_shape$WebGL$Shape2d$Form = F3(
 	function (a, b, c) {
-		return {$: 'Form', a: a, b: b, c: c};
+		return {$: 0, a: a, b: b, c: c};
 	});
 var $elm_explorations$webgl$WebGL$Internal$Blend = function (a) {
 	return function (b) {
@@ -8963,7 +9030,7 @@ var $elm_explorations$webgl$WebGL$Internal$Blend = function (a) {
 							return function (h) {
 								return function (i) {
 									return function (j) {
-										return {$: 'Blend', a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h, i: i, j: j};
+										return {$: 0, a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h, i: i, j: j};
 									};
 								};
 							};
@@ -8975,12 +9042,12 @@ var $elm_explorations$webgl$WebGL$Internal$Blend = function (a) {
 	};
 };
 var $elm_explorations$webgl$WebGL$Settings$Blend$custom = function (_v0) {
-	var r = _v0.r;
-	var g = _v0.g;
-	var b = _v0.b;
-	var a = _v0.a;
-	var color = _v0.color;
-	var alpha = _v0.alpha;
+	var r = _v0.av;
+	var g = _v0.au;
+	var b = _v0.at;
+	var a = _v0.d;
+	var color = _v0.R;
+	var alpha = _v0.as;
 	var expand = F2(
 		function (_v1, _v2) {
 			var eq1 = _v1.a;
@@ -8995,68 +9062,66 @@ var $elm_explorations$webgl$WebGL$Settings$Blend$custom = function (_v0) {
 };
 var $elm_explorations$webgl$WebGL$Settings$Blend$Blender = F3(
 	function (a, b, c) {
-		return {$: 'Blender', a: a, b: b, c: c};
+		return {$: 0, a: a, b: b, c: c};
 	});
 var $elm_explorations$webgl$WebGL$Settings$Blend$customAdd = F2(
 	function (_v0, _v1) {
-		var factor1 = _v0.a;
-		var factor2 = _v1.a;
+		var factor1 = _v0;
+		var factor2 = _v1;
 		return A3($elm_explorations$webgl$WebGL$Settings$Blend$Blender, 32774, factor1, factor2);
 	});
 var $elm_explorations$webgl$WebGL$Settings$Blend$add = F2(
 	function (factor1, factor2) {
 		return $elm_explorations$webgl$WebGL$Settings$Blend$custom(
 			{
-				a: 0,
-				alpha: A2($elm_explorations$webgl$WebGL$Settings$Blend$customAdd, factor1, factor2),
-				b: 0,
-				color: A2($elm_explorations$webgl$WebGL$Settings$Blend$customAdd, factor1, factor2),
-				g: 0,
-				r: 0
+				d: 0,
+				as: A2($elm_explorations$webgl$WebGL$Settings$Blend$customAdd, factor1, factor2),
+				at: 0,
+				R: A2($elm_explorations$webgl$WebGL$Settings$Blend$customAdd, factor1, factor2),
+				au: 0,
+				av: 0
 			});
 	});
 var $elm_explorations$webgl$WebGL$Internal$ColorMask = F4(
 	function (a, b, c, d) {
-		return {$: 'ColorMask', a: a, b: b, c: c, d: d};
+		return {$: 4, a: a, b: b, c: c, d: d};
 	});
 var $elm_explorations$webgl$WebGL$Settings$colorMask = $elm_explorations$webgl$WebGL$Internal$ColorMask;
-var $elm_explorations$webgl$WebGL$Settings$Blend$Factor = function (a) {
-	return {$: 'Factor', a: a};
-};
-var $elm_explorations$webgl$WebGL$Settings$Blend$oneMinusSrcAlpha = $elm_explorations$webgl$WebGL$Settings$Blend$Factor(771);
-var $elm_explorations$webgl$WebGL$Settings$Blend$srcAlpha = $elm_explorations$webgl$WebGL$Settings$Blend$Factor(770);
-var $justgook$webgl_playground$Playground$Render$defaultEntitySettings = _List_fromArray(
+var $elm_explorations$webgl$WebGL$Settings$Blend$Factor = $elm$core$Basics$identity;
+var $elm_explorations$webgl$WebGL$Settings$Blend$oneMinusSrcAlpha = 771;
+var $elm_explorations$webgl$WebGL$Settings$Blend$srcAlpha = 770;
+var $author$project$Playground$Render$defaultEntitySettings = _List_fromArray(
 	[
 		A2($elm_explorations$webgl$WebGL$Settings$Blend$add, $elm_explorations$webgl$WebGL$Settings$Blend$srcAlpha, $elm_explorations$webgl$WebGL$Settings$Blend$oneMinusSrcAlpha),
 		A4($elm_explorations$webgl$WebGL$Settings$colorMask, true, true, true, false)
 	]);
 var $elm_explorations$webgl$WebGL$entityWith = _WebGL_entity;
-var $justgook$webgl_playground$Playground$Shader$fragFill = {
+var $author$project$Playground$Shader$fragFill = {
 	src: '\n        precision mediump float;\n        uniform vec4 color;\n        void main () {\n            gl_FragColor = color;\n        }\n    ',
 	attributes: {},
-	uniforms: {color: 'color'}
+	uniforms: {color: 'R'}
 };
 var $elm_explorations$webgl$WebGL$Mesh1 = F2(
 	function (a, b) {
-		return {$: 'Mesh1', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm_explorations$webgl$WebGL$triangleStrip = $elm_explorations$webgl$WebGL$Mesh1(
-	{elemSize: 1, indexSize: 0, mode: 5});
+	{aW: 1, a0: 0, bk: 5});
 var $elm_explorations$linear_algebra$Math$Vector2$vec2 = _MJS_v2;
-var $justgook$webgl_playground$Playground$Shader$mesh = $elm_explorations$webgl$WebGL$triangleStrip(
+var $author$project$Playground$Shader$mesh = $elm_explorations$webgl$WebGL$triangleStrip(
 	_List_fromArray(
 		[
 			{
-			aP: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, -1, -1)
+			ar: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, -1, -1)
 		},
 			{
-			aP: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, -1, 1)
+			ar: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, -1, 1)
 		},
 			{
-			aP: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 1, -1)
+			ar: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 1, -1)
 		},
 			{
-			aP: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 1, 1)
+			ar: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 1, 1)
 		}
 		]));
 var $elm$core$Basics$composeR = F3(
@@ -9066,69 +9131,101 @@ var $elm$core$Basics$composeR = F3(
 	});
 var $elm_explorations$linear_algebra$Math$Vector3$toRecord = _MJS_v3toRecord;
 var $elm_explorations$linear_algebra$Math$Vector4$vec4 = _MJS_v4;
-var $justgook$webgl_playground$Playground$Render$setAlpha = A2(
+var $author$project$Playground$Render$setAlpha = A2(
 	$elm$core$Basics$composeR,
 	$elm_explorations$linear_algebra$Math$Vector3$toRecord,
 	function (a) {
-		return A3($elm_explorations$linear_algebra$Math$Vector4$vec4, a.x, a.y, a.z);
+		return A3($elm_explorations$linear_algebra$Math$Vector4$vec4, a.K, a.L, a.ce);
 	});
-var $justgook$webgl_playground$Playground$Shader$vertNone = {
+var $author$project$Playground$Shader$vertNone = {
 	src: '\n        precision mediump float;\n        attribute vec2 aP;\n        uniform vec4 uT;\n        uniform vec2 uP;\n        void main () {\n            gl_Position = vec4(aP * mat2(uT) + uP, 0., 1.0);\n        }\n    ',
-	attributes: {aP: 'aP'},
-	uniforms: {uP: 'uP', uT: 'uT'}
+	attributes: {aP: 'ar'},
+	uniforms: {uP: 'D', uT: 'E'}
 };
-var $justgook$webgl_playground$Playground$Render$rect = F4(
+var $author$project$Playground$Render$rect = F4(
 	function (color, uP, uT, opacity) {
 		return A5(
 			$elm_explorations$webgl$WebGL$entityWith,
-			$justgook$webgl_playground$Playground$Render$defaultEntitySettings,
-			$justgook$webgl_playground$Playground$Shader$vertNone,
-			$justgook$webgl_playground$Playground$Shader$fragFill,
-			$justgook$webgl_playground$Playground$Shader$mesh,
+			$author$project$Playground$Render$defaultEntitySettings,
+			$author$project$Playground$Shader$vertNone,
+			$author$project$Playground$Shader$fragFill,
+			$author$project$Playground$Shader$mesh,
 			{
-				color: A2($justgook$webgl_playground$Playground$Render$setAlpha, color, opacity),
-				uP: uP,
-				uT: uT
+				R: A2($author$project$Playground$Render$setAlpha, color, opacity),
+				D: uP,
+				E: uT
 			});
 	});
-var $justgook$webgl_playground$Playground$square = F2(
+var $author$project$Playground$square = F2(
 	function (color, n) {
-		return $justgook$webgl_shape$WebGL$Shape2d$Shape2d(
-			{
-				a: 0,
-				form: A3(
-					$justgook$webgl_shape$WebGL$Shape2d$Form,
-					n,
-					n,
-					$justgook$webgl_playground$Playground$Render$rect(color)),
-				o: 1,
-				sx: 1,
-				sy: 1,
-				x: 0,
-				y: 0
-			});
+		return {
+			d: 0,
+			f: A3(
+				$justgook$webgl_shape$WebGL$Shape2d$Form,
+				n,
+				n,
+				$author$project$Playground$Render$rect(color)),
+			e: 1,
+			b: 1,
+			c: 1,
+			K: 0,
+			L: 0
+		};
 	});
 var $author$project$Main$view = F2(
 	function (_v0, _v1) {
-		var time = _v0.time;
-		var x = _v1.x;
-		var y = _v1.y;
+		var time = _v0.b5;
+		var attacker = _v1.aa;
+		var guardian = _v1.ae;
+		var prey = _v1.ah;
 		return _List_fromArray(
 			[
 				A3(
-				$justgook$webgl_playground$Playground$move,
-				x,
-				y,
+				$author$project$Playground$move,
+				attacker.a.K,
+				attacker.a.L,
 				A2(
-					$justgook$webgl_playground$Playground$rotate,
-					A2($justgook$webgl_playground$Playground$spin, 2, time),
-					A2($justgook$webgl_playground$Playground$square, $justgook$webgl_playground$Playground$red, 40)))
+					$author$project$Playground$rotate,
+					A2($author$project$Playground$spin, 2, time),
+					A2($author$project$Playground$square, $author$project$Playground$red, attacker.z))),
+				A3(
+				$author$project$Playground$move,
+				guardian.a.K,
+				guardian.a.L,
+				A2(
+					$author$project$Playground$rotate,
+					A2($author$project$Playground$spin, 8, time),
+					A2($author$project$Playground$square, $author$project$Playground$green, guardian.z))),
+				A3(
+				$author$project$Playground$move,
+				prey.a.K,
+				prey.a.L,
+				A2(
+					$author$project$Playground$rotate,
+					A2($author$project$Playground$spin, 1, time),
+					A2($author$project$Playground$square, $author$project$Playground$blue, prey.z)))
 			]);
 	});
 var $author$project$Main$main = A3(
-	$justgook$webgl_playground$Playground$game,
+	$author$project$Playground$game,
 	$author$project$Main$view,
 	$author$project$Main$update,
-	{x: 0, y: 0});
+	{
+		aa: {
+			a: {K: 0, L: 0},
+			z: $author$project$Main$defaultSize,
+			A: $author$project$Main$defaultSpeed * 1.3
+		},
+		ae: {
+			a: {K: 0, L: 0},
+			z: $author$project$Main$defaultSize * 2,
+			A: $author$project$Main$defaultSpeed / 3
+		},
+		ah: {
+			a: {K: 0, L: 0},
+			z: $author$project$Main$defaultSize / 2,
+			A: $author$project$Main$defaultSpeed
+		}
+	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
