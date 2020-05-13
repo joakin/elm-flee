@@ -1,0 +1,3 @@
+[submodule "vendor/webgl-playground"]
+	path = vendor/webgl-playground
+	url = https://github.com/justgook/webgl-playground.git
