@@ -1,3 +1,5 @@
 #!/bin/bash
 
-elm-live src/Main.elm --dir dist --pushstate --host=0.0.0.0 -- --output=dist/elm.js --optimize
+ARG=${1:---optimize}
+
+elm-live src/Main.elm --dir dist --pushstate --host=0.0.0.0 -- --output=dist/elm.js $ARG
