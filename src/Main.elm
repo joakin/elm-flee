@@ -33,8 +33,8 @@ main =
     game
         view
         update
-        { attacker = { pos = { x = 500, y = -100 }, size = defaultSize, speed = defaultSpeed * 1.3 }
-        , attacker2 = { pos = { x = 500, y = 100 }, size = defaultSize, speed = defaultSpeed * 1.3 }
+        { attacker = { pos = { x = 500, y = -100 }, size = defaultSize, speed = defaultSpeed * 1.1 }
+        , attacker2 = { pos = { x = 500, y = 100 }, size = defaultSize, speed = defaultSpeed * 1.1 }
         , guardian = { pos = { x = 0, y = 0 }, size = defaultSize * 2, speed = defaultSpeed / 3 }
         , prey = { pos = { x = -200, y = 0 }, size = defaultSize / 2, speed = defaultSpeed }
         }
@@ -106,8 +106,12 @@ update { mouse, keyboard, screen } { attacker, attacker2, guardian, prey } =
                     prey
 
             mouseControlled =
-                prey
-                    |> followPoint { x = mouse.x, y = mouse.y }
+                if mouse.down then
+                    prey
+                        |> followPoint { x = mouse.x, y = mouse.y }
+
+                else
+                    prey
         in
         mouseControlled
             |> fleeFrom 1.1 guardian
@@ -132,7 +136,7 @@ collidesWith target thing =
             Vec2.distanceSquared target.pos thing.pos
 
         radiuses =
-            squared (target.size / 2) + squared (thing.size / 2)
+            (target.size / 2) ^ 2 + (thing.size / 2) ^ 2
     in
     if dSq < radiuses then
         setPos
@@ -159,7 +163,7 @@ follow target thing =
 
 followPoint : Vec2 -> Player -> Player
 followPoint target thing =
-    if Vec2.distanceSquared target thing.pos > 0 then
+    if Vec2.distanceSquared target thing.pos > thing.speed ^ 2 then
         setPos
             (Vec2.add thing.pos (Vec2.direction target thing.pos |> Vec2.scale thing.speed))
             thing
@@ -170,27 +174,27 @@ followPoint target thing =
 
 fleeFrom : Float -> Player -> Player -> Player
 fleeFrom fear target thing =
-    if Vec2.distanceSquared target.pos thing.pos > 0 then
+    let
+        distanceSquared =
+            Vec2.distanceSquared target.pos thing.pos
+    in
+    if distanceSquared > 0 && distanceSquared < (target.size * 3) ^ 2 then
         let
             maxForce =
                 thing.speed * fear
 
             squareSize =
-                squared target.size
+                target.size ^ 2
 
             pos =
                 Vec2.direction thing.pos target.pos
-                    |> Vec2.scale (maxForce * squareSize / max squareSize (Vec2.distanceSquared target.pos thing.pos))
+                    |> Vec2.scale (maxForce * squareSize / max squareSize distanceSquared)
                     |> Vec2.add thing.pos
         in
         setPos pos thing
 
     else
         thing
-
-
-squared x =
-    x * x
 
 
 setPos : Vec2 -> Player -> Player
