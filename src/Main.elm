@@ -7,6 +7,7 @@ import Random
 
 type alias State =
     { attacker : Player
+    , attacker2 : Player
     , guardian : Player
     , prey : Player
     }
@@ -32,19 +33,23 @@ main =
     game
         view
         update
-        { attacker = { pos = { x = 500, y = -100 }, size = defaultSize, speed = defaultSpeed * 1.1 }
+        { attacker = { pos = { x = 500, y = -100 }, size = defaultSize, speed = defaultSpeed * 1.3 }
+        , attacker2 = { pos = { x = 500, y = 100 }, size = defaultSize, speed = defaultSpeed * 1.3 }
         , guardian = { pos = { x = 0, y = 0 }, size = defaultSize * 2, speed = defaultSpeed / 3 }
         , prey = { pos = { x = -200, y = 0 }, size = defaultSize / 2, speed = defaultSpeed }
         }
 
 
 view : Computer -> State -> List Shape
-view { time, screen } { attacker, guardian, prey } =
+view { time, screen } { attacker, attacker2, guardian, prey } =
     [ words lightPurple "Avoid the red attacker!"
         |> moveY (screen.top - 40)
     , square red attacker.size
         |> rotate (spin 2 time)
         |> move attacker.pos.x attacker.pos.y
+    , square lightRed attacker2.size
+        |> rotate (spin 2 time)
+        |> move attacker2.pos.x attacker2.pos.y
     , square green guardian.size
         |> rotate (spin 8 time)
         |> move guardian.pos.x guardian.pos.y
@@ -58,31 +63,54 @@ view { time, screen } { attacker, guardian, prey } =
 
 
 update : Computer -> State -> State
-update { mouse, keyboard, screen } { attacker, guardian, prey } =
+update { mouse, keyboard, screen } { attacker, attacker2, guardian, prey } =
     { attacker =
         attacker
             |> follow prey
             |> fleeFrom 2 guardian
             |> collidesWith guardian
+            |> collidesWith attacker2
             |> boundedBy screen
-    , guardian =
-        guardian
-            |> follow attacker
+    , attacker2 =
+        attacker2
+            |> follow prey
+            |> fleeFrom 2 guardian
+            |> collidesWith guardian
             |> collidesWith attacker
             |> boundedBy screen
+    , guardian =
+        let
+            closestAttacker =
+                if Vec2.distanceSquared guardian.pos attacker.pos < Vec2.distanceSquared guardian.pos attacker2.pos then
+                    attacker
+
+                else
+                    attacker2
+        in
+        guardian
+            |> follow closestAttacker
+            |> collidesWith attacker
+            |> collidesWith attacker2
+            |> boundedBy screen
     , prey =
-        -- let
-        --     ( xv, yv ) =
-        --         toXY keyboard
-        -- in
-        -- setPos
-        --     { x = prey.pos.x + xv * prey.speed
-        --     , y = prey.pos.y + yv * prey.speed
-        --     }
-        --     prey
-        prey
-            |> followPoint { x = mouse.x, y = mouse.y }
-            |> fleeFrom 1.5 guardian
+        let
+            keyboardControlled =
+                let
+                    ( xv, yv ) =
+                        toXY keyboard
+                in
+                setPos
+                    { x = prey.pos.x + xv * prey.speed
+                    , y = prey.pos.y + yv * prey.speed
+                    }
+                    prey
+
+            mouseControlled =
+                prey
+                    |> followPoint { x = mouse.x, y = mouse.y }
+        in
+        mouseControlled
+            |> fleeFrom 1.1 guardian
             |> collidesWith guardian
             |> boundedBy screen
     }
