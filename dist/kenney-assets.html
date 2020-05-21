@@ -1,0 +1,29 @@
+<body>
+  <script>
+    let assets = [
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%20(version%2041)/2D%20assets/RPG%20Tiles%20Vector/Sample.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%20(version%2041)/2D%20assets/UI%20Pixel%20Pack/Preview.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%20(version%2041)/2D%20assets/Roguelike%20Dungeon%20Pack/Sample.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%20(version%2041)/2D%20assets/Roguelike%20Base%20Pack/Sample1.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%20(version%2041)/2D%20assets/Hexagon%20Pack/Sample.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%20(version%2041)/2D%20assets/Hexagon%20Base%20Pack/Sample.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%203%20version%2021%20(1)/2D%20assets/Animal%20Pack%20Redux/Preview.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%202%20version%2021/2D%20assets/Fish%20Pack%20(120%20assets)/Sample.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%202%20version%2021/2D%20assets/Foliage%20Pack%20(100%20assets)/Preview.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%202%20version%2021/2D%20assets/RTS%20Medieval%20(120%20assets)/Sample.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%202%20version%2021/2D%20assets/RTS%20Sci-fi%20(120%20assets)/Sample.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%202%20version%2021/2D%20assets/Topdown%20Shooter%20(pixel)%20(620%20assets)/Sample.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%203%20version%2021%20(1)/2D%20assets/1-Bit%20pack/Sample_fantasy.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%203%20version%2021%20(1)/2D%20assets/Background%20Elements%20Redux/Preview.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%203%20version%2021%20(1)/2D%20assets/Foliage%20Sprites/Preview.png",
+      "file:///Users/jkn/Downloads/Kenney%20Game%20Assets%203%20version%2021%20(1)/2D%20assets/Emote%20Pack/Preview.png",
+    ];
+    for (let asset of assets) {
+      let d = document.createElement("div");
+      d.innerHTML = `
+        <img src='${asset}' style='max-width: 100%;' />
+      `;
+      document.body.appendChild(d);
+    }
+  </script>
+</body>
