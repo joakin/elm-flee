@@ -2,11 +2,13 @@ module Main exposing (main)
 
 import AltMath.Vector2 as Vec2 exposing (Vec2)
 import Components exposing (..)
-import Logic.Component as Component exposing (Set, Spec)
+import Dict exposing (Dict)
+import Logic.Component as Component exposing (Spec)
 import Logic.Entity as Entity
-import Logic.System as System
+import Logic.System as System exposing (System, applyIf)
 import Playground exposing (..)
 import Random
+import Set exposing (Set)
 
 
 type alias World =
@@ -30,30 +32,35 @@ defaultSpeed =
 
 spawn : World -> World
 spawn w =
+    let
+        predator pos w_ =
+            w_
+                |> Components.addEntity
+                |> Entity.with ( kinds, Predator )
+                |> Entity.with ( positions, pos )
+                |> Entity.with ( sizes, defaultSize )
+                |> Entity.with ( speeds, defaultSpeed * 1 )
+                |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 2 )
+                |> Entity.with ( follows, Set.singleton (kindToString Prey) )
+                |> Tuple.second
+    in
     w.components
+        |> predator { x = 500, y = -100 }
+        |> predator { x = 500, y = 100 }
         |> Components.addEntity
-        |> Entity.with ( predators, Predator )
-        |> Entity.with ( positions, { x = 500, y = -100 } )
-        |> Entity.with ( sizes, defaultSize )
-        |> Entity.with ( speeds, defaultSpeed * 1 )
-        |> Tuple.second
-        |> Components.addEntity
-        |> Entity.with ( predators, Predator )
-        |> Entity.with ( positions, { x = 500, y = 100 } )
-        |> Entity.with ( sizes, defaultSize )
-        |> Entity.with ( speeds, defaultSpeed * 1 )
-        |> Tuple.second
-        |> Components.addEntity
-        |> Entity.with ( guardians, Guardian )
+        |> Entity.with ( kinds, Guardian )
         |> Entity.with ( positions, { x = 0, y = 0 } )
         |> Entity.with ( sizes, defaultSize * 2 )
         |> Entity.with ( speeds, defaultSpeed / 3 )
+        |> Entity.with ( follows, Set.singleton (kindToString Predator) )
         |> Tuple.second
         |> Components.addEntity
-        |> Entity.with ( preys, Prey )
+        |> Entity.with ( kinds, Prey )
+        |> Entity.with ( userInputs, UserInput )
         |> Entity.with ( positions, { x = -200, y = 0 } )
         |> Entity.with ( sizes, defaultSize / 2 )
         |> Entity.with ( speeds, defaultSpeed * 1.1 )
+        |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 1.1 )
         |> Tuple.second
         |> Components.set w
 
@@ -126,10 +133,18 @@ viewPlaying { time, screen } world =
                 |> moveY (screen.top - 40)
           ]
         , System.foldl3
-            (\_ position size shapes ->
+            (\kind position size shapes ->
                 let
                     ( color, spinTime ) =
-                        ( green, 8 )
+                        case kind of
+                            Guardian ->
+                                ( green, 8 )
+
+                            Predator ->
+                                ( red, 2 )
+
+                            Prey ->
+                                ( blue, 1 )
                 in
                 (square color size
                     |> rotate (spin spinTime time)
@@ -137,39 +152,7 @@ viewPlaying { time, screen } world =
                 )
                     :: shapes
             )
-            (guardians.get world.components)
-            (positions.get world.components)
-            (sizes.get world.components)
-            []
-        , System.foldl3
-            (\_ position size shapes ->
-                let
-                    ( color, spinTime ) =
-                        ( red, 2 )
-                in
-                (square color size
-                    |> rotate (spin spinTime time)
-                    |> move position.x position.y
-                )
-                    :: shapes
-            )
-            (predators.get world.components)
-            (positions.get world.components)
-            (sizes.get world.components)
-            []
-        , System.foldl3
-            (\_ position size shapes ->
-                let
-                    ( color, spinTime ) =
-                        ( blue, 1 )
-                in
-                (square color size
-                    |> rotate (spin spinTime time)
-                    |> move position.x position.y
-                )
-                    :: shapes
-            )
-            (preys.get world.components)
+            (kinds.get world.components)
             (positions.get world.components)
             (sizes.get world.components)
             []
@@ -201,39 +184,31 @@ updatePlaying { mouse, keyboard, screen } world =
     --     List.map
     --         (\attacker ->
     --             attacker
-    --                 |> follow prey
-    --                 |> fleeFrom 2 guardian
     --                 |> collidesWith guardian
     --                 |> collidesWithMany attackers
-    --                 |> boundedBy screen
     --         )
     --         attackers
     -- , guardian =
     --     guardian
-    --         |> follow (closest attackers guardian)
     --         |> collidesWithMany attackers
-    --         |> boundedBy screen
     -- , prey =
-    --     mouseControlled
-    --         |> fleeFrom 1.1 guardian
     --         |> collidesWith guardian
-    --         |> boundedBy screen
     -- }
     --
     -- TODO: make components and systems for the behaviors on the functions,
-    --  - Fleeing
     --  - Collisions
-    --  - Screen bounds
-    --  - Following/targetting
     world.components
-        |> applyMouseInput mouse
+        |> mouseInput mouse
+        |> avoid
+        |> follow
+        |> boundedBy screen
         |> Components.set world
 
 
-applyMouseInput : Mouse -> Components -> Components
-applyMouseInput mouse components =
-    System.step4
-        (\_ ( position, setPosition ) ( speed, _ ) ( size, _ ) cs ->
+mouseInput : Mouse -> System Components
+mouseInput mouse components =
+    System.step3
+        (\_ ( position, setPosition ) ( speed, _ ) cs ->
             if mouse.down then
                 setPosition
                     (followPoint { x = mouse.x, y = mouse.y } ( position, speed ))
@@ -242,37 +217,103 @@ applyMouseInput mouse components =
             else
                 cs
         )
-        preys
+        userInputs
         positions
         speeds
+        components
+
+
+avoid : System Components
+avoid components =
+    System.step3
+        (\( avoidKinds, _ ) ( position, setPosition ) ( speed, _ ) xs ->
+            let
+                newPosition =
+                    Dict.foldl
+                        (\kind fear positionAcc1 ->
+                            System.foldl3
+                                (\avoidKind avoidPosition avoidSize positionAcc2 ->
+                                    if kind == kindToString avoidKind then
+                                        fleeFrom fear ( avoidPosition, avoidSize ) ( positionAcc2, speed )
+
+                                    else
+                                        positionAcc2
+                                )
+                                (kinds.get components)
+                                (positions.get components)
+                                (sizes.get components)
+                                positionAcc1
+                        )
+                        position
+                        avoidKinds
+            in
+            xs
+                |> applyIf (newPosition /= position) (setPosition newPosition)
+        )
+        avoids
+        positions
+        speeds
+        components
+
+
+follow : System Components
+follow components =
+    System.step3
+        (\( followKinds, _ ) ( position, setPosition ) ( speed, _ ) xs ->
+            let
+                closestPosition =
+                    closest components followKinds position
+            in
+            xs
+                |> applyIf (closestPosition /= position)
+                    (setPosition (followPoint closestPosition ( position, speed )))
+        )
+        follows
+        positions
+        speeds
+        components
+
+
+closest : Components -> Set String -> Position -> Position
+closest components validKinds origin =
+    System.foldl2
+        (\kind position (( minDist, _ ) as acc) ->
+            if Set.member (kindToString kind) validKinds then
+                let
+                    dist =
+                        Vec2.distanceSquared position origin
+                in
+                if position /= origin && dist < minDist then
+                    ( dist, position )
+
+                else
+                    acc
+
+            else
+                acc
+        )
+        (kinds.get components)
+        (positions.get components)
+        ( 1 / 0, origin )
+        |> Tuple.second
+
+
+boundedBy : Screen -> System Components
+boundedBy screen components =
+    System.step2
+        (\( position, setPosition ) ( size, _ ) xs ->
+            setPosition
+                { x = clamp (screen.left + size / 2) (screen.right - size / 2) position.x
+                , y = clamp (screen.bottom + size / 2) (screen.top - size / 2) position.y
+                }
+                xs
+        )
+        positions
         sizes
         components
 
 
 
--- closest : World -> EntityID -> Maybe EntityID
--- closest world me =
---     List.foldl
---         (\entity (( minDist, _ ) as acc) ->
---             let
---                 dist =
---                     Vec2.distanceSquared entity.position me.position
---             in
---             if entity.id /= me.id && dist < minDist then
---                 ( dist, entity )
---             else
---                 acc
---         )
---         ( 1 / 0, me )
---         entities
---         |> Tuple.second
--- boundedBy : Screen -> Entity -> Entity
--- boundedBy screen player =
---     setPosition
---         { x = clamp (screen.left + player.size / 2) (screen.right - player.size / 2) player.position.x
---         , y = clamp (screen.bottom + player.size / 2) (screen.top - player.size / 2) player.position.y
---         }
---         player
 -- collidesWith : Entity -> Entity -> Entity
 -- collidesWith entity me =
 --     let
@@ -316,24 +357,23 @@ followPoint point ( position, speed ) =
         position
 
 
+fleeFrom : Float -> ( Position, Size ) -> ( Position, Speed ) -> Position
+fleeFrom fear ( targetPosition, targetSize ) ( mePosition, meSpeed ) =
+    let
+        distanceSquared =
+            Vec2.distanceSquared targetPosition mePosition
+    in
+    if distanceSquared > 0 && distanceSquared < (targetSize * 3) ^ 2 then
+        let
+            maxForce =
+                meSpeed * fear
 
--- fleeFrom : Float -> Entity -> Entity -> Entity
--- fleeFrom fear entity me =
---     let
---         distanceSquared =
---             Vec2.distanceSquared entity.position me.position
---     in
---     if distanceSquared > 0 && distanceSquared < (entity.size * 3) ^ 2 then
---         let
---             maxForce =
---                 me.speed * fear
---             squareSize =
---                 entity.size ^ 2
---             position =
---                 Vec2.direction me.position entity.position
---                     |> Vec2.scale (maxForce * squareSize / max squareSize distanceSquared)
---                     |> Vec2.add me.position
---         in
---         setPosition position me
---     else
---         me
+            squareSize =
+                targetSize ^ 2
+        in
+        Vec2.direction mePosition targetPosition
+            |> Vec2.scale (maxForce * squareSize / max squareSize distanceSquared)
+            |> Vec2.add mePosition
+
+    else
+        mePosition

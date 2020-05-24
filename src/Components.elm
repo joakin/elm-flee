@@ -4,9 +4,10 @@ module Components exposing
     , Position, positions
     , Size, sizes, defaultSize
     , Speed, speeds, defaultSpeed
-    , Prey(..), preys
-    , Predator(..), predators
-    , Guardian(..), guardians
+    , Kind(..), kindToString, kinds
+    , UserInput(..), userInputs
+    , Avoid, avoids
+    , Follow, follows
     )
 
 {-|
@@ -30,15 +31,27 @@ module Components exposing
 
 @docs Speed, speeds, defaultSpeed
 
-@docs Prey, preys
-@docs Predator, predators
-@docs Guardian, guardians
+
+## Entity tags
+
+@docs Kind, kindToString, kinds
+
+
+## Behaviors
+
+@docs UserInput, userInputs
+
+@docs Avoid, avoids
+
+@docs Follow, follows
 
 -}
 
 import AltMath.Vector2 as Vec2 exposing (Vec2)
-import Logic.Component as Component exposing (Set, Spec)
+import Dict exposing (Dict)
+import Logic.Component as Component exposing (Spec)
 import Logic.Entity as Entity exposing (EntityID)
+import Set exposing (Set)
 
 
 
@@ -47,12 +60,13 @@ import Logic.Entity as Entity exposing (EntityID)
 
 type alias Components =
     { idPool : IdPool
-    , positions : Set Position
-    , speeds : Set Speed
-    , sizes : Set Size
-    , preys : Set Prey
-    , predators : Set Predator
-    , guardians : Set Guardian
+    , positions : Component.Set Position
+    , speeds : Component.Set Speed
+    , sizes : Component.Set Size
+    , kinds : Component.Set Kind
+    , userInputs : Component.Set UserInput
+    , avoids : Component.Set Avoid
+    , follows : Component.Set Follow
     }
 
 
@@ -62,9 +76,10 @@ empty =
     , positions = Component.empty
     , speeds = Component.empty
     , sizes = Component.empty
-    , preys = Component.empty
-    , predators = Component.empty
-    , guardians = Component.empty
+    , kinds = Component.empty
+    , userInputs = Component.empty
+    , avoids = Component.empty
+    , follows = Component.empty
     }
 
 
@@ -106,9 +121,10 @@ removeEntity entityID components =
       , positions = Component.remove entityID components.positions
       , speeds = Component.remove entityID components.speeds
       , sizes = Component.remove entityID components.sizes
-      , preys = Component.remove entityID components.preys
-      , predators = Component.remove entityID components.predators
-      , guardians = Component.remove entityID components.guardians
+      , kinds = Component.remove entityID components.kinds
+      , userInputs = Component.remove entityID components.userInputs
+      , avoids = Component.remove entityID components.avoids
+      , follows = Component.remove entityID components.follows
       }
     )
 
@@ -154,28 +170,52 @@ defaultSize =
     40
 
 
-type Prey
+type Kind
     = Prey
+    | Predator
+    | Guardian
 
 
-preys : Spec Prey Components
-preys =
-    Spec .preys (\comps components -> { components | preys = comps })
+kindToString : Kind -> String
+kindToString kind =
+    case kind of
+        Prey ->
+            "Prey"
+
+        Predator ->
+            "Predator"
+
+        Guardian ->
+            "Guardian"
 
 
-type Predator
-    = Predator
+kinds : Spec Kind Components
+kinds =
+    Spec .kinds (\comps components -> { components | kinds = comps })
 
 
-predators : Spec Predator Components
-predators =
-    Spec .predators (\comps components -> { components | predators = comps })
+type UserInput
+    = UserInput
 
 
-type Guardian
-    = Guardian
+userInputs : Spec UserInput Components
+userInputs =
+    Spec .userInputs (\comps components -> { components | userInputs = comps })
 
 
-guardians : Spec Guardian Components
-guardians =
-    Spec .guardians (\comps components -> { components | guardians = comps })
+type alias Avoid =
+    Dict String Float
+
+
+avoids : Spec Avoid Components
+avoids =
+    Spec .avoids (\comps components -> { components | avoids = comps })
+
+
+type alias Follow =
+    Set String
+
+
+follows : Spec Follow Components
+follows =
+    Spec .follows (\comps components -> { components | follows = comps })
