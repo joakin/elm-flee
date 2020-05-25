@@ -8,6 +8,7 @@ module Components exposing
     , UserInput(..), userInputs
     , Avoid, avoids
     , Follow, follows
+    , Collision, collisions
     )
 
 {-|
@@ -45,6 +46,8 @@ module Components exposing
 
 @docs Follow, follows
 
+@docs Collision, collisions
+
 -}
 
 import AltMath.Vector2 as Vec2 exposing (Vec2)
@@ -67,6 +70,7 @@ type alias Components =
     , userInputs : Component.Set UserInput
     , avoids : Component.Set Avoid
     , follows : Component.Set Follow
+    , collisions : Component.Set Collision
     }
 
 
@@ -80,6 +84,7 @@ empty =
     , userInputs = Component.empty
     , avoids = Component.empty
     , follows = Component.empty
+    , collisions = Component.empty
     }
 
 
@@ -125,6 +130,7 @@ removeEntity entityID components =
       , userInputs = Component.remove entityID components.userInputs
       , avoids = Component.remove entityID components.avoids
       , follows = Component.remove entityID components.follows
+      , collisions = Component.remove entityID components.collisions
       }
     )
 
@@ -219,3 +225,12 @@ type alias Follow =
 follows : Spec Follow Components
 follows =
     Spec .follows (\comps components -> { components | follows = comps })
+
+
+type alias Collision =
+    Set String
+
+
+collisions : Spec Collision Components
+collisions =
+    Spec .collisions (\comps components -> { components | collisions = comps })

@@ -42,6 +42,7 @@ spawn w =
                 |> Entity.with ( speeds, defaultSpeed * 1 )
                 |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 2 )
                 |> Entity.with ( follows, Set.singleton (kindToString Prey) )
+                |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator ] )
                 |> Tuple.second
     in
     w.components
@@ -53,6 +54,7 @@ spawn w =
         |> Entity.with ( sizes, defaultSize * 2 )
         |> Entity.with ( speeds, defaultSpeed / 3 )
         |> Entity.with ( follows, Set.singleton (kindToString Predator) )
+        |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator, Prey ] )
         |> Tuple.second
         |> Components.addEntity
         |> Entity.with ( kinds, Prey )
@@ -61,6 +63,7 @@ spawn w =
         |> Entity.with ( sizes, defaultSize / 2 )
         |> Entity.with ( speeds, defaultSpeed * 1.1 )
         |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 1.1 )
+        |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Prey ] )
         |> Tuple.second
         |> Components.set w
 
@@ -199,8 +202,9 @@ updatePlaying { mouse, keyboard, screen } world =
     --  - Collisions
     world.components
         |> mouseInput mouse
-        |> avoid
         |> follow
+        |> avoid
+        |> resolveCollisions
         |> boundedBy screen
         |> Components.set world
 
@@ -313,39 +317,36 @@ boundedBy screen components =
         components
 
 
+resolveCollisions : System Components
+resolveCollisions components =
+    System.step4
+        (\( validKinds, _ ) ( position, setPosition ) ( size, _ ) ( speed, _ ) xs ->
+            let
+                newPosition =
+                    System.foldl3
+                        (\targetKind targetPosition targetSize correctedPosition ->
+                            if Set.member (kindToString targetKind) validKinds then
+                                collidesWith ( targetPosition, targetSize ) ( correctedPosition, size, speed )
 
--- collidesWith : Entity -> Entity -> Entity
--- collidesWith entity me =
---     let
---         dSq =
---             Vec2.distanceSquared entity.position me.position
---         radiuses =
---             (entity.size / 2) ^ 2 + (me.size / 2) ^ 2
---     in
---     if dSq < radiuses then
---         setPosition
---             (Vec2.sub me.position
---                 (Vec2.direction entity.position me.position
---                     |> Vec2.scale me.speed
---                 )
---             )
---             me
---     else
---         me
--- collidesWithMany : List Entity -> Entity -> Entity
--- collidesWithMany entities me =
---     List.foldl
---         (\entity t ->
---             if entity.id /= me.id then
---                 collidesWith entity t
---             else
---                 t
---         )
---         me
---         entities
--- between : Vec2 -> Vec2 -> Vec2
--- between a b =
---     Vec2.add a (Vec2.sub b a |> Vec2.scale 0.5)
+                            else
+                                correctedPosition
+                        )
+                        (kinds.get components)
+                        (positions.get components)
+                        (sizes.get components)
+                        position
+            in
+            if newPosition /= position then
+                setPosition newPosition xs
+
+            else
+                xs
+        )
+        collisions
+        positions
+        sizes
+        speeds
+        components
 
 
 followPoint : Position -> ( Position, Speed ) -> Position
@@ -377,3 +378,26 @@ fleeFrom fear ( targetPosition, targetSize ) ( mePosition, meSpeed ) =
 
     else
         mePosition
+
+
+collidesWith : ( Position, Size ) -> ( Position, Size, Speed ) -> Position
+collidesWith ( targetPosition, targetSize ) ( myPosition, mySize, mySpeed ) =
+    if targetPosition /= myPosition then
+        let
+            dSq =
+                Vec2.distanceSquared targetPosition myPosition
+
+            radiuses =
+                (targetSize / 2) ^ 2 + (mySize / 2) ^ 2
+        in
+        if dSq < radiuses then
+            Vec2.sub myPosition
+                (Vec2.direction targetPosition myPosition
+                    |> Vec2.scale mySpeed
+                )
+
+        else
+            myPosition
+
+    else
+        myPosition
