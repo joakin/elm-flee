@@ -3,12 +3,42 @@ module Main exposing (main)
 import AltMath.Vector2 as Vec2 exposing (Vec2)
 import Components exposing (..)
 import Dict exposing (Dict)
+import Image
 import Logic.Component as Component exposing (Spec)
 import Logic.Entity as Entity
 import Logic.System as System exposing (System, applyIf)
 import Playground exposing (..)
+import Playground.Extra exposing (..)
 import Random
 import Set exposing (Set)
+
+
+viewport : Screen
+viewport =
+    { width = 320, height = 200 }
+        |> (\{ width, height } ->
+                { width = width
+                , height = height
+                , left = -width / 2
+                , right = width / 2
+                , bottom = -height / 2
+                , top = height / 2
+                }
+           )
+
+
+defaultFontSize =
+    12
+
+
+defaultSpeed : Speed
+defaultSpeed =
+    viewport.width / 210
+
+
+defaultSize : Size
+defaultSize =
+    viewport.width / 32
 
 
 type alias World =
@@ -20,14 +50,6 @@ type alias World =
 type State
     = Menu
     | Playing
-
-
-defaultSize =
-    40
-
-
-defaultSpeed =
-    6
 
 
 spawn : World -> World
@@ -88,83 +110,169 @@ view computer world =
             viewPlaying computer world
 
 
+scalingFactor : Screen -> Float
+scalingFactor screen =
+    if screen.width / screen.height > viewport.width / viewport.height then
+        screen.height / viewport.height
+
+    else
+        screen.width / viewport.width
+
+
+toViewport : Screen -> { a | x : Float, y : Float } -> Vec2
+toViewport screen coords =
+    { x = coords.x / scalingFactor screen
+    , y = coords.y / scalingFactor screen
+    }
+
+
+adaptToViewport : Screen -> List Shape -> Shape
+adaptToViewport screen shapes =
+    shapes
+        |> group
+        |> scale (scalingFactor screen)
+
+
 backgroundColor =
-    rgb 250 255 200
+    rgb 55 148 110
+
+
+background : Shape
+background =
+    let
+        randomIndexes =
+            Random.list numTiles
+            -- <| Random.int 1 7
+            <|
+                Random.weighted
+                    ( 5, 1 )
+                    [ ( 10, 2 )
+                    , ( 20, 3 )
+                    , ( 2, 4 )
+                    , ( 2, 5 )
+                    , ( 10, 6 )
+                    , ( 10, 7 )
+                    ]
+
+        spriteSize =
+            10
+
+        numTiles =
+            horizontalTiles * verticalTiles
+
+        ( horizontalTiles, verticalTiles ) =
+            ( viewport.width / spriteSize |> round, viewport.height / spriteSize |> round )
+
+        lookupImage =
+            Random.initialSeed 42
+                |> Random.step randomIndexes
+                |> Tuple.first
+                |> Image.fromList horizontalTiles
+                |> Image.toPngUrl
+    in
+    tilemap
+        spriteSize
+        spriteSize
+        "sprites10.png"
+        lookupImage
 
 
 viewMenu : Computer -> List Shape
-viewMenu { time, screen } =
+viewMenu { time, screen, mouse } =
     let
         moveTitle : Int -> Shape -> Shape
-        moveTitle delay =
+        moveTitle delay shape =
             let
                 t =
                     { time | now = time.now - delay }
+
+                ( mx, my ) =
+                    ( viewport.width / 13, viewport.height / 20 )
             in
-            rotate (wave -5 5 8 t)
-                >> move (wave -50 50 10 t) (wave -20 20 2 t)
-                >> scale (wave 1 1.1 2 t)
+            shape
+                |> rotate (wave -5 5 8 t)
+                |> move (wave -mx mx 10 t) (wave -my my 2 t)
+                |> scale (wave 1 1.1 2 t)
+
+        titleScale =
+            -- a % of the viewport
+            (viewport.height / defaultFontSize) / 6
+
+        titleShadowOffset =
+            defaultFontSize * titleScale / 20
     in
     [ rectangle backgroundColor
         screen.width
         screen.height
-    , words darkPurple "Flee!"
-        |> moveDown 10
-        |> moveRight 10
-        |> scale 6
-        |> moveTitle 60
-    , words purple "Flee!"
-        |> moveDown 5
-        |> moveRight 5
-        |> scale 6
-        |> moveTitle 30
-    , words lightPurple "Flee!"
-        |> scale 6
-        |> moveTitle 0
-    , words orange "Click to start!"
-        |> scale 1
-        |> moveDown 150
-        |> moveDown (wave 0 20 5 time)
+    , adaptToViewport screen
+        [ background
+        , group
+            [ words darkPurple "Flee!"
+                |> moveDown (titleShadowOffset * 2)
+                |> moveRight (titleShadowOffset * 2)
+                |> scale titleScale
+                |> moveTitle 60
+            , words purple "Flee!"
+                |> moveDown titleShadowOffset
+                |> moveRight titleShadowOffset
+                |> scale titleScale
+                |> moveTitle 30
+            , words lightPurple "Flee!"
+                |> scale titleScale
+                |> moveTitle 0
+            ]
+            |> moveUp (viewport.height / 6)
+        , let
+            fontScale =
+                1.5
+
+            my =
+                viewport.height / 40
+          in
+          words white "Click to start!"
+            |> scaleY fontScale
+            |> scale ((viewport.height / (defaultFontSize * fontScale)) / 32)
+            |> moveDown (viewport.height / 4)
+            |> moveDown (wave -my my 5 time)
+        ]
     ]
 
 
 viewPlaying : Computer -> World -> List Shape
 viewPlaying { time, screen } world =
-    List.concat
-        [ [ rectangle backgroundColor screen.width screen.height
-          , words lightPurple "Avoid the red attacker!"
-                |> moveY (screen.top - 40)
-          ]
-        , System.foldl3
-            (\kind position size shapes ->
-                let
-                    ( color, spinTime ) =
-                        case kind of
-                            Guardian ->
-                                ( green, 8 )
+    [ rectangle backgroundColor
+        screen.width
+        screen.height
+    , adaptToViewport screen
+        [ background
+        , group <|
+            System.foldl3
+                (\kind position size shapes ->
+                    let
+                        ( color, spinTime ) =
+                            case kind of
+                                Guardian ->
+                                    ( green, 8 )
 
-                            Predator ->
-                                ( red, 2 )
+                                Predator ->
+                                    ( red, 2 )
 
-                            Prey ->
-                                ( blue, 1 )
-                in
-                (square color size
-                    |> rotate (spin spinTime time)
-                    |> move position.x position.y
-                    |> moveZ (round (-position.y + screen.height))
+                                Prey ->
+                                    ( blue, 1 )
+                    in
+                    (square color size
+                        |> rotate (spin spinTime time)
+                        |> move position.x position.y
+                        |> moveZ (round (-position.y + viewport.height / 2))
+                    )
+                        :: shapes
                 )
-                    :: shapes
-            )
-            (kinds.get world.components)
-            (positions.get world.components)
-            (sizes.get world.components)
-            []
-
-        -- , [ words black (Debug.toString world)
-        --         |> move 0 0
-        --   ]
+                (kinds.get world.components)
+                (positions.get world.components)
+                (sizes.get world.components)
+                []
         ]
+    ]
 
 
 update : Computer -> World -> World
@@ -184,39 +292,22 @@ update ({ mouse } as computer) world =
 
 updatePlaying : Computer -> World -> World
 updatePlaying { mouse, keyboard, screen } world =
-    -- { attackers =
-    --     List.map
-    --         (\attacker ->
-    --             attacker
-    --                 |> collidesWith guardian
-    --                 |> collidesWithMany attackers
-    --         )
-    --         attackers
-    -- , guardian =
-    --     guardian
-    --         |> collidesWithMany attackers
-    -- , prey =
-    --         |> collidesWith guardian
-    -- }
-    --
-    -- TODO: make components and systems for the behaviors on the functions,
-    --  - Collisions
     world.components
-        |> mouseInput mouse
+        |> mouseInput screen mouse
         |> follow
         |> avoid
         |> resolveCollisions
-        |> boundedBy screen
+        |> boundedBy viewport
         |> Components.set world
 
 
-mouseInput : Mouse -> System Components
-mouseInput mouse components =
+mouseInput : Screen -> Mouse -> System Components
+mouseInput screen mouse components =
     System.step3
         (\_ ( position, setPosition ) ( speed, _ ) cs ->
             if mouse.down then
                 setPosition
-                    (followPoint { x = mouse.x, y = mouse.y } ( position, speed ))
+                    (followPoint (toViewport screen mouse) ( position, speed ))
                     cs
 
             else

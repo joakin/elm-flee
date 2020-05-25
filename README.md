@@ -1,5 +1,17 @@
 # Untitled elm-gamejam-4 game (Flee)
 
+## TODO
+
+- [ ] Make level background art and add it to level and main menu (grass/sand theme?)
+- [ ] Add timer countdown before start with some instructions instead of text in level
+- [ ] Make initial animals pixel art
+- [ ] Flesh out game mechanics
+- [ ] Make touch input work. Hard with playground. Unsure on how to proceed now.
+
+Later:
+
+- [ ] FX for menu, timer, and gameplay
+
 ## Inspiration
 
 - Keep guardian angel between you and the agent

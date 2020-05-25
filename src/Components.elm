@@ -2,8 +2,8 @@ module Components exposing
     ( Components, empty, set
     , addEntity, removeEntity
     , Position, positions
-    , Size, sizes, defaultSize
-    , Speed, speeds, defaultSpeed
+    , Size, sizes
+    , Speed, speeds
     , Kind(..), kindToString, kinds
     , UserInput(..), userInputs
     , Avoid, avoids
@@ -28,9 +28,9 @@ module Components exposing
 
 @docs Position, positions
 
-@docs Size, sizes, defaultSize
+@docs Size, sizes
 
-@docs Speed, speeds, defaultSpeed
+@docs Speed, speeds
 
 
 ## Entity tags
@@ -157,11 +157,6 @@ speeds =
     Spec .speeds (\comps components -> { components | speeds = comps })
 
 
-defaultSpeed : Speed
-defaultSpeed =
-    6
-
-
 type alias Size =
     Float
 
@@ -169,11 +164,6 @@ type alias Size =
 sizes : Spec Size Components
 sizes =
     Spec .sizes (\comps components -> { components | sizes = comps })
-
-
-defaultSize : Size
-defaultSize =
-    40
 
 
 type Kind
