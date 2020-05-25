@@ -152,6 +152,7 @@ viewPlaying { time, screen } world =
                 (square color size
                     |> rotate (spin spinTime time)
                     |> move position.x position.y
+                    |> moveZ (round (-position.y + screen.height))
                 )
                     :: shapes
             )
