@@ -1,0 +1,121 @@
+{ "frames": {
+   "sprites10 (grass1).aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (grass2).aseprite": {
+    "frame": { "x": 10, "y": 0, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (grass3).aseprite": {
+    "frame": { "x": 20, "y": 0, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (grass4).aseprite": {
+    "frame": { "x": 30, "y": 0, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (grass 5).aseprite": {
+    "frame": { "x": 0, "y": 10, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (grass 6).aseprite": {
+    "frame": { "x": 10, "y": 10, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (grass 7).aseprite": {
+    "frame": { "x": 20, "y": 10, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (trees).aseprite": {
+    "frame": { "x": 30, "y": 10, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (trees border left).aseprite": {
+    "frame": { "x": 0, "y": 20, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (trees border right).aseprite": {
+    "frame": { "x": 10, "y": 20, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (trees border top).aseprite": {
+    "frame": { "x": 20, "y": 20, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   },
+   "sprites10 (trees border bottom).aseprite": {
+    "frame": { "x": 30, "y": 20, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "sourceSize": { "w": 10, "h": 10 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.18",
+  "image": "sprites10.png",
+  "format": "RGBA8888",
+  "size": { "w": 40, "h": 30 },
+  "scale": "1",
+  "layers": [
+   { "name": "grass1", "opacity": 255, "blendMode": "normal" },
+   { "name": "grass2", "opacity": 255, "blendMode": "normal" },
+   { "name": "grass3", "opacity": 255, "blendMode": "normal" },
+   { "name": "grass4", "opacity": 255, "blendMode": "normal" },
+   { "name": "grass 5", "opacity": 255, "blendMode": "normal" },
+   { "name": "grass 6", "opacity": 255, "blendMode": "normal" },
+   { "name": "grass 7", "opacity": 255, "blendMode": "normal" },
+   { "name": "trees", "opacity": 255, "blendMode": "normal" },
+   { "name": "trees border left", "opacity": 255, "blendMode": "normal" },
+   { "name": "trees border right", "opacity": 255, "blendMode": "normal" },
+   { "name": "trees border top", "opacity": 255, "blendMode": "normal" },
+   { "name": "trees border bottom", "opacity": 255, "blendMode": "normal" }
+  ]
+ }
+}
