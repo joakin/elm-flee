@@ -106,7 +106,7 @@ spawn w =
                     (Random.list n
                         (Random.pair
                             (Random.float viewport.left viewport.right)
-                            (Random.float viewport.top viewport.bottom)
+                            (Random.float viewport.bottom viewport.top )
                         )
                     )
                 |> Tuple.first
