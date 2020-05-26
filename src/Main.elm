@@ -94,17 +94,36 @@ spawn w =
                 |> Entity.with ( positions, pos )
                 |> Entity.with ( sizes, defaultSize / 2 )
                 |> Entity.with ( speeds, defaultSpeed * 1.1 )
-                |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 1.1 )
+                |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 1.1 ), ( kindToString Prey, 0.5 ) ] )
                 |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Prey ] )
                 |> Entity.with ( directions, pos )
                 |> Entity.with ( facings, Right )
                 |> Tuple.second
+
+        many n fn w_ =
+            Random.initialSeed 24
+                |> Random.step
+                    (Random.list n
+                        (Random.pair
+                            (Random.float viewport.left viewport.right)
+                            (Random.float viewport.top viewport.bottom)
+                        )
+                    )
+                |> Tuple.first
+                |> List.foldl
+                    (\( x, y ) w__ ->
+                        w__ |> fn { x = x, y = y }
+                    )
+                    w_
     in
     w.components
-        |> predator { x = 500, y = -100 }
-        |> predator { x = 500, y = 100 }
+        |> predator { x = viewport.right - 10, y = -viewport.width / 10 }
+        |> predator { x = viewport.right - 10, y = viewport.width / 10 }
         |> guardian { x = 0, y = 0 }
-        |> prey { x = -200, y = 0 }
+        |> prey { x = viewport.left + 20, y = 0 }
+        -- |> many 40 prey
+        -- |> many 10 predator
+        -- |> many 5 guardian
         |> Components.set w
 
 
