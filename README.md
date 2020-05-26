@@ -4,7 +4,6 @@
 
 - [ ] Add the tree borders to the level
 - [ ] Add timer countdown before start with some instructions instead of text in level
-- [ ] Make initial animals pixel art
 - [ ] Flesh out game mechanics
 - [ ] Make touch input work. Hard with playground. Unsure on how to proceed now.
 

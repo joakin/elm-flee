@@ -5312,7 +5312,7 @@ function _Browser_getViewport()
 			E: _Browser_window.pageXOffset,
 			F: _Browser_window.pageYOffset,
 			q: _Browser_doc.documentElement.clientWidth,
-			n: _Browser_doc.documentElement.clientHeight
+			k: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -5323,7 +5323,7 @@ function _Browser_getScene()
 	var elem = _Browser_doc.documentElement;
 	return {
 		q: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		n: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		k: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -5348,13 +5348,13 @@ function _Browser_getViewportOf(id)
 		return {
 			cw: {
 				q: node.scrollWidth,
-				n: node.scrollHeight
+				k: node.scrollHeight
 			},
 			dA: {
 				E: node.scrollLeft,
 				F: node.scrollTop,
 				q: node.clientWidth,
-				n: node.clientHeight
+				k: node.clientHeight
 			}
 		};
 	});
@@ -5389,13 +5389,13 @@ function _Browser_getElement(id)
 				E: x,
 				F: y,
 				q: _Browser_doc.documentElement.clientWidth,
-				n: _Browser_doc.documentElement.clientHeight
+				k: _Browser_doc.documentElement.clientHeight
 			},
 			cW: {
 				E: x + rect.left,
 				F: y + rect.top,
 				q: rect.width,
-				n: rect.height
+				k: rect.height
 			}
 		};
 	});
@@ -6768,7 +6768,7 @@ var $elm$core$Array$builderToArray = F2(
 			var treeLen = builder.h * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.k) : builder.k;
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.l) : builder.l;
 			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.h);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
@@ -6788,7 +6788,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{k: nodeList, h: (len / $elm$core$Array$branchFactor) | 0, j: tail});
+					{l: nodeList, h: (len / $elm$core$Array$branchFactor) | 0, j: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -7349,13 +7349,12 @@ var $justgook$webgl_shape$WebGL$Shape2d$Transformation$scale = F3(
 		return {u: sx * b.u, v: sx * b.v, G: sx * b.G, w: sy * b.w, x: sy * b.x, H: sy * b.H};
 	});
 var $justgook$webgl_shape$WebGL$Shape2d$Shape2d = $elm$core$Basics$identity;
-var $justgook$webgl_shape$WebGL$Shape2d$setZ = F2(
-	function (parentZ, _v0) {
+var $justgook$webgl_shape$WebGL$Shape2d$setOZ = F3(
+	function (o, z, _v0) {
 		var shape = _v0;
-		var z = shape.t;
 		return _Utils_update(
 			shape,
-			{t: parentZ + z});
+			{f: o * shape.f, t: z + shape.t});
 	});
 var $elm_explorations$linear_algebra$Math$Vector2$fromRecord = _MJS_v2fromRecord;
 var $elm_explorations$linear_algebra$Math$Vector4$fromRecord = _MJS_v4fromRecord;
@@ -7372,8 +7371,8 @@ var $justgook$webgl_shape$WebGL$Shape2d$Transformation$toGL = function (_v0) {
 		$elm_explorations$linear_algebra$Math$Vector2$fromRecord(
 			{E: a13, F: a23}));
 };
-var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F6(
-	function (screen, textures, parent, parentOpacity, _v0, acc) {
+var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F5(
+	function (screen, textures, parent, _v0, acc) {
 		renderShape:
 		while (true) {
 			var x = _v0.E;
@@ -7395,14 +7394,14 @@ var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F6(
 						A3(
 							$justgook$webgl_shape$WebGL$Shape2d$Transformation$scale,
 							1 / screen.q,
-							1 / screen.n,
+							1 / screen.k,
 							A6($justgook$webgl_shape$WebGL$Shape2d$createTrans, x * 2, y * 2, width * sx, height * sy, a, parent)));
 					var t1 = _v2.a;
 					var t2 = _v2.b;
 					return _Utils_Tuple2(
 						A2(
 							$elm$core$List$cons,
-							A4(fn, t2, t1, z, o * parentOpacity),
+							A4(fn, t2, t1, z, o),
 							entities),
 						missing);
 				case 1:
@@ -7411,16 +7410,15 @@ var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F6(
 					var _v3 = A2($elm$core$Dict$get, src, textures);
 					if (!_v3.$) {
 						var texture = _v3.a;
+						var shape = fn(texture);
 						var $temp$screen = screen,
 							$temp$textures = textures,
 							$temp$parent = A6($justgook$webgl_shape$WebGL$Shape2d$createTrans, x * 2, y * 2, sx, sy, a, parent),
-							$temp$parentOpacity = o * parentOpacity,
-							$temp$_v0 = fn(texture),
+							$temp$_v0 = A3($justgook$webgl_shape$WebGL$Shape2d$setOZ, o, z, shape),
 							$temp$acc = acc;
 						screen = $temp$screen;
 						textures = $temp$textures;
 						parent = $temp$parent;
-						parentOpacity = $temp$parentOpacity;
 						_v0 = $temp$_v0;
 						acc = $temp$acc;
 						continue renderShape;
@@ -7432,13 +7430,12 @@ var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F6(
 				default:
 					var shapes = form.a;
 					var fn = function (shape) {
-						return A5(
+						return A4(
 							$justgook$webgl_shape$WebGL$Shape2d$renderShape,
 							screen,
 							textures,
 							A6($justgook$webgl_shape$WebGL$Shape2d$createTrans, x * 2, y * 2, sx, sy, a, parent),
-							o * parentOpacity,
-							A2($justgook$webgl_shape$WebGL$Shape2d$setZ, z, shape));
+							A3($justgook$webgl_shape$WebGL$Shape2d$setOZ, o, z, shape));
 					};
 					return A3($elm$core$List$foldr, fn, acc, shapes);
 			}
@@ -7448,7 +7445,7 @@ var $justgook$webgl_shape$WebGL$Shape2d$toEntities = F3(
 	function (textures, screen, shapes) {
 		return A3(
 			$elm$core$List$foldr,
-			A4($justgook$webgl_shape$WebGL$Shape2d$renderShape, screen, textures, $justgook$webgl_shape$WebGL$Shape2d$Transformation$identity, 1),
+			A3($justgook$webgl_shape$WebGL$Shape2d$renderShape, screen, textures, $justgook$webgl_shape$WebGL$Shape2d$Transformation$identity),
 			_Utils_Tuple2(_List_Nil, $elm$core$Set$empty),
 			shapes);
 	});
@@ -7887,7 +7884,7 @@ var $elm$time$Time$posixToMillis = function (_v0) {
 };
 var $author$project$Playground$Internal$toScreen = F2(
 	function (width, height) {
-		return {bb: (-height) / 2, n: height, a1: (-width) / 2, aK: width / 2, bD: height / 2, q: width};
+		return {bb: (-height) / 2, k: height, a1: (-width) / 2, aK: width / 2, bD: height / 2, q: width};
 	});
 var $author$project$Playground$Internal$updateKeyboard = F3(
 	function (isDown, key, keyboard) {
@@ -7969,7 +7966,7 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 							aD: _Utils_update(
 								computer,
 								{
-									bw: A2($author$project$Playground$Internal$toScreen, viewport.q, viewport.n)
+									bw: A2($author$project$Playground$Internal$toScreen, viewport.q, viewport.k)
 								})
 						}),
 					$elm$core$Platform$Cmd$none);
@@ -8927,7 +8924,7 @@ var $author$project$Playground$Internal$viewWrap = F2(
 						$elm$html$Html$Attributes$width(
 						$elm$core$Basics$round(screen.q)),
 						$elm$html$Html$Attributes$height(
-						$elm$core$Basics$round(screen.n))
+						$elm$core$Basics$round(screen.k))
 					]),
 				entities)
 			]);
@@ -9036,10 +9033,10 @@ var $author$project$Main$spriteSize = 10;
 var $author$project$Main$defaultSize = $author$project$Main$spriteSize;
 var $author$project$Main$viewport = function (_v0) {
 	var width = _v0.q;
-	var height = _v0.n;
-	return {bb: (-height) / 2, n: height, a1: (-width) / 2, aK: width / 2, bD: height / 2, q: width};
+	var height = _v0.k;
+	return {bb: (-height) / 2, k: height, a1: (-width) / 2, aK: width / 2, bD: height / 2, q: width};
 }(
-	{n: 200, q: 320});
+	{k: 200, q: 320});
 var $author$project$Main$defaultSpeed = $author$project$Main$viewport.q / 210;
 var $author$project$Components$directions = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
@@ -9274,20 +9271,20 @@ var $elm$core$Array$appendHelpBuilder = F2(
 		var notAppended = ($elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(builder.j)) - tailLen;
 		var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, builder.j, tail);
 		return (notAppended < 0) ? {
-			k: A2(
+			l: A2(
 				$elm$core$List$cons,
 				$elm$core$Array$Leaf(appended),
-				builder.k),
+				builder.l),
 			h: builder.h + 1,
 			j: A3($elm$core$Elm$JsArray$slice, notAppended, tailLen, tail)
 		} : ((!notAppended) ? {
-			k: A2(
+			l: A2(
 				$elm$core$List$cons,
 				$elm$core$Array$Leaf(appended),
-				builder.k),
+				builder.l),
 			h: builder.h + 1,
 			j: $elm$core$Elm$JsArray$empty
-		} : {k: builder.k, h: builder.h, j: appended});
+		} : {l: builder.l, h: builder.h, j: appended});
 	});
 var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
 var $elm$core$Basics$ge = _Utils_ge;
@@ -9395,7 +9392,7 @@ var $elm$core$Array$builderFromArray = function (_v0) {
 			}
 		});
 	return {
-		k: A3($elm$core$Elm$JsArray$foldl, helper, _List_Nil, tree),
+		l: A3($elm$core$Elm$JsArray$foldl, helper, _List_Nil, tree),
 		h: (len / $elm$core$Array$branchFactor) | 0,
 		j: tail
 	};
@@ -10257,7 +10254,7 @@ var $author$project$Main$follow = function (components) {
 		components);
 };
 var $author$project$Main$scalingFactor = function (screen) {
-	return (_Utils_cmp(screen.q / screen.n, $author$project$Main$viewport.q / $author$project$Main$viewport.n) > 0) ? (screen.n / $author$project$Main$viewport.n) : (screen.q / $author$project$Main$viewport.q);
+	return (_Utils_cmp(screen.q / screen.k, $author$project$Main$viewport.q / $author$project$Main$viewport.k) > 0) ? (screen.k / $author$project$Main$viewport.k) : (screen.q / $author$project$Main$viewport.q);
 };
 var $author$project$Main$toViewport = F2(
 	function (screen, coords) {
@@ -10335,11 +10332,11 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 				return _Utils_update(
 					acc,
 					{
-						m: A3(
+						n: A3(
 							$elm$core$Array$set,
 							i,
 							$elm$core$Maybe$Just(d),
-							acc.m)
+							acc.n)
 					});
 			});
 		var set3 = F3(
@@ -10382,7 +10379,7 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 			e: spec1.A(world),
 			aX: spec2.A(world),
 			b: spec3.A(world),
-			m: spec4.A(world)
+			n: spec4.A(world)
 		};
 		var result = A3(
 			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
@@ -10414,14 +10411,14 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 							value,
 							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.aX),
 							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.b),
-							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.m)));
+							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.n)));
 				}),
 			combined,
 			combined.e);
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
-			!_Utils_eq(result.m, combined.m),
-			spec4.di(result.m),
+			!_Utils_eq(result.n, combined.n),
+			spec4.di(result.n),
 			A3(
 				$justgook$elm_game_logic$Logic$System$applyIf,
 				!_Utils_eq(result.b, combined.b),
@@ -10554,7 +10551,7 @@ var $justgook$elm_image$Image$fromList = F2(
 			$justgook$elm_image$Image$Info$FromData(
 				{
 					aj: $justgook$elm_image$Image$Info$FromDataChannel4(3),
-					n: ($elm$core$List$length(l) / w) | 0,
+					k: ($elm$core$List$length(l) / w) | 0,
 					q: w
 				}),
 			l);
@@ -10656,7 +10653,7 @@ var $author$project$Playground$Render$defaultEntitySettings = _List_fromArray(
 	]);
 var $elm_explorations$webgl$WebGL$entityWith = _WebGL_entity;
 var $author$project$Playground$Extra$Tilemap$fragTilemap = {
-	src: '\nprecision mediump float;\nvarying vec2 uv;\nuniform sampler2D uAtlas;\nuniform sampler2D uLut;\nuniform vec2 uAtlasSize;\nuniform vec2 uLutSize;\nuniform vec2 uTileSize;\nuniform float uA;\n\nfloat color2float(vec4 color) {\n\n    return\n    color.a * 255.0\n    + color.b * 256.0 * 255.0\n    + color.g * 256.0 * 256.0 * 255.0\n    + color.r * 256.0 * 256.0 * 256.0 * 255.0;\n    }\n\n/**\n * Returns accurate MOD when arguments are approximate integers.\n */\nfloat modI(float a,float b) {\n    float m=a-floor((a+0.5)/b)*b;\n    return floor(m+0.5);\n}\n\nvoid main () {\n   vec2 point = floor(uv * uLutSize);\n   vec2 offset = fract(uv * uLutSize);\n\n   //(2i + 1)/(2N) Pixel center\n   vec2 coordinate = (point + 0.5) / uLutSize;\n   float index = color2float(texture2D(uLut, coordinate));\n   if (index <= 0.0) discard;\n   vec2 grid = uAtlasSize / uTileSize;\n   // tile indexes in uAtlas starts from zero, but in lut zero is used for\n   // \"none\" placeholder\n   vec2 tile = vec2(modI((index - 1.), grid.x), int(index - 1.) / int(grid.x));\n   // inverting reading botom to top\n   tile.y = grid.y - tile.y - 1.;\n   vec2 fragmentOffsetPx = floor(offset * uTileSize);\n   //(2i + 1)/(2N) Pixel center\n   vec2 pixel = (floor(tile * uTileSize + fragmentOffsetPx) + 0.5) / uAtlasSize;\n   gl_FragColor = texture2D(uAtlas, pixel);\n   gl_FragColor.a *= float(index != 0.);\n}\n    ',
+	src: '\nprecision mediump float;\nvarying vec2 uv;\nuniform sampler2D uAtlas;\nuniform sampler2D uLut;\nuniform vec2 uAtlasSize;\nuniform vec2 uLutSize;\nuniform vec2 uTileSize;\nuniform float uA;\n\nfloat color2float(vec4 color) {\n\n    return\n    color.a * 255.0\n    + color.b * 256.0 * 255.0\n    + color.g * 256.0 * 256.0 * 255.0\n    + color.r * 256.0 * 256.0 * 256.0 * 255.0;\n    }\n\n/**\n * Returns accurate MOD when arguments are approximate integers.\n */\nfloat modI(float a,float b) {\n    float m=a-floor((a+0.5)/b)*b;\n    return floor(m+0.5);\n}\n\nvoid main () {\n   vec2 point = floor(uv * uLutSize);\n   vec2 offset = fract(uv * uLutSize);\n\n   //(2i + 1)/(2N) Pixel center\n   vec2 coordinate = (point + 0.5) / uLutSize;\n   float index = color2float(texture2D(uLut, coordinate));\n   if (index <= 0.0) discard;\n   vec2 grid = uAtlasSize / uTileSize;\n   // tile indexes in uAtlas starts from zero, but in lut zero is used for\n   // \"none\" placeholder\n   vec2 tile = vec2(modI((index - 1.), grid.x), int(index - 1.) / int(grid.x));\n   // inverting reading botom to top\n   tile.y = grid.y - tile.y - 1.;\n   vec2 fragmentOffsetPx = floor(offset * uTileSize);\n   //(2i + 1)/(2N) Pixel center\n   vec2 pixel = (floor(tile * uTileSize + fragmentOffsetPx) + 0.5) / uAtlasSize;\n   gl_FragColor = texture2D(uAtlas, pixel);\n   gl_FragColor.a *= float(index != 0.);\n   if(gl_FragColor.a <= 0.025) discard;\n}\n    ',
 	attributes: {},
 	uniforms: {uA: '$7', uAtlas: 'dp', uAtlasSize: 'dq', uLut: 'dr', uLutSize: 'ds', uTileSize: 'dv'}
 };
@@ -11739,7 +11736,7 @@ var $elm$core$Array$fromListHelp = F3(
 				return A2(
 					$elm$core$Array$builderToArray,
 					true,
-					{k: nodeList, h: nodeListSize, j: jsArray});
+					{l: nodeList, h: nodeListSize, j: jsArray});
 			} else {
 				var $temp$list = remainingItems,
 					$temp$nodeList = A2(
@@ -11780,7 +11777,7 @@ var $elm$core$Array$indexedMap = F2(
 		var tree = _v0.c;
 		var tail = _v0.d;
 		var initialBuilder = {
-			k: _List_Nil,
+			l: _List_Nil,
 			h: 0,
 			j: A3(
 				$elm$core$Elm$JsArray$indexedMap,
@@ -11799,7 +11796,7 @@ var $elm$core$Array$indexedMap = F2(
 					var mappedLeaf = $elm$core$Array$Leaf(
 						A3($elm$core$Elm$JsArray$indexedMap, func, offset, leaf));
 					return {
-						k: A2($elm$core$List$cons, mappedLeaf, builder.k),
+						l: A2($elm$core$List$cons, mappedLeaf, builder.l),
 						h: builder.h + 1,
 						j: builder.j
 					};
@@ -13576,7 +13573,7 @@ var $elm$core$Array$sliceLeft = F2(
 					var rest = nodesToInsert.b;
 					var firstSlice = from - (skipNodes * $elm$core$Array$branchFactor);
 					var initialBuilder = {
-						k: _List_Nil,
+						l: _List_Nil,
 						h: 0,
 						j: A3(
 							$elm$core$Elm$JsArray$slice,
@@ -14410,20 +14407,20 @@ var $justgook$elm_image$Image$Info$dimensions = function (meta) {
 	switch (meta.$) {
 		case 0:
 			var width = meta.a.q;
-			var height = meta.a.n;
-			return {n: height, q: width};
+			var height = meta.a.k;
+			return {k: height, q: width};
 		case 1:
 			var width = meta.a.q;
-			var height = meta.a.n;
-			return {n: height, q: width};
+			var height = meta.a.k;
+			return {k: height, q: width};
 		case 2:
 			var width = meta.a.q;
-			var height = meta.a.n;
-			return {n: height, q: width};
+			var height = meta.a.k;
+			return {k: height, q: width};
 		default:
 			var width = meta.a.q;
-			var height = meta.a.n;
-			return {n: height, q: width};
+			var height = meta.a.k;
+			return {k: height, q: width};
 	}
 };
 var $justgook$elm_image$Image$Internal$ImageData$splitAt = F2(
@@ -14840,7 +14837,7 @@ var $elm$random$Random$weighted = F2(
 var $author$project$Main$background = function () {
 	var _v0 = _Utils_Tuple2(
 		$elm$core$Basics$round($author$project$Main$viewport.q / $author$project$Main$spriteSize),
-		$elm$core$Basics$round($author$project$Main$viewport.n / $author$project$Main$spriteSize));
+		$elm$core$Basics$round($author$project$Main$viewport.k / $author$project$Main$spriteSize));
 	var horizontalTiles = _v0.a;
 	var verticalTiles = _v0.b;
 	var numTiles = horizontalTiles * verticalTiles;
@@ -15066,7 +15063,7 @@ var $author$project$Playground$purple = A2(
 	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
 	$author$project$Playground$hexColor2Vec3('#75507b'));
 var $author$project$Playground$Shader$fragFill = {
-	src: '\n        precision mediump float;\n        uniform vec4 color;\n        void main () {\n            gl_FragColor = color;\n        }\n    ',
+	src: '\n        precision mediump float;\n        uniform vec4 color;\n        void main () {\n            gl_FragColor = color;\n            if(gl_FragColor.a <= 0.025) discard;\n        }\n    ',
 	attributes: {},
 	uniforms: {color: 'aj'}
 };
@@ -15166,7 +15163,7 @@ var $author$project$Playground$white = A2(
 	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
 	$author$project$Playground$hexColor2Vec3('#ffffff'));
 var $author$project$Playground$Shader$fragImageColor = {
-	src: '\n        precision mediump float;\n        varying vec2 uv;\n        uniform vec2 uImgSize;\n        uniform sampler2D uImg;\n        uniform vec4 color;\n        void main () {\n            vec2 pixel = ((floor(uv * uImgSize) + 0.5) * 2.0 ) / uImgSize / 2.0;\n            gl_FragColor = texture2D(uImg, pixel) * color;\n        }\n    ',
+	src: '\n        precision mediump float;\n        varying vec2 uv;\n        uniform vec2 uImgSize;\n        uniform sampler2D uImg;\n        uniform vec4 color;\n        void main () {\n            vec2 pixel = ((floor(uv * uImgSize) + 0.5) * 2.0 ) / uImgSize / 2.0;\n            gl_FragColor = texture2D(uImg, pixel) * color;\n            if(gl_FragColor.a <= 0.025) discard;\n        }\n    ',
 	attributes: {},
 	uniforms: {color: 'aj', uImg: 'aR', uImgSize: 'aS'}
 };
@@ -15344,14 +15341,14 @@ var $author$project$Main$viewMenu = function (_v0) {
 	var time = _v0.cA;
 	var screen = _v0.bw;
 	var mouse = _v0.bn;
-	var titleScale = ($author$project$Main$viewport.n / $author$project$Main$defaultFontSize) / 6;
+	var titleScale = ($author$project$Main$viewport.k / $author$project$Main$defaultFontSize) / 6;
 	var titleShadowOffset = ($author$project$Main$defaultFontSize * titleScale) / 20;
 	var moveTitle = F2(
 		function (delay, shape) {
 			var t = _Utils_update(
 				time,
 				{aJ: time.aJ - delay});
-			var _v1 = _Utils_Tuple2($author$project$Main$viewport.q / 13, $author$project$Main$viewport.n / 20);
+			var _v1 = _Utils_Tuple2($author$project$Main$viewport.q / 13, $author$project$Main$viewport.k / 20);
 			var mx = _v1.a;
 			var my = _v1.b;
 			return A2(
@@ -15368,7 +15365,7 @@ var $author$project$Main$viewMenu = function (_v0) {
 		});
 	return _List_fromArray(
 		[
-			A3($author$project$Playground$rectangle, $author$project$Main$backgroundColor, screen.q, screen.n),
+			A3($author$project$Playground$rectangle, $author$project$Main$backgroundColor, screen.q, screen.k),
 			A2(
 			$author$project$Main$adaptToViewport,
 			screen,
@@ -15377,7 +15374,7 @@ var $author$project$Main$viewMenu = function (_v0) {
 					$author$project$Main$background,
 					A2(
 					$author$project$Playground$moveUp,
-					$author$project$Main$viewport.n / 6,
+					$author$project$Main$viewport.k / 6,
 					$author$project$Playground$group(
 						_List_fromArray(
 							[
@@ -15416,17 +15413,17 @@ var $author$project$Main$viewMenu = function (_v0) {
 									A2($author$project$Playground$words, $author$project$Playground$lightPurple, 'Flee!')))
 							]))),
 					function () {
-					var my = $author$project$Main$viewport.n / 40;
+					var my = $author$project$Main$viewport.k / 40;
 					var fontScale = 1.5;
 					return A2(
 						$author$project$Playground$moveDown,
 						A4($author$project$Playground$wave, -my, my, 5, time),
 						A2(
 							$author$project$Playground$moveDown,
-							$author$project$Main$viewport.n / 4,
+							$author$project$Main$viewport.k / 4,
 							A2(
 								$author$project$Playground$scale,
-								($author$project$Main$viewport.n / ($author$project$Main$defaultFontSize * fontScale)) / 32,
+								($author$project$Main$viewport.k / ($author$project$Main$defaultFontSize * fontScale)) / 32,
 								A2(
 									$author$project$Playground$scaleY,
 									fontScale,
@@ -15464,7 +15461,13 @@ var $justgook$elm_game_logic$Logic$System$foldl5 = F6(
 			acc_,
 			comp1);
 	});
-var $elm$core$List$sortBy = _List_sortBy;
+var $author$project$Playground$moveZ = F2(
+	function (z, _v0) {
+		var shape = _v0;
+		return _Utils_update(
+			shape,
+			{t: z});
+	});
 var $author$project$Playground$Extra$size = function (t) {
 	return function (_v0) {
 		var w = _v0.a;
@@ -15474,7 +15477,7 @@ var $author$project$Playground$Extra$size = function (t) {
 		$elm_explorations$webgl$WebGL$Texture$size(t));
 };
 var $author$project$Playground$Shader$fragImage = {
-	src: '\n        precision mediump float;\n        varying vec2 uv;\n        uniform vec2 uImgSize;\n        uniform sampler2D uImg;\n        uniform float uA;\n        void main () {\n            vec2 pixel = (floor(uv * uImgSize) + 0.5) / uImgSize;\n            gl_FragColor = texture2D(uImg, pixel);\n            gl_FragColor.a *= uA;\n        }\n    ',
+	src: '\n        precision mediump float;\n        varying vec2 uv;\n        uniform vec2 uImgSize;\n        uniform sampler2D uImg;\n        uniform float uA;\n        void main () {\n            vec2 pixel = (floor(uv * uImgSize) + 0.5) / uImgSize;\n            gl_FragColor = texture2D(uImg, pixel);\n            gl_FragColor.a *= uA;\n            if(gl_FragColor.a <= 0.025) discard;\n        }\n    ',
 	attributes: {},
 	uniforms: {uA: '$7', uImg: 'aR', uImgSize: 'aS'}
 };
@@ -15530,7 +15533,7 @@ var $author$project$Main$viewPlaying = F2(
 		var screen = _v0.bw;
 		return _List_fromArray(
 			[
-				A3($author$project$Playground$rectangle, $author$project$Main$backgroundColor, screen.q, screen.n),
+				A3($author$project$Playground$rectangle, $author$project$Main$backgroundColor, screen.q, screen.k),
 				A2(
 				$author$project$Main$adaptToViewport,
 				screen,
@@ -15538,49 +15541,41 @@ var $author$project$Main$viewPlaying = F2(
 					[
 						$author$project$Main$background,
 						$author$project$Playground$group(
-						A2(
-							$elm$core$List$map,
-							$elm$core$Tuple$first,
-							A2(
-								$elm$core$List$sortBy,
-								function (_v2) {
-									var y = _v2.b;
-									return y;
-								},
-								A6(
-									$justgook$elm_game_logic$Logic$System$foldl5,
-									F5(
-										function (kind, position, size, facing, shapes) {
-											var tilesheet = A3($author$project$Playground$Extra$tile, 40, 40, 'sprites20.png');
-											var shape = function () {
-												switch (kind) {
-													case 2:
-														return tilesheet(
-															A2($elm$core$Basics$modBy, 13, (time.aJ / 80) | 0) + 11);
-													case 1:
-														return tilesheet(
-															A2($elm$core$Basics$modBy, 6, (time.aJ / 80) | 0) + 5);
-													default:
-														return tilesheet(
-															A2($elm$core$Basics$modBy, 3, (time.aJ / 100) | 0) + 1);
-												}
-											}();
-											return A2(
-												$elm$core$List$cons,
-												_Utils_Tuple2(
-													A3(
-														$justgook$elm_game_logic$Logic$System$applyIf,
-														!facing,
-														$author$project$Playground$flipX,
-														A3($author$project$Playground$move, position.E, position.F, shape)),
-													-(position.F - size)),
-												shapes);
-										}),
-									$author$project$Components$kinds.A(world.cO),
-									$author$project$Components$positions.A(world.cO),
-									$author$project$Components$sizes.A(world.cO),
-									$author$project$Components$facings.A(world.cO),
-									_List_Nil))))
+						A6(
+							$justgook$elm_game_logic$Logic$System$foldl5,
+							F5(
+								function (kind, position, size, facing, shapes) {
+									var tilesheet = A3($author$project$Playground$Extra$tile, 40, 40, 'sprites20.png');
+									var shape = function () {
+										switch (kind) {
+											case 2:
+												return tilesheet(
+													A2($elm$core$Basics$modBy, 13, (time.aJ / 80) | 0) + 11);
+											case 1:
+												return tilesheet(
+													A2($elm$core$Basics$modBy, 6, (time.aJ / 80) | 0) + 5);
+											default:
+												return tilesheet(
+													A2($elm$core$Basics$modBy, 3, (time.aJ / 100) | 0) + 1);
+										}
+									}();
+									return A2(
+										$elm$core$List$cons,
+										A2(
+											$author$project$Playground$moveZ,
+											$elm$core$Basics$round((-(position.F - size)) + ($author$project$Main$viewport.k / 2)),
+											A3(
+												$justgook$elm_game_logic$Logic$System$applyIf,
+												!facing,
+												$author$project$Playground$flipX,
+												A3($author$project$Playground$move, position.E, position.F, shape))),
+										shapes);
+								}),
+							$author$project$Components$kinds.A(world.cO),
+							$author$project$Components$positions.A(world.cO),
+							$author$project$Components$sizes.A(world.cO),
+							$author$project$Components$facings.A(world.cO),
+							_List_Nil))
 					]))
 			]);
 	});
