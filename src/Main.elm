@@ -385,7 +385,7 @@ avoid components =
                         (\kind fear positionAcc1 ->
                             System.foldl3
                                 (\avoidKind avoidPosition avoidSize positionAcc2 ->
-                                    if kind == kindToString avoidKind then
+                                    if position /= avoidPosition && kind == kindToString avoidKind then
                                         fleeFrom fear ( avoidPosition, avoidSize ) ( positionAcc2, speed )
 
                                     else
