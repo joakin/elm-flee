@@ -1,0 +1,213 @@
+{ "frames": {
+   "sprites20 (prey) 0.aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (prey) 1.aseprite": {
+    "frame": { "x": 40, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (prey) 2.aseprite": {
+    "frame": { "x": 80, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (prey) 3.aseprite": {
+    "frame": { "x": 120, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (predator) 4.aseprite": {
+    "frame": { "x": 160, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (predator) 5.aseprite": {
+    "frame": { "x": 0, "y": 40, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (predator) 6.aseprite": {
+    "frame": { "x": 40, "y": 40, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (predator) 7.aseprite": {
+    "frame": { "x": 80, "y": 40, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (predator) 8.aseprite": {
+    "frame": { "x": 120, "y": 40, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (predator) 9.aseprite": {
+    "frame": { "x": 160, "y": 40, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (predator) 10.aseprite": {
+    "frame": { "x": 0, "y": 80, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 11.aseprite": {
+    "frame": { "x": 40, "y": 80, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 12.aseprite": {
+    "frame": { "x": 80, "y": 80, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 13.aseprite": {
+    "frame": { "x": 120, "y": 80, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 14.aseprite": {
+    "frame": { "x": 160, "y": 80, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 15.aseprite": {
+    "frame": { "x": 0, "y": 120, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 16.aseprite": {
+    "frame": { "x": 40, "y": 120, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 17.aseprite": {
+    "frame": { "x": 80, "y": 120, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 18.aseprite": {
+    "frame": { "x": 120, "y": 120, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 19.aseprite": {
+    "frame": { "x": 160, "y": 120, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 20.aseprite": {
+    "frame": { "x": 0, "y": 160, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 21.aseprite": {
+    "frame": { "x": 40, "y": 160, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 22.aseprite": {
+    "frame": { "x": 80, "y": 160, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   "sprites20 (guardian) 23.aseprite": {
+    "frame": { "x": 120, "y": 160, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.18",
+  "image": "sprites20.png",
+  "format": "RGBA8888",
+  "size": { "w": 200, "h": 200 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "rat run", "from": 1, "to": 3, "direction": "forward" },
+   { "name": "dog run", "from": 5, "to": 10, "direction": "forward" },
+   { "name": "cow run", "from": 11, "to": 23, "direction": "forward" }
+  ],
+  "layers": [
+   { "name": "prey", "opacity": 255, "blendMode": "normal" },
+   { "name": "predator", "opacity": 255, "blendMode": "normal" },
+   { "name": "guardian", "opacity": 255, "blendMode": "normal" }
+  ]
+ }
+}

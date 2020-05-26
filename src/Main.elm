@@ -38,7 +38,11 @@ defaultSpeed =
 
 defaultSize : Size
 defaultSize =
-    viewport.width / 32
+    spriteSize
+
+
+spriteSize =
+    10
 
 
 type alias World =
@@ -154,9 +158,6 @@ background =
                     , ( 10, 7 )
                     ]
 
-        spriteSize =
-            10
-
         numTiles =
             horizontalTiles * verticalTiles
 
@@ -245,32 +246,41 @@ viewPlaying { time, screen } world =
         screen.height
     , adaptToViewport screen
         [ background
-        , group <|
-            System.foldl3
-                (\kind position size shapes ->
-                    let
-                        ( color, spinTime ) =
-                            case kind of
-                                Guardian ->
-                                    ( green, 8 )
+        , System.foldl3
+            (\kind position size shapes ->
+                let
+                    tilesheet =
+                        tile 40 40 "sprites20.png"
 
-                                Predator ->
-                                    ( red, 2 )
+                    shape =
+                        case kind of
+                            Guardian ->
+                                tilesheet ((time.now // 80 |> modBy 13) + 11)
 
-                                Prey ->
-                                    ( blue, 1 )
-                    in
-                    (square color size
-                        |> rotate (spin spinTime time)
-                        |> move position.x position.y
-                        |> moveZ (round (-position.y + viewport.height / 2))
-                    )
-                        :: shapes
+                            Predator ->
+                                tilesheet ((time.now // 80 |> modBy 6) + 5)
+
+                            Prey ->
+                                tilesheet ((time.now // 100 |> modBy 3) + 1)
+                in
+                ( shape
+                    |> move position.x position.y
+                  -- Not using moveZ because of bug on webgl2d-shape where it
+                  -- doesn't work with tiles
+                  -- |> moveZ (round (-position.y + viewport.height / 2))
+                , -(position.y - size)
                 )
-                (kinds.get world.components)
-                (positions.get world.components)
-                (sizes.get world.components)
-                []
+                    :: shapes
+            )
+            (kinds.get world.components)
+            (positions.get world.components)
+            (sizes.get world.components)
+            []
+            -- Sort manually the entities based on Y because of bug in
+            -- webgl-shape's moveZ
+            |> List.sortBy (\( _, y ) -> y)
+            |> List.map Tuple.first
+            |> group
         ]
     ]
 

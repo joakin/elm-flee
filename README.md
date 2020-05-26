@@ -2,7 +2,8 @@
 
 ## TODO
 
-- [ ] Make level background art and add it to level and main menu (grass/sand theme?)
+- [ ] Add direction and flip sprites based on it
+- [ ] Add the tree borders to the level
 - [ ] Add timer countdown before start with some instructions instead of text in level
 - [ ] Make initial animals pixel art
 - [ ] Flesh out game mechanics
