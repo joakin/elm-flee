@@ -299,10 +299,7 @@ viewPlaying { time, screen } world =
                 ( shape
                     |> move position.x position.y
                     |> applyIf (facing == Left) flipX
-                  -- Not using moveZ because of bug on webgl2d-shape where it
-                  -- doesn't work with tiles
-                  -- |> moveZ (round (-position.y + viewport.height / 2))
-                , -(position.y - size)
+                  |> moveZ (round (-(position.y - size) + viewport.height / 2))
                 )
                     :: shapes
             )
@@ -311,10 +308,6 @@ viewPlaying { time, screen } world =
             (sizes.get world.components)
             (facings.get world.components)
             []
-            -- Sort manually the entities based on Y because of bug in
-            -- webgl-shape's moveZ
-            |> List.sortBy (\( _, y ) -> y)
-            |> List.map Tuple.first
             |> group
         ]
     ]

@@ -18,7 +18,7 @@
             "justgook/alt-linear-algebra": "2.0.0",
             "justgook/elm-game-logic": "3.0.0",
             "justgook/elm-image": "4.0.0",
-            "justgook/webgl-shape": "2.0.0"
+            "justgook/webgl-shape": "2.0.2"
         },
         "indirect": {
             "avh4/elm-color": "1.0.0",
