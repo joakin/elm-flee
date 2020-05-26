@@ -69,28 +69,42 @@ spawn w =
                 |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 2 )
                 |> Entity.with ( follows, Set.singleton (kindToString Prey) )
                 |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator ] )
+                |> Entity.with ( directions, pos )
+                |> Entity.with ( facings, Right )
+                |> Tuple.second
+
+        guardian pos w_ =
+            w_
+                |> Components.addEntity
+                |> Entity.with ( kinds, Guardian )
+                |> Entity.with ( positions, pos )
+                |> Entity.with ( sizes, defaultSize * 2 )
+                |> Entity.with ( speeds, defaultSpeed / 3 )
+                |> Entity.with ( follows, Set.singleton (kindToString Predator) )
+                |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator, Prey ] )
+                |> Entity.with ( directions, pos )
+                |> Entity.with ( facings, Right )
+                |> Tuple.second
+
+        prey pos w_ =
+            w_
+                |> Components.addEntity
+                |> Entity.with ( kinds, Prey )
+                |> Entity.with ( userInputs, UserInput )
+                |> Entity.with ( positions, pos )
+                |> Entity.with ( sizes, defaultSize / 2 )
+                |> Entity.with ( speeds, defaultSpeed * 1.1 )
+                |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 1.1 )
+                |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Prey ] )
+                |> Entity.with ( directions, pos )
+                |> Entity.with ( facings, Right )
                 |> Tuple.second
     in
     w.components
         |> predator { x = 500, y = -100 }
         |> predator { x = 500, y = 100 }
-        |> Components.addEntity
-        |> Entity.with ( kinds, Guardian )
-        |> Entity.with ( positions, { x = 0, y = 0 } )
-        |> Entity.with ( sizes, defaultSize * 2 )
-        |> Entity.with ( speeds, defaultSpeed / 3 )
-        |> Entity.with ( follows, Set.singleton (kindToString Predator) )
-        |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator, Prey ] )
-        |> Tuple.second
-        |> Components.addEntity
-        |> Entity.with ( kinds, Prey )
-        |> Entity.with ( userInputs, UserInput )
-        |> Entity.with ( positions, { x = -200, y = 0 } )
-        |> Entity.with ( sizes, defaultSize / 2 )
-        |> Entity.with ( speeds, defaultSpeed * 1.1 )
-        |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 1.1 )
-        |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Prey ] )
-        |> Tuple.second
+        |> guardian { x = 0, y = 0 }
+        |> prey { x = -200, y = 0 }
         |> Components.set w
 
 
@@ -246,8 +260,8 @@ viewPlaying { time, screen } world =
         screen.height
     , adaptToViewport screen
         [ background
-        , System.foldl3
-            (\kind position size shapes ->
+        , System.foldl5
+            (\kind position size facing shapes ->
                 let
                     tilesheet =
                         tile 40 40 "sprites20.png"
@@ -265,6 +279,7 @@ viewPlaying { time, screen } world =
                 in
                 ( shape
                     |> move position.x position.y
+                    |> applyIf (facing == Left) flipX
                   -- Not using moveZ because of bug on webgl2d-shape where it
                   -- doesn't work with tiles
                   -- |> moveZ (round (-position.y + viewport.height / 2))
@@ -275,6 +290,7 @@ viewPlaying { time, screen } world =
             (kinds.get world.components)
             (positions.get world.components)
             (sizes.get world.components)
+            (facings.get world.components)
             []
             -- Sort manually the entities based on Y because of bug in
             -- webgl-shape's moveZ
@@ -305,6 +321,7 @@ updatePlaying { mouse, keyboard, screen } world =
     world.components
         |> mouseInput screen mouse
         |> follow
+        |> applyDirection
         |> avoid
         |> resolveCollisions
         |> boundedBy viewport
@@ -313,20 +330,49 @@ updatePlaying { mouse, keyboard, screen } world =
 
 mouseInput : Screen -> Mouse -> System Components
 mouseInput screen mouse components =
-    System.step3
-        (\_ ( position, setPosition ) ( speed, _ ) cs ->
+    System.step2
+        (\_ ( _, setDirection ) cs ->
             if mouse.down then
-                setPosition
-                    (followPoint (toViewport screen mouse) ( position, speed ))
+                setDirection
+                    (toViewport screen mouse)
                     cs
 
             else
                 cs
         )
         userInputs
-        positions
-        speeds
+        directions
         components
+
+
+applyDirection : System Components
+applyDirection components =
+    components
+        |> System.step3
+            (\( position, _ ) ( direction, _ ) ( _, setFacing ) cs ->
+                let
+                    facing =
+                        if (Vec2.sub direction position).x < 1 then
+                            Left
+
+                        else
+                            Right
+                in
+                cs
+                    |> applyIf (direction /= position) (setFacing facing)
+            )
+            positions
+            directions
+            facings
+        |> System.step3
+            (\( direction, _ ) ( position, setPosition ) ( speed, _ ) cs ->
+                cs
+                    |> applyIf (direction /= position)
+                        (setPosition (followPoint direction ( position, speed )))
+            )
+            directions
+            positions
+            speeds
 
 
 avoid : System Components
@@ -365,18 +411,17 @@ avoid components =
 follow : System Components
 follow components =
     System.step3
-        (\( followKinds, _ ) ( position, setPosition ) ( speed, _ ) xs ->
+        (\( followKinds, _ ) ( position, _ ) ( _, setDirection ) xs ->
             let
                 closestPosition =
                     closest components followKinds position
             in
             xs
-                |> applyIf (closestPosition /= position)
-                    (setPosition (followPoint closestPosition ( position, speed )))
+                |> applyIf (closestPosition /= position) (setDirection closestPosition)
         )
         follows
         positions
-        speeds
+        directions
         components
 
 

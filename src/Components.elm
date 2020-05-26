@@ -9,6 +9,8 @@ module Components exposing
     , Avoid, avoids
     , Follow, follows
     , Collision, collisions
+    , Direction, directions
+    , Facing(..), facings
     )
 
 {-|
@@ -48,6 +50,10 @@ module Components exposing
 
 @docs Collision, collisions
 
+@docs Direction, directions
+
+@docs Facing, facings
+
 -}
 
 import AltMath.Vector2 as Vec2 exposing (Vec2)
@@ -71,6 +77,8 @@ type alias Components =
     , avoids : Component.Set Avoid
     , follows : Component.Set Follow
     , collisions : Component.Set Collision
+    , directions : Component.Set Direction
+    , facings : Component.Set Facing
     }
 
 
@@ -85,6 +93,8 @@ empty =
     , avoids = Component.empty
     , follows = Component.empty
     , collisions = Component.empty
+    , directions = Component.empty
+    , facings = Component.empty
     }
 
 
@@ -131,6 +141,8 @@ removeEntity entityID components =
       , avoids = Component.remove entityID components.avoids
       , follows = Component.remove entityID components.follows
       , collisions = Component.remove entityID components.collisions
+      , directions = Component.remove entityID components.directions
+      , facings = Component.remove entityID components.facings
       }
     )
 
@@ -224,3 +236,22 @@ type alias Collision =
 collisions : Spec Collision Components
 collisions =
     Spec .collisions (\comps components -> { components | collisions = comps })
+
+
+type alias Direction =
+    Vec2
+
+
+directions : Spec Direction Components
+directions =
+    Spec .directions (\comps components -> { components | directions = comps })
+
+
+type Facing
+    = Left
+    | Right
+
+
+facings : Spec Facing Components
+facings =
+    Spec .facings (\comps components -> { components | facings = comps })
