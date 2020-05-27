@@ -106,7 +106,7 @@ spawn w =
                     (Random.list n
                         (Random.pair
                             (Random.float viewport.left viewport.right)
-                            (Random.float viewport.bottom viewport.top )
+                            (Random.float viewport.bottom viewport.top)
                         )
                     )
                 |> Tuple.first
@@ -123,7 +123,7 @@ spawn w =
         |> prey { x = viewport.left + 20, y = 0 }
         -- |> many 40 prey
         -- |> many 10 predator
-        -- |> many 5 guardian
+        -- |> many 3 guardian
         |> Components.set w
 
 
@@ -201,6 +201,26 @@ background =
             Random.initialSeed 42
                 |> Random.step randomIndexes
                 |> Tuple.first
+                |> List.indexedMap
+                    (\i x ->
+                        if i == 0 || i == horizontalTiles - 1 || i == numTiles - horizontalTiles || i == numTiles - 1 then
+                            8
+
+                        else if i < horizontalTiles then
+                            11
+
+                        else if i >= numTiles - horizontalTiles then
+                            12
+
+                        else if (i |> modBy horizontalTiles) == 0 then
+                            9
+
+                        else if (i |> modBy horizontalTiles) == horizontalTiles - 1 then
+                            10
+
+                        else
+                            x
+                    )
                 |> Image.fromList horizontalTiles
                 |> Image.toPngUrl
     in
@@ -296,10 +316,10 @@ viewPlaying { time, screen } world =
                             Prey ->
                                 tilesheet ((time.now // 100 |> modBy 3) + 1)
                 in
-                ( shape
+                (shape
                     |> move position.x position.y
                     |> applyIf (facing == Left) flipX
-                  |> moveZ (round (-(position.y - size) + viewport.height / 2))
+                    |> moveZ (round (-(position.y - size) + viewport.height / 2))
                 )
                     :: shapes
             )
