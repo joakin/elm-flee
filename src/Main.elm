@@ -52,66 +52,78 @@ type State
     | Playing
 
 
-spawn : World -> World
-spawn w =
-    let
-        predator pos w_ =
-            w_
-                |> Components.addEntity
-                |> Entity.with ( kinds, Predator )
-                |> Entity.with ( positions, pos )
-                |> Entity.with ( sizes, defaultSize )
-                |> Entity.with ( speeds, defaultSpeed * 1 )
-                |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 2 )
-                |> Entity.with ( follows, Set.singleton (kindToString Prey) )
-                |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator ] )
-                |> Entity.with ( directions, pos )
-                |> Entity.with ( facings, Right )
-                |> Tuple.second
+predator pos world =
+    world
+        |> Components.addEntity
+        |> Entity.with ( kinds, Predator )
+        |> Entity.with ( positions, pos )
+        |> Entity.with ( sizes, defaultSize )
+        |> Entity.with ( speeds, defaultSpeed * 1 )
+        |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 2 )
+        |> Entity.with ( follows, Set.singleton (kindToString Prey) )
+        |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator ] )
+        |> Entity.with ( directions, pos )
+        |> Entity.with ( facings, Right )
+        |> Tuple.second
 
-        guardian pos w_ =
-            w_
-                |> Components.addEntity
-                |> Entity.with ( kinds, Guardian )
-                |> Entity.with ( positions, pos )
-                |> Entity.with ( sizes, defaultSize * 2 )
-                |> Entity.with ( speeds, defaultSpeed / 3 )
-                |> Entity.with ( follows, Set.singleton (kindToString Predator) )
-                |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator, Prey ] )
-                |> Entity.with ( directions, pos )
-                |> Entity.with ( facings, Right )
-                |> Tuple.second
 
-        prey pos w_ =
-            w_
-                |> Components.addEntity
-                |> Entity.with ( kinds, Prey )
-                |> Entity.with ( userInputs, UserInput )
-                |> Entity.with ( positions, pos )
-                |> Entity.with ( sizes, defaultSize / 2 )
-                |> Entity.with ( speeds, defaultSpeed * 1.1 )
-                |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 1.1 ), ( kindToString Prey, 0.5 ) ] )
-                |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Prey ] )
-                |> Entity.with ( directions, pos )
-                |> Entity.with ( facings, Right )
-                |> Tuple.second
+guardian pos world =
+    world
+        |> Components.addEntity
+        |> Entity.with ( kinds, Guardian )
+        |> Entity.with ( positions, pos )
+        |> Entity.with ( sizes, defaultSize * 2 )
+        |> Entity.with ( speeds, defaultSpeed / 3 )
+        |> Entity.with ( follows, Set.singleton (kindToString Predator) )
+        |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator, Prey ] )
+        |> Entity.with ( directions, pos )
+        |> Entity.with ( facings, Right )
+        |> Tuple.second
 
-        many n fn w_ =
-            Random.initialSeed 24
-                |> Random.step
-                    (Random.list n
-                        (Random.pair
-                            (Random.float viewport.left viewport.right)
-                            (Random.float viewport.bottom viewport.top)
-                        )
-                    )
-                |> Tuple.first
-                |> List.foldl
-                    (\( x, y ) w__ ->
-                        w__ |> fn { x = x, y = y }
-                    )
-                    w_
-    in
+
+prey pos world =
+    world
+        |> Components.addEntity
+        |> Entity.with ( kinds, Prey )
+        |> Entity.with ( userInputs, UserInput )
+        |> Entity.with ( positions, pos )
+        |> Entity.with ( sizes, defaultSize / 2 )
+        |> Entity.with ( speeds, defaultSpeed * 1.1 )
+        |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 1.1 ), ( kindToString Prey, 0.5 ) ] )
+        |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Prey ] )
+        |> Entity.with ( directions, pos )
+        |> Entity.with ( facings, Right )
+        |> Tuple.second
+
+
+many n fn world =
+    Random.initialSeed 24
+        |> Random.step
+            (Random.list n
+                (Random.pair
+                    (Random.float viewport.left viewport.right)
+                    (Random.float viewport.bottom viewport.top)
+                )
+            )
+        |> Tuple.first
+        |> List.foldl
+            (\( x, y ) w__ ->
+                w__ |> fn { x = x, y = y }
+            )
+            world
+
+
+spawnMenu : World -> World
+spawnMenu w =
+    w.components
+        |> predator { x = viewport.right - 10, y = viewport.width / 10 }
+        |> guardian { x = 0, y = 0 }
+        |> prey { x = viewport.left + 20, y = 0 }
+        |> Components.set w
+
+
+spawnPlaying : World -> World
+spawnPlaying w =
     w.components
         |> predator { x = viewport.right - 10, y = -viewport.width / 10 }
         |> predator { x = viewport.right - 10, y = viewport.width / 10 }
@@ -128,9 +140,11 @@ main =
     game
         view
         update
-        { state = Menu
-        , components = Components.empty
-        }
+        ({ state = Menu
+         , components = Components.empty
+         }
+            |> spawnMenu
+        )
 
 
 view : Computer -> World -> List Shape
@@ -138,7 +152,7 @@ view computer world =
     adaptToViewport computer.screen <|
         case world.state of
             Menu ->
-                viewMenu computer
+                viewMenu computer world
 
             Playing ->
                 viewPlaying computer world
@@ -294,8 +308,8 @@ background =
         lookupImage
 
 
-viewMenu : Computer -> List Shape
-viewMenu { time, screen, mouse } =
+viewMenu : Computer -> World -> List Shape
+viewMenu { time, screen, mouse } world =
     let
         moveTitle : Int -> Shape -> Shape
         moveTitle delay shape =
@@ -319,36 +333,39 @@ viewMenu { time, screen, mouse } =
             defaultFontSize * titleScale / 20
     in
     [ fullScreenBackground screen
+    , background
+    , viewEntities time world
+    , moveZ (round viewport.height) <|
+        group
+            [ group
+                [ words darkPurple "Flee!"
+                    |> moveDown (titleShadowOffset * 2)
+                    |> moveRight (titleShadowOffset * 2)
+                    |> scale titleScale
+                    |> moveTitle 60
+                , words purple "Flee!"
+                    |> moveDown titleShadowOffset
+                    |> moveRight titleShadowOffset
+                    |> scale titleScale
+                    |> moveTitle 30
+                , words lightPurple "Flee!"
+                    |> scale titleScale
+                    |> moveTitle 0
+                ]
+                |> moveUp (viewport.height / 6)
+            , let
+                fontScale =
+                    1.5
 
-    -- , background
-    , group
-        [ words darkPurple "Flee!"
-            |> moveDown (titleShadowOffset * 2)
-            |> moveRight (titleShadowOffset * 2)
-            |> scale titleScale
-            |> moveTitle 60
-        , words purple "Flee!"
-            |> moveDown titleShadowOffset
-            |> moveRight titleShadowOffset
-            |> scale titleScale
-            |> moveTitle 30
-        , words lightPurple "Flee!"
-            |> scale titleScale
-            |> moveTitle 0
-        ]
-        |> moveUp (viewport.height / 6)
-    , let
-        fontScale =
-            1.5
-
-        my =
-            viewport.height / 40
-      in
-      words white "Click to start!"
-        |> scaleY fontScale
-        |> scale ((viewport.height / (defaultFontSize * fontScale)) / 32)
-        |> moveDown (viewport.height / 4)
-        |> moveDown (wave -my my 5 time)
+                my =
+                    viewport.height / 40
+              in
+              words white "Click to start!"
+                |> scaleY fontScale
+                |> scale ((viewport.height / (defaultFontSize * fontScale)) / 32)
+                |> moveDown (viewport.height / 4)
+                |> moveDown (wave -my my 5 time)
+            ]
     ]
 
 
@@ -356,7 +373,13 @@ viewPlaying : Computer -> World -> List Shape
 viewPlaying { time, screen } world =
     [ fullScreenBackground screen
     , background
-    , System.foldl5
+    , viewEntities time world
+    ]
+
+
+viewEntities : Time -> World -> Shape
+viewEntities time world =
+    System.foldl5
         (\kind position size facing shapes ->
             let
                 tilesheet =
@@ -386,22 +409,45 @@ viewPlaying { time, screen } world =
         (facings.get world.components)
         []
         |> group
-    ]
 
 
 update : Computer -> World -> World
-update ({ mouse } as computer) world =
+update computer world =
     case world.state of
         Menu ->
-            if mouse.click then
-                { world | state = Playing }
-                    |> spawn
-
-            else
-                world
+            updateMenu computer world
 
         Playing ->
             updatePlaying computer world
+
+
+updateMenu : Computer -> World -> World
+updateMenu { mouse, screen, time } world =
+    if mouse.click then
+        { world
+            | state = Playing
+            , components = Components.empty
+        }
+            |> spawnPlaying
+
+    else
+        let
+            t =
+                3
+        in
+        world.components
+            |> mouseInput screen
+                { x = wave -viewport.width viewport.width t time
+                , y = wave -viewport.height viewport.height t { time | now = time.now - round ((t / 4) * 1000) }
+                , down = True
+                , click = True
+                }
+            |> follow
+            |> applyDirection
+            |> avoid
+            |> resolveCollisions
+            |> boundedBy viewport
+            |> Components.set world
 
 
 updatePlaying : Computer -> World -> World
