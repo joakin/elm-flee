@@ -38,11 +38,7 @@ defaultSpeed =
 
 defaultSize : Size
 defaultSize =
-    spriteSize
-
-
-spriteSize =
-    10
+    sprites10.size
 
 
 type alias World =
@@ -139,21 +135,22 @@ main =
 
 view : Computer -> World -> List Shape
 view computer world =
-    case world.state of
-        Menu ->
-            viewMenu computer
+    adaptToViewport computer.screen <|
+        case world.state of
+            Menu ->
+                viewMenu computer
 
-        Playing ->
-            viewPlaying computer world
+            Playing ->
+                viewPlaying computer world
 
 
 scalingFactor : Screen -> Float
 scalingFactor screen =
     if screen.width / screen.height > viewport.width / viewport.height then
-        screen.height / viewport.height
+        screen.height / (viewport.height + sprites10.size * 3)
 
     else
-        screen.width / viewport.width
+        screen.width / (viewport.width + sprites10.size * 3)
 
 
 toViewport : Screen -> { a | x : Float, y : Float } -> Vec2
@@ -163,39 +160,105 @@ toViewport screen coords =
     }
 
 
-adaptToViewport : Screen -> List Shape -> Shape
+adaptToViewport : Screen -> List Shape -> List Shape
 adaptToViewport screen shapes =
-    shapes
+    [ shapes
         |> group
         |> scale (scalingFactor screen)
+    ]
+
+
+sprites10 =
+    { file = "sprites10.png"
+    , size = 10
+    , grass1 = 1
+    , grass2 = 2
+    , grass3 = 3
+    , grass4 = 4
+    , grass5 = 5
+    , grass6 = 6
+    , grass7 = 7
+    , trees = 8
+    , treesLeft = 9
+    , treesRight = 10
+    , treesTop = 11
+    , treesBottom = 12
+    }
 
 
 backgroundColor =
     rgb 55 148 110
 
 
+fullScreenBackgroundTile : Shape
+fullScreenBackgroundTile =
+    let
+        ( horizontalTiles, verticalTiles ) =
+            ( viewport.width / sprites10.size |> round, viewport.height / sprites10.size |> round )
+
+        lookupImage =
+            List.repeat (horizontalTiles * verticalTiles) sprites10.trees
+                |> Image.fromList horizontalTiles
+                |> Image.toPngUrl
+    in
+    tilemap
+        sprites10.size
+        sprites10.size
+        sprites10.file
+        lookupImage
+
+
+fullScreenBackground : Screen -> Shape
+fullScreenBackground screen =
+    let
+        tilesInRow =
+            (ceiling ((screen.width / 2) / (viewport.width / 2)) - 1) * 2 + 1
+
+        tilesInColumn =
+            (ceiling ((screen.height / 2) / (viewport.height / 2)) - 1) * 2 + 1
+
+        numTiles =
+            tilesInRow * tilesInColumn
+
+        shapes =
+            List.repeat numTiles fullScreenBackgroundTile
+                |> List.indexedMap
+                    (\i shape ->
+                        let
+                            ( x, y ) =
+                                ( i |> modBy tilesInRow, i // tilesInRow )
+                        in
+                        shape
+                            |> move
+                                (toFloat x * viewport.width + viewport.width / 2)
+                                (toFloat y * viewport.height + viewport.height / 2)
+                            |> moveDown (screen.height / 2)
+                            |> moveLeft (screen.width / 2)
+                    )
+    in
+    group shapes
+
+
 background : Shape
 background =
     let
         randomIndexes =
-            Random.list numTiles
-            -- <| Random.int 1 7
-            <|
+            Random.list numTiles <|
                 Random.weighted
-                    ( 5, 1 )
-                    [ ( 10, 2 )
-                    , ( 20, 3 )
-                    , ( 2, 4 )
-                    , ( 2, 5 )
-                    , ( 10, 6 )
-                    , ( 10, 7 )
+                    ( 5, sprites10.grass1 )
+                    [ ( 10, sprites10.grass2 )
+                    , ( 20, sprites10.grass3 )
+                    , ( 2, sprites10.grass4 )
+                    , ( 2, sprites10.grass5 )
+                    , ( 10, sprites10.grass6 )
+                    , ( 10, sprites10.grass7 )
                     ]
+
+        ( horizontalTiles, verticalTiles ) =
+            ( viewport.width / sprites10.size |> round |> (+) 2, viewport.height / sprites10.size |> round |> (+) 2 )
 
         numTiles =
             horizontalTiles * verticalTiles
-
-        ( horizontalTiles, verticalTiles ) =
-            ( viewport.width / spriteSize |> round, viewport.height / spriteSize |> round )
 
         lookupImage =
             Random.initialSeed 42
@@ -204,19 +267,19 @@ background =
                 |> List.indexedMap
                     (\i x ->
                         if i == 0 || i == horizontalTiles - 1 || i == numTiles - horizontalTiles || i == numTiles - 1 then
-                            8
+                            sprites10.trees
 
                         else if i < horizontalTiles then
-                            11
+                            sprites10.treesTop
 
                         else if i >= numTiles - horizontalTiles then
-                            12
+                            sprites10.treesBottom
 
                         else if (i |> modBy horizontalTiles) == 0 then
-                            9
+                            sprites10.treesLeft
 
                         else if (i |> modBy horizontalTiles) == horizontalTiles - 1 then
-                            10
+                            sprites10.treesRight
 
                         else
                             x
@@ -225,9 +288,9 @@ background =
                 |> Image.toPngUrl
     in
     tilemap
-        spriteSize
-        spriteSize
-        "sprites10.png"
+        sprites10.size
+        sprites10.size
+        sprites10.file
         lookupImage
 
 
@@ -255,81 +318,74 @@ viewMenu { time, screen, mouse } =
         titleShadowOffset =
             defaultFontSize * titleScale / 20
     in
-    [ rectangle backgroundColor
-        screen.width
-        screen.height
-    , adaptToViewport screen
-        [ background
-        , group
-            [ words darkPurple "Flee!"
-                |> moveDown (titleShadowOffset * 2)
-                |> moveRight (titleShadowOffset * 2)
-                |> scale titleScale
-                |> moveTitle 60
-            , words purple "Flee!"
-                |> moveDown titleShadowOffset
-                |> moveRight titleShadowOffset
-                |> scale titleScale
-                |> moveTitle 30
-            , words lightPurple "Flee!"
-                |> scale titleScale
-                |> moveTitle 0
-            ]
-            |> moveUp (viewport.height / 6)
-        , let
-            fontScale =
-                1.5
+    [ fullScreenBackground screen
 
-            my =
-                viewport.height / 40
-          in
-          words white "Click to start!"
-            |> scaleY fontScale
-            |> scale ((viewport.height / (defaultFontSize * fontScale)) / 32)
-            |> moveDown (viewport.height / 4)
-            |> moveDown (wave -my my 5 time)
+    -- , background
+    , group
+        [ words darkPurple "Flee!"
+            |> moveDown (titleShadowOffset * 2)
+            |> moveRight (titleShadowOffset * 2)
+            |> scale titleScale
+            |> moveTitle 60
+        , words purple "Flee!"
+            |> moveDown titleShadowOffset
+            |> moveRight titleShadowOffset
+            |> scale titleScale
+            |> moveTitle 30
+        , words lightPurple "Flee!"
+            |> scale titleScale
+            |> moveTitle 0
         ]
+        |> moveUp (viewport.height / 6)
+    , let
+        fontScale =
+            1.5
+
+        my =
+            viewport.height / 40
+      in
+      words white "Click to start!"
+        |> scaleY fontScale
+        |> scale ((viewport.height / (defaultFontSize * fontScale)) / 32)
+        |> moveDown (viewport.height / 4)
+        |> moveDown (wave -my my 5 time)
     ]
 
 
 viewPlaying : Computer -> World -> List Shape
 viewPlaying { time, screen } world =
-    [ rectangle backgroundColor
-        screen.width
-        screen.height
-    , adaptToViewport screen
-        [ background
-        , System.foldl5
-            (\kind position size facing shapes ->
-                let
-                    tilesheet =
-                        tile 40 40 "sprites20.png"
+    [ fullScreenBackground screen
+    , background
+    , System.foldl5
+        (\kind position size facing shapes ->
+            let
+                tilesheet =
+                    tile 40 40 "sprites20.png"
 
-                    shape =
-                        case kind of
-                            Guardian ->
-                                tilesheet ((time.now // 80 |> modBy 13) + 11)
+                shape =
+                    case kind of
+                        Guardian ->
+                            tilesheet ((time.now // 80 |> modBy 13) + 11)
 
-                            Predator ->
-                                tilesheet ((time.now // 80 |> modBy 6) + 5)
+                        Predator ->
+                            tilesheet ((time.now // 80 |> modBy 6) + 5)
 
-                            Prey ->
-                                tilesheet ((time.now // 100 |> modBy 3) + 1)
-                in
-                (shape
-                    |> move position.x position.y
-                    |> applyIf (facing == Left) flipX
-                    |> moveZ (round (-(position.y - size) + viewport.height / 2))
-                )
-                    :: shapes
+                        Prey ->
+                            tilesheet ((time.now // 100 |> modBy 3) + 1)
+            in
+            (shape
+                |> move position.x position.y
+                |> applyIf (facing == Left) flipX
+                |> moveZ (round (-(position.y - size) + viewport.height / 2))
             )
-            (kinds.get world.components)
-            (positions.get world.components)
-            (sizes.get world.components)
-            (facings.get world.components)
-            []
-            |> group
-        ]
+                :: shapes
+        )
+        (kinds.get world.components)
+        (positions.get world.components)
+        (sizes.get world.components)
+        (facings.get world.components)
+        []
+        |> group
     ]
 
 
