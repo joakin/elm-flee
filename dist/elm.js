@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.bA.aH === region.bP.aH)
+	if (region.bA.aK === region.bS.aK)
 	{
-		return 'on line ' + region.bA.aH;
+		return 'on line ' + region.bA.aK;
 	}
-	return 'on lines ' + region.bA.aH + ' through ' + region.bP.aH;
+	return 'on lines ' + region.bA.aK + ' through ' + region.bS.aK;
 }
 
 
@@ -1857,8 +1857,8 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aq,
-		impl.az,
+		impl.ar,
+		impl.aB,
 		impl.bC,
 		function() { return function() {} }
 	);
@@ -2391,7 +2391,7 @@ var _Texture_load = F6(function (magnify, mininify, horizontalWrap, verticalWrap
       if (isSizeValid) {
         callback(_Scheduler_succeed({
           $: 0,
-          c3: createTexture,
+          c4: createTexture,
           a: width,
           b: height
         }));
@@ -2470,11 +2470,11 @@ var _MJS_v2setY = F2(function(y, a) {
 });
 
 var _MJS_v2toRecord = function(a) {
-    return { F: a[0], G: a[1] };
+    return { r: a[0], s: a[1] };
 };
 
 var _MJS_v2fromRecord = function(r) {
-    return new Float64Array([r.F, r.G]);
+    return new Float64Array([r.r, r.s]);
 };
 
 var _MJS_v2add = F2(function(a, b) {
@@ -2583,11 +2583,11 @@ var _MJS_v3setZ = F2(function(z, a) {
 });
 
 var _MJS_v3toRecord = function(a) {
-    return { F: a[0], G: a[1], t: a[2] };
+    return { r: a[0], s: a[1], v: a[2] };
 };
 
 var _MJS_v3fromRecord = function(r) {
-    return new Float64Array([r.F, r.G, r.t]);
+    return new Float64Array([r.r, r.s, r.v]);
 };
 
 var _MJS_v3add = F2(function(a, b) {
@@ -2743,11 +2743,11 @@ var _MJS_v4setW = F2(function(w, a) {
 });
 
 var _MJS_v4toRecord = function(a) {
-    return { F: a[0], G: a[1], t: a[2], cR: a[3] };
+    return { r: a[0], s: a[1], v: a[2], cT: a[3] };
 };
 
 var _MJS_v4fromRecord = function(r) {
-    return new Float64Array([r.F, r.G, r.t, r.cR]);
+    return new Float64Array([r.r, r.s, r.v, r.cT]);
 };
 
 var _MJS_v4add = F2(function(a, b) {
@@ -2853,31 +2853,31 @@ var _MJS_m4x4identity = new Float64Array([
 
 var _MJS_m4x4fromRecord = function(r) {
     var m = new Float64Array(16);
-    m[0] = r.b8;
-    m[1] = r.cc;
-    m[2] = r.cg;
-    m[3] = r.ck;
-    m[4] = r.b9;
-    m[5] = r.cd;
-    m[6] = r.ch;
-    m[7] = r.cl;
-    m[8] = r.ca;
-    m[9] = r.ce;
-    m[10] = r.ci;
-    m[11] = r.cm;
-    m[12] = r.cb;
-    m[13] = r.cf;
-    m[14] = r.cj;
-    m[15] = r.cn;
+    m[0] = r.cb;
+    m[1] = r.cf;
+    m[2] = r.cj;
+    m[3] = r.cn;
+    m[4] = r.cc;
+    m[5] = r.cg;
+    m[6] = r.ck;
+    m[7] = r.co;
+    m[8] = r.cd;
+    m[9] = r.ch;
+    m[10] = r.cl;
+    m[11] = r.cp;
+    m[12] = r.ce;
+    m[13] = r.ci;
+    m[14] = r.cm;
+    m[15] = r.cq;
     return m;
 };
 
 var _MJS_m4x4toRecord = function(m) {
     return {
-        b8: m[0], cc: m[1], cg: m[2], ck: m[3],
-        b9: m[4], cd: m[5], ch: m[6], cl: m[7],
-        ca: m[8], ce: m[9], ci: m[10], cm: m[11],
-        cb: m[12], cf: m[13], cj: m[14], cn: m[15]
+        cb: m[0], cf: m[1], cj: m[2], cn: m[3],
+        cc: m[4], cg: m[5], ck: m[6], co: m[7],
+        cd: m[8], ch: m[9], cl: m[10], cp: m[11],
+        ce: m[12], ci: m[13], cm: m[14], cq: m[15]
     };
 };
 
@@ -5003,11 +5003,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aq,
-		impl.az,
+		impl.ar,
+		impl.aB,
 		impl.bC,
 		function(sendToApp, initialModel) {
-			var view = impl.bH;
+			var view = impl.bI;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -5039,12 +5039,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aq,
-		impl.az,
+		impl.ar,
+		impl.aB,
 		impl.bC,
 		function(sendToApp, initialModel) {
 			var divertHrefToApp = impl.bz && impl.bz(sendToApp)
-			var view = impl.bH;
+			var view = impl.bI;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -5057,7 +5057,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.bE) && (_VirtualDom_doc.title = title = doc.bE);
+				(title !== doc.bF) && (_VirtualDom_doc.title = title = doc.bF);
 			});
 		}
 	);
@@ -5134,9 +5134,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.cB === next.cB
-							&& curr.b$ === next.b$
-							&& curr.cy.a === next.cy.a
+							&& curr.cE === next.cE
+							&& curr.b2 === next.b2
+							&& curr.cB.a === next.cB.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -5144,12 +5144,12 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aq: function(flags)
+		ar: function(flags)
 		{
-			return A3(impl.aq, flags, _Browser_getUrl(), key);
+			return A3(impl.ar, flags, _Browser_getUrl(), key);
 		},
-		bH: impl.bH,
-		az: impl.az,
+		bI: impl.bI,
+		aB: impl.aB,
 		bC: impl.bC
 	});
 }
@@ -5216,17 +5216,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { dh: 'hidden', cX: 'visibilitychange' }
+		? { dh: 'hidden', cZ: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { dh: 'mozHidden', cX: 'mozvisibilitychange' }
+		? { dh: 'mozHidden', cZ: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { dh: 'msHidden', cX: 'msvisibilitychange' }
+		? { dh: 'msHidden', cZ: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { dh: 'webkitHidden', cX: 'webkitvisibilitychange' }
-		: { dh: 'hidden', cX: 'visibilitychange' };
+		? { dh: 'webkitHidden', cZ: 'webkitvisibilitychange' }
+		: { dh: 'hidden', cZ: 'visibilitychange' };
 }
 
 
@@ -5307,12 +5307,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		cG: _Browser_getScene(),
+		cJ: _Browser_getScene(),
 		dO: {
-			F: _Browser_window.pageXOffset,
-			G: _Browser_window.pageYOffset,
-			l: _Browser_doc.documentElement.clientWidth,
-			e: _Browser_doc.documentElement.clientHeight
+			r: _Browser_window.pageXOffset,
+			s: _Browser_window.pageYOffset,
+			f: _Browser_doc.documentElement.clientWidth,
+			c: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -5322,8 +5322,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		l: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		e: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		f: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		c: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -5346,15 +5346,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			cG: {
-				l: node.scrollWidth,
-				e: node.scrollHeight
+			cJ: {
+				f: node.scrollWidth,
+				c: node.scrollHeight
 			},
 			dO: {
-				F: node.scrollLeft,
-				G: node.scrollTop,
-				l: node.clientWidth,
-				e: node.clientHeight
+				r: node.scrollLeft,
+				s: node.scrollTop,
+				f: node.clientWidth,
+				c: node.clientHeight
 			}
 		};
 	});
@@ -5384,18 +5384,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			cG: _Browser_getScene(),
+			cJ: _Browser_getScene(),
 			dO: {
-				F: x,
-				G: y,
-				l: _Browser_doc.documentElement.clientWidth,
-				e: _Browser_doc.documentElement.clientHeight
+				r: x,
+				s: y,
+				f: _Browser_doc.documentElement.clientWidth,
+				c: _Browser_doc.documentElement.clientHeight
 			},
 			c8: {
-				F: x + rect.left,
-				G: y + rect.top,
-				l: rect.width,
-				e: rect.height
+				r: x + rect.left,
+				s: y + rect.top,
+				f: rect.width,
+				c: rect.height
 			}
 		};
 	});
@@ -5691,7 +5691,7 @@ function _WebGL_doBindAttribute(gl, attribute, mesh, attributes) {
   // The length of the number of vertices that
   // complete one 'thing' based on the drawing mode.
   // ie, 2 for Lines, 3 for Triangles, etc.
-  var elemSize = mesh.a.bO;
+  var elemSize = mesh.a.bR;
 
   var idxKeys = [];
   for (var i = 0; i < elemSize; i++) {
@@ -5754,10 +5754,10 @@ function _WebGL_doBindAttribute(gl, attribute, mesh, attributes) {
  *  @return {Object} buffer.buffers - will be used to buffer attributes
  */
 function _WebGL_doBindSetup(gl, mesh) {
-  if (mesh.a.b4 > 0) {
+  if (mesh.a.b7 > 0) {
     _WebGL_log('Created index buffer');
     var indexBuffer = gl.createBuffer();
-    var indices = _WebGL_makeIndexedBuffer(mesh.c, mesh.a.b4);
+    var indices = _WebGL_makeIndexedBuffer(mesh.c, mesh.a.b7);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
     return {
@@ -5767,7 +5767,7 @@ function _WebGL_doBindSetup(gl, mesh) {
     };
   } else {
     return {
-      numIndices: mesh.a.bO * _WebGL_listLength(mesh.b),
+      numIndices: mesh.a.bR * _WebGL_listLength(mesh.b),
       indexBuffer: null,
       buffers: {}
     };
@@ -5913,9 +5913,9 @@ var _WebGL_drawGL = F2(function (model, domNode) {
 
     if (buffer.indexBuffer) {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBuffer);
-      gl.drawElements(entity.d.a.cq, buffer.numIndices, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(entity.d.a.ct, buffer.numIndices, gl.UNSIGNED_SHORT, 0);
     } else {
-      gl.drawArrays(entity.d.a.cq, 0, buffer.numIndices);
+      gl.drawArrays(entity.d.a.ct, 0, buffer.numIndices);
     }
 
     _WebGL_listEach($elm_explorations$webgl$WebGL$Internal$disableSetting(model.f), entity.a);
@@ -5962,7 +5962,7 @@ function _WebGL_createUniformSetters(gl, model, program, uniformsMap) {
           var tex = model.f.textures.get(texture);
           if (!tex) {
             _WebGL_log('Created texture');
-            tex = texture.c3(gl);
+            tex = texture.c4(gl);
             model.f.textures.set(texture, tex);
           }
           gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -6334,6 +6334,10 @@ var _Bytes_read_string = F3(function(len, bytes, offset)
 
 var _Bytes_decodeFailure = F2(function() { throw 0; });
 var $author$project$Main$Menu = 0;
+var $elm$core$Basics$apR = F2(
+	function (x, f) {
+		return f(x);
+	});
 var $elm$core$List$cons = _List_cons;
 var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var $elm$core$Array$foldr = F3(
@@ -6432,17 +6436,17 @@ var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling(
 var $elm$core$Array$empty = A4($elm$core$Array$Array_elm_builtin, 0, $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, $elm$core$Elm$JsArray$empty);
 var $justgook$elm_game_logic$Logic$Component$empty = $elm$core$Array$empty;
 var $author$project$Components$empty = {
-	ai: $justgook$elm_game_logic$Logic$Component$empty,
 	aj: $justgook$elm_game_logic$Logic$Component$empty,
-	am: $justgook$elm_game_logic$Logic$Component$empty,
-	ao: $justgook$elm_game_logic$Logic$Component$empty,
+	ak: $justgook$elm_game_logic$Logic$Component$empty,
+	an: $justgook$elm_game_logic$Logic$Component$empty,
 	ap: $justgook$elm_game_logic$Logic$Component$empty,
-	_: {aJ: 0, ac: _List_Nil},
-	ar: $justgook$elm_game_logic$Logic$Component$empty,
-	au: $justgook$elm_game_logic$Logic$Component$empty,
+	aq: $justgook$elm_game_logic$Logic$Component$empty,
+	_: {aM: 0, ad: _List_Nil},
+	as: $justgook$elm_game_logic$Logic$Component$empty,
 	av: $justgook$elm_game_logic$Logic$Component$empty,
 	ax: $justgook$elm_game_logic$Logic$Component$empty,
-	aA: $justgook$elm_game_logic$Logic$Component$empty
+	az: $justgook$elm_game_logic$Logic$Component$empty,
+	aC: $justgook$elm_game_logic$Logic$Component$empty
 };
 var $author$project$Playground$Internal$VisibilityChanged = function (a) {
 	return {$: 5, a: a};
@@ -6696,10 +6700,6 @@ var $elm$core$Basics$apL = F2(
 	function (f, x) {
 		return f(x);
 	});
-var $elm$core$Basics$apR = F2(
-	function (x, f) {
-		return f(x);
-	});
 var $elm$core$Basics$eq = _Utils_equal;
 var $elm$core$Basics$floor = _Basics_floor;
 var $elm$core$Elm$JsArray$length = _JsArray_length;
@@ -6757,25 +6757,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.i) {
+		if (!builder.j) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.k),
+				$elm$core$Elm$JsArray$length(builder.l),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.k);
+				builder.l);
 		} else {
-			var treeLen = builder.i * $elm$core$Array$branchFactor;
+			var treeLen = builder.j * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
 			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.m) : builder.m;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.i);
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.j);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.k) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.l) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.k);
+				builder.l);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -6788,7 +6788,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{m: nodeList, i: (len / $elm$core$Array$branchFactor) | 0, k: tail});
+					{m: nodeList, j: (len / $elm$core$Array$branchFactor) | 0, l: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -6845,9 +6845,9 @@ var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
 var $elm$core$Set$empty = $elm$core$Dict$empty;
 var $author$project$Playground$Internal$Mouse = F4(
 	function (x, y, down, click) {
-		return {c_: click, c7: down, F: x, G: y};
+		return {bN: click, bQ: down, r: x, s: y};
 	});
-var $author$project$Playground$Internal$emptyKeyboard = {cV: false, c7: false, c9: false, b6: $elm$core$Set$empty, a2: false, aL: false, dx: false, dz: false, cQ: false};
+var $author$project$Playground$Internal$emptyKeyboard = {cX: false, bQ: false, c9: false, b9: $elm$core$Set$empty, aJ: false, aw: false, dx: false, dz: false, cS: false};
 var $elm$core$Dict$isEmpty = function (dict) {
 	if (dict.$ === -2) {
 		return true;
@@ -6871,7 +6871,7 @@ var $author$project$Playground$Internal$mouseClick = F2(
 	function (bool, mouse) {
 		return _Utils_update(
 			mouse,
-			{c_: bool});
+			{bN: bool});
 	});
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Playground$Internal$GotTexture = function (a) {
@@ -7292,12 +7292,12 @@ var $author$project$Playground$Internal$requestTexture = F2(
 				F2(
 					function (url, acc) {
 						var done = acc.a.Y;
-						var loading = acc.a.as;
+						var loading = acc.a.at;
 						var acc2 = acc.b;
 						return A2($elm$core$Set$member, url, loading) ? acc : _Utils_Tuple2(
 							{
 								Y: done,
-								as: A2($elm$core$Set$insert, url, loading)
+								at: A2($elm$core$Set$insert, url, loading)
 							},
 							A2(
 								$elm$core$List$cons,
@@ -7316,10 +7316,10 @@ var $author$project$Playground$Internal$requestTexture = F2(
 				_Utils_Tuple2(textures, _List_Nil),
 				missing));
 	});
-var $justgook$webgl_shape$WebGL$Shape2d$Transformation$identity = {u: 1, v: 0, H: 0, w: 0, x: 1, I: 0};
+var $justgook$webgl_shape$WebGL$Shape2d$Transformation$identity = {w: 1, x: 0, H: 0, y: 0, z: 1, I: 0};
 var $justgook$webgl_shape$WebGL$Shape2d$Transformation$apply = F2(
 	function (a, b) {
-		return {u: (a.u * b.u) + (a.v * b.w), v: (a.u * b.v) + (a.v * b.x), H: ((a.u * b.H) + (a.v * b.I)) + a.H, w: (a.w * b.u) + (a.x * b.w), x: (a.w * b.v) + (a.x * b.x), I: ((a.w * b.H) + (a.x * b.I)) + a.I};
+		return {w: (a.w * b.w) + (a.x * b.y), x: (a.w * b.x) + (a.x * b.z), H: ((a.w * b.H) + (a.x * b.I)) + a.H, y: (a.y * b.w) + (a.z * b.y), z: (a.y * b.x) + (a.z * b.z), I: ((a.y * b.H) + (a.z * b.I)) + a.I};
 	});
 var $elm$core$Basics$cos = _Basics_cos;
 var $elm$core$Basics$negate = function (n) {
@@ -7329,11 +7329,11 @@ var $elm$core$Basics$sin = _Basics_sin;
 var $justgook$webgl_shape$WebGL$Shape2d$Transformation$transform = F5(
 	function (tx, ty, sx, sy, angle) {
 		return {
-			u: $elm$core$Basics$cos(angle) * sx,
-			v: $elm$core$Basics$sin(angle) * (-sy),
+			w: $elm$core$Basics$cos(angle) * sx,
+			x: $elm$core$Basics$sin(angle) * (-sy),
 			H: tx,
-			w: $elm$core$Basics$sin(angle) * sx,
-			x: $elm$core$Basics$cos(angle) * sy,
+			y: $elm$core$Basics$sin(angle) * sx,
+			z: $elm$core$Basics$cos(angle) * sy,
 			I: ty
 		};
 	});
@@ -7346,7 +7346,7 @@ var $justgook$webgl_shape$WebGL$Shape2d$createTrans = F6(
 	});
 var $justgook$webgl_shape$WebGL$Shape2d$Transformation$scale = F3(
 	function (sx, sy, b) {
-		return {u: sx * b.u, v: sx * b.v, H: sx * b.H, w: sy * b.w, x: sy * b.x, I: sy * b.I};
+		return {w: sx * b.w, x: sx * b.x, H: sx * b.H, y: sy * b.y, z: sy * b.z, I: sy * b.I};
 	});
 var $justgook$webgl_shape$WebGL$Shape2d$Shape2d = $elm$core$Basics$identity;
 var $justgook$webgl_shape$WebGL$Shape2d$setOZ = F3(
@@ -7354,35 +7354,35 @@ var $justgook$webgl_shape$WebGL$Shape2d$setOZ = F3(
 		var shape = _v0;
 		return _Utils_update(
 			shape,
-			{g: o * shape.g, t: z + shape.t});
+			{h: o * shape.h, v: z + shape.v});
 	});
 var $elm_explorations$linear_algebra$Math$Vector2$fromRecord = _MJS_v2fromRecord;
 var $elm_explorations$linear_algebra$Math$Vector4$fromRecord = _MJS_v4fromRecord;
 var $justgook$webgl_shape$WebGL$Shape2d$Transformation$toGL = function (_v0) {
-	var a11 = _v0.u;
-	var a12 = _v0.v;
+	var a11 = _v0.w;
+	var a12 = _v0.x;
 	var a13 = _v0.H;
-	var a21 = _v0.w;
-	var a22 = _v0.x;
+	var a21 = _v0.y;
+	var a22 = _v0.z;
 	var a23 = _v0.I;
 	return _Utils_Tuple2(
 		$elm_explorations$linear_algebra$Math$Vector4$fromRecord(
-			{cR: a22, F: a11, G: a12, t: a21}),
+			{cT: a22, r: a11, s: a12, v: a21}),
 		$elm_explorations$linear_algebra$Math$Vector2$fromRecord(
-			{F: a13, G: a23}));
+			{r: a13, s: a23}));
 };
 var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F5(
 	function (screen, textures, parent, _v0, acc) {
 		renderShape:
 		while (true) {
-			var x = _v0.F;
-			var y = _v0.G;
-			var z = _v0.t;
-			var a = _v0.f;
-			var sx = _v0.c;
-			var sy = _v0.d;
-			var o = _v0.g;
-			var form = _v0.h;
+			var x = _v0.r;
+			var y = _v0.s;
+			var z = _v0.v;
+			var a = _v0.g;
+			var sx = _v0.d;
+			var sy = _v0.e;
+			var o = _v0.h;
+			var form = _v0.i;
 			var entities = acc.a;
 			var missing = acc.b;
 			switch (form.$) {
@@ -7393,8 +7393,8 @@ var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F5(
 					var _v2 = $justgook$webgl_shape$WebGL$Shape2d$Transformation$toGL(
 						A3(
 							$justgook$webgl_shape$WebGL$Shape2d$Transformation$scale,
-							1 / screen.l,
-							1 / screen.e,
+							1 / screen.f,
+							1 / screen.c,
 							A6($justgook$webgl_shape$WebGL$Shape2d$createTrans, x * 2, y * 2, width * sx, height * sy, a, parent)));
 					var t1 = _v2.a;
 					var t2 = _v2.b;
@@ -7451,11 +7451,11 @@ var $justgook$webgl_shape$WebGL$Shape2d$toEntities = F3(
 	});
 var $author$project$Playground$Internal$gameTick = F3(
 	function (viewMemory, updateMemory, model) {
-		var computer = model.aE;
-		var memory = model.aI;
-		var textures = model.ay;
+		var computer = model.aG;
+		var memory = model.aL;
+		var textures = model.aA;
 		var newMemory = A2(updateMemory, computer, memory);
-		var newComputer = computer.bq.c_ ? _Utils_update(
+		var newComputer = computer.bq.bN ? _Utils_update(
 			computer,
 			{
 				bq: A2($author$project$Playground$Internal$mouseClick, false, computer.bq)
@@ -7463,20 +7463,20 @@ var $author$project$Playground$Internal$gameTick = F3(
 		var _v0 = A3(
 			$justgook$webgl_shape$WebGL$Shape2d$toEntities,
 			textures.Y,
-			computer.a6,
+			computer.aN,
 			A2(viewMemory, newComputer, newMemory));
 		var entities = _v0.a;
 		var missing = _v0.b;
 		return $elm$core$Set$isEmpty(missing) ? _Utils_Tuple2(
 			_Utils_update(
 				model,
-				{aE: newComputer, bh: entities, aI: newMemory}),
+				{aG: newComputer, bh: entities, aL: newMemory}),
 			$elm$core$Platform$Cmd$none) : A2(
 			$elm$core$Tuple$mapFirst,
 			function (loadingTextures) {
 				return _Utils_update(
 					model,
-					{aE: newComputer, bh: entities, aI: newMemory, ay: loadingTextures});
+					{aG: newComputer, bh: entities, aL: newMemory, aA: loadingTextures});
 			},
 			A2($author$project$Playground$Internal$requestTexture, missing, textures));
 	});
@@ -7850,14 +7850,14 @@ var $elm$core$Set$remove = F2(
 var $author$project$Playground$Internal$gotTextures = F2(
 	function (r, textures) {
 		var done = textures.Y;
-		var loading = textures.as;
+		var loading = textures.at;
 		if (!r.$) {
 			var _v1 = r.a;
 			var name = _v1.a;
 			var t = _v1.b;
 			return {
 				Y: A3($elm$core$Dict$insert, name, t, done),
-				as: A2($elm$core$Set$remove, name, loading)
+				at: A2($elm$core$Set$remove, name, loading)
 			};
 		} else {
 			var _v2 = r.a;
@@ -7870,13 +7870,13 @@ var $author$project$Playground$Internal$mouseDown = F2(
 	function (bool, mouse) {
 		return _Utils_update(
 			mouse,
-			{c7: bool});
+			{bQ: bool});
 	});
 var $author$project$Playground$Internal$mouseMove = F3(
 	function (x, y, mouse) {
 		return _Utils_update(
 			mouse,
-			{F: x, G: y});
+			{r: x, s: y});
 	});
 var $elm$time$Time$posixToMillis = function (_v0) {
 	var millis = _v0;
@@ -7884,66 +7884,66 @@ var $elm$time$Time$posixToMillis = function (_v0) {
 };
 var $author$project$Playground$Internal$toScreen = F2(
 	function (width, height) {
-		return {bd: (-height) / 2, e: height, a2: (-width) / 2, aL: width / 2, bF: height / 2, l: width};
+		return {bd: (-height) / 2, c: height, aJ: (-width) / 2, aw: width / 2, bG: height / 2, f: width};
 	});
 var $author$project$Playground$Internal$updateKeyboard = F3(
 	function (isDown, key, keyboard) {
-		var keys = isDown ? A2($elm$core$Set$insert, key, keyboard.b6) : A2($elm$core$Set$remove, key, keyboard.b6);
+		var keys = isDown ? A2($elm$core$Set$insert, key, keyboard.b9) : A2($elm$core$Set$remove, key, keyboard.b9);
 		switch (key) {
 			case 'Space':
 				return _Utils_update(
 					keyboard,
-					{b6: keys, dz: isDown});
+					{b9: keys, dz: isDown});
 			case 'Enter':
 				return _Utils_update(
 					keyboard,
-					{c9: isDown, b6: keys});
+					{c9: isDown, b9: keys});
 			case 'ShiftLeft':
 				return _Utils_update(
 					keyboard,
-					{b6: keys, dx: isDown});
+					{b9: keys, dx: isDown});
 			case 'ShiftRight':
 				return _Utils_update(
 					keyboard,
-					{b6: keys, dx: isDown});
+					{b9: keys, dx: isDown});
 			case 'Backspace':
 				return _Utils_update(
 					keyboard,
-					{cV: isDown, b6: keys});
+					{cX: isDown, b9: keys});
 			case 'ArrowUp':
 				return _Utils_update(
 					keyboard,
-					{b6: keys, cQ: isDown});
+					{b9: keys, cS: isDown});
 			case 'ArrowDown':
 				return _Utils_update(
 					keyboard,
-					{c7: isDown, b6: keys});
+					{bQ: isDown, b9: keys});
 			case 'ArrowLeft':
 				return _Utils_update(
 					keyboard,
-					{b6: keys, a2: isDown});
+					{b9: keys, aJ: isDown});
 			case 'ArrowRight':
 				return _Utils_update(
 					keyboard,
-					{b6: keys, aL: isDown});
+					{b9: keys, aw: isDown});
 			default:
 				return _Utils_update(
 					keyboard,
-					{b6: keys});
+					{b9: keys});
 		}
 	});
 var $author$project$Playground$Internal$gameUpdate = F4(
 	function (viewMemory, updateMemory, msg, _v0) {
 		var model = _v0;
 		var visibility = model.a8;
-		var memory = model.aI;
-		var textures = model.ay;
-		var computer = model.aE;
+		var memory = model.aL;
+		var textures = model.aA;
+		var computer = model.aG;
 		switch (msg.$) {
 			case 1:
 				var time = msg.a;
 				var now = $elm$time$Time$posixToMillis(time);
-				var d = now - computer.cK.aK;
+				var d = now - computer.bE.ab;
 				return A3(
 					$author$project$Playground$Internal$gameTick,
 					viewMemory,
@@ -7951,10 +7951,10 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
 								{
-									cK: {al: d, aK: now}
+									bE: {am: d, ab: now}
 								})
 						}));
 			case 3:
@@ -7963,10 +7963,10 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
 								{
-									a6: A2($author$project$Playground$Internal$toScreen, viewport.l, viewport.e)
+									aN: A2($author$project$Playground$Internal$toScreen, viewport.f, viewport.c)
 								})
 						}),
 					$elm$core$Platform$Cmd$none);
@@ -7976,9 +7976,9 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
-								{a6: newScreen})
+								{aN: newScreen})
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 0:
@@ -7988,7 +7988,7 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
 								{
 									dk: A3($author$project$Playground$Internal$updateKeyboard, isDown, key, computer.dk)
@@ -7998,13 +7998,13 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 			case 6:
 				var pageX = msg.a;
 				var pageY = msg.b;
-				var y = computer.a6.bF - pageY;
-				var x = computer.a6.a2 + pageX;
+				var y = computer.aN.bG - pageY;
+				var x = computer.aN.aJ + pageX;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
 								{
 									bq: A3($author$project$Playground$Internal$mouseMove, x, y, computer.bq)
@@ -8016,7 +8016,7 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
 								{
 									bq: A2($author$project$Playground$Internal$mouseClick, true, computer.bq)
@@ -8029,7 +8029,7 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
 								{
 									bq: A2($author$project$Playground$Internal$mouseDown, isDown, computer.bq)
@@ -8042,12 +8042,12 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
 								{
 									dk: $author$project$Playground$Internal$emptyKeyboard,
-									bq: A4($author$project$Playground$Internal$Mouse, computer.bq.F, computer.bq.G, false, false),
-									cK: {al: 0, aK: computer.cK.aK}
+									bq: A4($author$project$Playground$Internal$Mouse, computer.bq.r, computer.bq.s, false, false),
+									bE: {am: 0, ab: computer.bE.ab}
 								}),
 							a8: vis
 						}),
@@ -8058,12 +8058,12 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
 								{
-									cK: {al: 0, aK: computer.cK.aK}
+									bE: {am: 0, ab: computer.bE.ab}
 								}),
-							ay: A2($author$project$Playground$Internal$gotTextures, r, model.ay)
+							aA: A2($author$project$Playground$Internal$gotTextures, r, model.aA)
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
@@ -8072,12 +8072,12 @@ var $author$project$Playground$Internal$gameUpdate = F4(
 					_Utils_update(
 						model,
 						{
-							aE: _Utils_update(
+							aG: _Utils_update(
 								computer,
 								{
-									cK: {
-										al: 0,
-										aK: $elm$time$Time$posixToMillis(time)
+									bE: {
+										am: 0,
+										ab: $elm$time$Time$posixToMillis(time)
 									}
 								})
 						}),
@@ -8110,7 +8110,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {bT: fragment, b$: host, cw: path, cy: port_, cB: protocol, cC: query};
+		return {bW: fragment, b2: host, cz: path, cB: port_, cE: protocol, cF: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -8253,8 +8253,8 @@ var $elm$browser$Browser$Dom$getViewport = _Browser_withWindow(_Browser_getViewp
 var $author$project$Playground$Internal$initialComputer = {
 	dk: $author$project$Playground$Internal$emptyKeyboard,
 	bq: A4($author$project$Playground$Internal$Mouse, 0, 0, false, false),
-	a6: A2($author$project$Playground$Internal$toScreen, 600, 600),
-	cK: {al: 0, aK: 0}
+	aN: A2($author$project$Playground$Internal$toScreen, 600, 600),
+	bE: {am: 0, ab: 0}
 };
 var $elm$time$Time$Name = function (a) {
 	return {$: 0, a: a};
@@ -8278,10 +8278,10 @@ var $author$project$Playground$Internal$create = F3(
 		};
 		var init = _Utils_Tuple2(
 			{
-				aE: $author$project$Playground$Internal$initialComputer,
+				aG: $author$project$Playground$Internal$initialComputer,
 				bh: _List_Nil,
-				aI: initialMemory,
-				ay: {Y: $elm$core$Dict$empty, as: $elm$core$Set$empty},
+				aL: initialMemory,
+				aA: {Y: $elm$core$Dict$empty, at: $elm$core$Set$empty},
 				a8: 0
 			},
 			$elm$core$Platform$Cmd$batch(
@@ -8291,9 +8291,9 @@ var $author$project$Playground$Internal$create = F3(
 						A2($elm$core$Task$perform, $author$project$Playground$Internal$InitTime, $elm$time$Time$now)
 					])));
 		return {
-			aq: init,
-			az: A2($author$project$Playground$Internal$gameUpdate, viewMemory, updateMemory),
-			bH: view
+			ar: init,
+			aB: A2($author$project$Playground$Internal$gameUpdate, viewMemory, updateMemory),
+			bI: view
 		};
 	});
 var $elm$browser$Browser$document = _Browser_document;
@@ -8306,7 +8306,7 @@ var $elm$browser$Browser$Events$MySub = F3(
 	});
 var $elm$browser$Browser$Events$State = F2(
 	function (subs, pids) {
-		return {cx: pids, cI: subs};
+		return {cA: pids, cL: subs};
 	});
 var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
 	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
@@ -8402,7 +8402,7 @@ var $elm$core$Dict$merge = F6(
 	});
 var $elm$browser$Browser$Events$Event = F2(
 	function (key, event) {
-		return {bQ: event, b5: key};
+		return {bT: event, b8: key};
 	});
 var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$browser$Browser$Events$spawn = F3(
@@ -8477,7 +8477,7 @@ var $elm$browser$Browser$Events$onEffects = F3(
 			stepLeft,
 			stepBoth,
 			stepRight,
-			state.cx,
+			state.cA,
 			$elm$core$Dict$fromList(newSubs),
 			_Utils_Tuple3(_List_Nil, $elm$core$Dict$empty, _List_Nil));
 		var deadPids = _v0.a;
@@ -8523,8 +8523,8 @@ var $elm$core$List$filterMap = F2(
 	});
 var $elm$browser$Browser$Events$onSelfMsg = F3(
 	function (router, _v0, state) {
-		var key = _v0.b5;
-		var event = _v0.bQ;
+		var key = _v0.b8;
+		var event = _v0.bT;
 		var toMessage = function (_v2) {
 			var subKey = _v2.a;
 			var _v3 = _v2.b;
@@ -8533,7 +8533,7 @@ var $elm$browser$Browser$Events$onSelfMsg = F3(
 			var decoder = _v3.c;
 			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
 		};
-		var messages = A2($elm$core$List$filterMap, toMessage, state.cI);
+		var messages = A2($elm$core$List$filterMap, toMessage, state.cL);
 		return A2(
 			$elm$core$Task$andThen,
 			function (_v1) {
@@ -8574,7 +8574,7 @@ var $elm$browser$Browser$Events$onVisibilityChange = function (func) {
 	return A3(
 		$elm$browser$Browser$Events$on,
 		0,
-		info.cX,
+		info.cZ,
 		A2(
 			$elm$json$Json$Decode$map,
 			$elm$browser$Browser$Events$withHidden(func),
@@ -8609,7 +8609,7 @@ var $elm$browser$Browser$AnimationManager$Time = function (a) {
 };
 var $elm$browser$Browser$AnimationManager$State = F3(
 	function (subs, request, oldTime) {
-		return {br: oldTime, cE: request, cI: subs};
+		return {br: oldTime, cH: request, cL: subs};
 	});
 var $elm$browser$Browser$AnimationManager$init = $elm$core$Task$succeed(
 	A3($elm$browser$Browser$AnimationManager$State, _List_Nil, $elm$core$Maybe$Nothing, 0));
@@ -8618,7 +8618,7 @@ var $elm$browser$Browser$AnimationManager$rAF = _Browser_rAF(0);
 var $elm$core$Process$spawn = _Scheduler_spawn;
 var $elm$browser$Browser$AnimationManager$onEffects = F3(
 	function (router, subs, _v0) {
-		var request = _v0.cE;
+		var request = _v0.cH;
 		var oldTime = _v0.br;
 		var _v1 = _Utils_Tuple2(request, subs);
 		if (_v1.a.$ === 1) {
@@ -8665,7 +8665,7 @@ var $elm$browser$Browser$AnimationManager$onEffects = F3(
 	});
 var $elm$browser$Browser$AnimationManager$onSelfMsg = F3(
 	function (router, newTime, _v0) {
-		var subs = _v0.cI;
+		var subs = _v0.cL;
 		var oldTime = _v0.br;
 		var send = function (sub) {
 			if (!sub.$) {
@@ -8751,7 +8751,7 @@ var $elm$browser$Browser$Events$onResize = function (func) {
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Playground$Internal$subscriptions = {
-	c_: $elm$core$Platform$Sub$batch(
+	bN: $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
 				$elm$browser$Browser$Events$onClick(
@@ -8763,7 +8763,7 @@ var $author$project$Playground$Internal$subscriptions = {
 				$elm$json$Json$Decode$succeed(
 					$author$project$Playground$Internal$MouseButton(false)))
 			])),
-	b6: $elm$core$Platform$Sub$batch(
+	b9: $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
 				$elm$browser$Browser$Events$onKeyUp(
@@ -8794,7 +8794,7 @@ var $author$project$Playground$Internal$subscriptions = {
 				return $author$project$Playground$Internal$Resized(
 					A2($author$project$Playground$Internal$toScreen, w, h));
 			})),
-	cK: $elm$browser$Browser$Events$onAnimationFrame($author$project$Playground$Internal$Tick),
+	bE: $elm$browser$Browser$Events$onAnimationFrame($author$project$Playground$Internal$Tick),
 	a8: $elm$browser$Browser$Events$onVisibilityChange($author$project$Playground$Internal$VisibilityChanged)
 };
 var $elm$virtual_dom$VirtualDom$node = function (tag) {
@@ -8922,9 +8922,9 @@ var $author$project$Playground$Internal$viewWrap = F2(
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$width(
-						$elm$core$Basics$round(screen.l)),
+						$elm$core$Basics$round(screen.f)),
 						$elm$html$Html$Attributes$height(
-						$elm$core$Basics$round(screen.e))
+						$elm$core$Basics$round(screen.c))
 					]),
 				entities)
 			]);
@@ -8932,51 +8932,49 @@ var $author$project$Playground$Internal$viewWrap = F2(
 var $author$project$Playground$game = F3(
 	function (viewMemory, updateMemory, initialMemory) {
 		var view = function (_v4) {
-			var computer = _v4.aE;
+			var computer = _v4.aG;
 			var entities = _v4.bh;
 			return {
-				bc: A2($author$project$Playground$Internal$viewWrap, computer.a6, entities),
-				bE: 'Playground'
+				bc: A2($author$project$Playground$Internal$viewWrap, computer.aN, entities),
+				bF: 'Playground'
 			};
 		};
 		var subs = function (_v3) {
 			var visibility = _v3.a8;
-			var computer = _v3.aE;
+			var computer = _v3.aG;
 			if (visibility === 1) {
 				return $elm$browser$Browser$Events$onVisibilityChange($author$project$Playground$Internal$VisibilityChanged);
 			} else {
 				return $elm$core$Platform$Sub$batch(
 					_List_fromArray(
-						[$author$project$Playground$Internal$subscriptions.b6, $author$project$Playground$Internal$subscriptions.cK, $author$project$Playground$Internal$subscriptions.a8, $author$project$Playground$Internal$subscriptions.c_, $author$project$Playground$Internal$subscriptions.bq, $author$project$Playground$Internal$subscriptions.bx]));
+						[$author$project$Playground$Internal$subscriptions.b9, $author$project$Playground$Internal$subscriptions.bE, $author$project$Playground$Internal$subscriptions.a8, $author$project$Playground$Internal$subscriptions.bN, $author$project$Playground$Internal$subscriptions.bq, $author$project$Playground$Internal$subscriptions.bx]));
 			}
 		};
 		var _v0 = A3($author$project$Playground$Internal$create, viewMemory, updateMemory, initialMemory);
-		var init = _v0.aq;
-		var update = _v0.az;
+		var init = _v0.ar;
+		var update = _v0.aB;
 		return $elm$browser$Browser$document(
 			{
-				aq: function (_v1) {
+				ar: function (_v1) {
 					return init;
 				},
 				bC: subs,
-				az: update,
-				bH: view
+				aB: update,
+				bI: view
 			});
 	});
-var $author$project$Main$Playing = 1;
 var $author$project$Components$Guardian = 2;
 var $author$project$Components$Predator = 1;
 var $author$project$Components$Prey = 0;
 var $author$project$Components$Right = 1;
-var $author$project$Components$UserInput = 0;
 var $justgook$elm_game_logic$Logic$Entity$create = F2(
 	function (id, world) {
 		return _Utils_Tuple2(id, world);
 	});
 var $author$project$Components$addEntity = function (components) {
 	var idPool = components._;
-	var next = idPool.aJ;
-	var pool = idPool.ac;
+	var next = idPool.aM;
+	var pool = idPool.ad;
 	if (pool.b) {
 		var id = pool.a;
 		var rest = pool.b;
@@ -8988,7 +8986,7 @@ var $author$project$Components$addEntity = function (components) {
 				{
 					_: _Utils_update(
 						idPool,
-						{ac: rest})
+						{ad: rest})
 				}));
 	} else {
 		return A2(
@@ -8999,105 +8997,46 @@ var $author$project$Components$addEntity = function (components) {
 				{
 					_: _Utils_update(
 						idPool,
-						{aJ: next + 1})
+						{aM: next + 1})
 				}));
 	}
 };
 var $justgook$elm_game_logic$Logic$Component$Spec = F2(
 	function (get, set) {
-		return {A: get, dw: set};
+		return {C: get, dw: set};
 	});
-var $author$project$Components$avoids = A2(
-	$justgook$elm_game_logic$Logic$Component$Spec,
-	function ($) {
-		return $.ai;
-	},
-	F2(
-		function (comps, components) {
-			return _Utils_update(
-				components,
-				{ai: comps});
-		}));
 var $author$project$Components$collisions = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
 	function ($) {
-		return $.aj;
+		return $.ak;
 	},
 	F2(
 		function (comps, components) {
 			return _Utils_update(
 				components,
-				{aj: comps});
+				{ak: comps});
 		}));
-var $author$project$Main$sprites10 = {bj: 'sprites10.png', bU: 1, bV: 2, bW: 3, bX: 4, bY: 5, bZ: 6, b_: 7, D: 10, bG: 8, cL: 12, cM: 9, cN: 10, cO: 11};
-var $author$project$Main$defaultSize = $author$project$Main$sprites10.D;
+var $author$project$Main$sprites10 = {bj: 'sprites10.png', bX: 1, bY: 2, bZ: 3, b_: 4, b$: 5, b0: 6, b1: 7, F: 10, bH: 8, cN: 12, cO: 9, cP: 10, cQ: 11};
+var $author$project$Main$defaultSize = $author$project$Main$sprites10.F;
 var $author$project$Main$viewport = function (_v0) {
-	var width = _v0.l;
-	var height = _v0.e;
-	return {bd: (-height) / 2, e: height, a2: (-width) / 2, aL: width / 2, bF: height / 2, l: width};
+	var width = _v0.f;
+	var height = _v0.c;
+	return {bd: (-height) / 2, c: height, aJ: (-width) / 2, aw: width / 2, bG: height / 2, f: width};
 }(
-	{e: 200, l: 320});
-var $author$project$Main$defaultSpeed = $author$project$Main$viewport.l / 210;
+	{c: 200, f: 320});
+var $author$project$Main$defaultSpeed = $author$project$Main$viewport.f / 210;
 var $author$project$Components$directions = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
 	function ($) {
-		return $.am;
+		return $.an;
 	},
 	F2(
 		function (comps, components) {
 			return _Utils_update(
 				components,
-				{am: comps});
+				{an: comps});
 		}));
 var $author$project$Components$facings = A2(
-	$justgook$elm_game_logic$Logic$Component$Spec,
-	function ($) {
-		return $.ao;
-	},
-	F2(
-		function (comps, components) {
-			return _Utils_update(
-				components,
-				{ao: comps});
-		}));
-var $elm$random$Random$Generator = $elm$core$Basics$identity;
-var $elm$core$Basics$abs = function (n) {
-	return (n < 0) ? (-n) : n;
-};
-var $elm$core$Bitwise$and = _Bitwise_and;
-var $elm$random$Random$Seed = F2(
-	function (a, b) {
-		return {$: 0, a: a, b: b};
-	});
-var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
-var $elm$random$Random$next = function (_v0) {
-	var state0 = _v0.a;
-	var incr = _v0.b;
-	return A2($elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
-};
-var $elm$core$Bitwise$xor = _Bitwise_xor;
-var $elm$random$Random$peel = function (_v0) {
-	var state = _v0.a;
-	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
-	return ((word >>> 22) ^ word) >>> 0;
-};
-var $elm$random$Random$float = F2(
-	function (a, b) {
-		return function (seed0) {
-			var seed1 = $elm$random$Random$next(seed0);
-			var range = $elm$core$Basics$abs(b - a);
-			var n1 = $elm$random$Random$peel(seed1);
-			var n0 = $elm$random$Random$peel(seed0);
-			var lo = (134217727 & n1) * 1.0;
-			var hi = (67108863 & n0) * 1.0;
-			var val = ((hi * 134217728.0) + lo) / 9007199254740992.0;
-			var scaled = (val * range) + a;
-			return _Utils_Tuple2(
-				scaled,
-				$elm$random$Random$next(seed1));
-		};
-	});
-var $author$project$Components$follows = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
 	function ($) {
 		return $.ap;
@@ -9108,17 +9047,19 @@ var $author$project$Components$follows = A2(
 				components,
 				{ap: comps});
 		}));
+var $author$project$Components$follows = A2(
+	$justgook$elm_game_logic$Logic$Component$Spec,
+	function ($) {
+		return $.aq;
+	},
+	F2(
+		function (comps, components) {
+			return _Utils_update(
+				components,
+				{aq: comps});
+		}));
 var $elm$core$Set$fromList = function (list) {
 	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
-};
-var $elm$random$Random$initialSeed = function (x) {
-	var _v0 = $elm$random$Random$next(
-		A2($elm$random$Random$Seed, 0, 1013904223));
-	var state1 = _v0.a;
-	var incr = _v0.b;
-	var state2 = (state1 + x) >>> 0;
-	return $elm$random$Random$next(
-		A2($elm$random$Random$Seed, state2, incr));
 };
 var $author$project$Components$kindToString = function (kind) {
 	switch (kind) {
@@ -9133,99 +9074,15 @@ var $author$project$Components$kindToString = function (kind) {
 var $author$project$Components$kinds = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
 	function ($) {
-		return $.ar;
+		return $.as;
 	},
 	F2(
 		function (comps, components) {
 			return _Utils_update(
 				components,
-				{ar: comps});
+				{as: comps});
 		}));
-var $elm$random$Random$listHelp = F4(
-	function (revList, n, gen, seed) {
-		listHelp:
-		while (true) {
-			if (n < 1) {
-				return _Utils_Tuple2(revList, seed);
-			} else {
-				var _v0 = gen(seed);
-				var value = _v0.a;
-				var newSeed = _v0.b;
-				var $temp$revList = A2($elm$core$List$cons, value, revList),
-					$temp$n = n - 1,
-					$temp$gen = gen,
-					$temp$seed = newSeed;
-				revList = $temp$revList;
-				n = $temp$n;
-				gen = $temp$gen;
-				seed = $temp$seed;
-				continue listHelp;
-			}
-		}
-	});
-var $elm$random$Random$list = F2(
-	function (n, _v0) {
-		var gen = _v0;
-		return function (seed) {
-			return A4($elm$random$Random$listHelp, _List_Nil, n, gen, seed);
-		};
-	});
-var $elm$random$Random$map2 = F3(
-	function (func, _v0, _v1) {
-		var genA = _v0;
-		var genB = _v1;
-		return function (seed0) {
-			var _v2 = genA(seed0);
-			var a = _v2.a;
-			var seed1 = _v2.b;
-			var _v3 = genB(seed1);
-			var b = _v3.a;
-			var seed2 = _v3.b;
-			return _Utils_Tuple2(
-				A2(func, a, b),
-				seed2);
-		};
-	});
-var $elm$random$Random$pair = F2(
-	function (genA, genB) {
-		return A3(
-			$elm$random$Random$map2,
-			F2(
-				function (a, b) {
-					return _Utils_Tuple2(a, b);
-				}),
-			genA,
-			genB);
-	});
 var $author$project$Components$positions = A2(
-	$justgook$elm_game_logic$Logic$Component$Spec,
-	function ($) {
-		return $.au;
-	},
-	F2(
-		function (comps, components) {
-			return _Utils_update(
-				components,
-				{au: comps});
-		}));
-var $elm$core$Tuple$second = function (_v0) {
-	var y = _v0.b;
-	return y;
-};
-var $author$project$Components$set = F2(
-	function (w, c) {
-		return _Utils_update(
-			w,
-			{c0: c});
-	});
-var $elm$core$Dict$singleton = F2(
-	function (key, value) {
-		return A5($elm$core$Dict$RBNode_elm_builtin, 1, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
-	});
-var $elm$core$Set$singleton = function (key) {
-	return A2($elm$core$Dict$singleton, key, 0);
-};
-var $author$project$Components$sizes = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
 	function ($) {
 		return $.av;
@@ -9236,7 +9093,18 @@ var $author$project$Components$sizes = A2(
 				components,
 				{av: comps});
 		}));
-var $author$project$Components$speeds = A2(
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
+var $elm$core$Dict$singleton = F2(
+	function (key, value) {
+		return A5($elm$core$Dict$RBNode_elm_builtin, 1, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+	});
+var $elm$core$Set$singleton = function (key) {
+	return A2($elm$core$Dict$singleton, key, 0);
+};
+var $author$project$Components$sizes = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
 	function ($) {
 		return $.ax;
@@ -9247,45 +9115,42 @@ var $author$project$Components$speeds = A2(
 				components,
 				{ax: comps});
 		}));
-var $elm$random$Random$step = F2(
-	function (_v0, seed) {
-		var generator = _v0;
-		return generator(seed);
-	});
-var $author$project$Components$userInputs = A2(
+var $author$project$Components$speeds = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
 	function ($) {
-		return $.aA;
+		return $.az;
 	},
 	F2(
 		function (comps, components) {
 			return _Utils_update(
 				components,
-				{aA: comps});
+				{az: comps});
 		}));
 var $elm$core$Elm$JsArray$appendN = _JsArray_appendN;
 var $elm$core$Elm$JsArray$slice = _JsArray_slice;
 var $elm$core$Array$appendHelpBuilder = F2(
 	function (tail, builder) {
 		var tailLen = $elm$core$Elm$JsArray$length(tail);
-		var notAppended = ($elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(builder.k)) - tailLen;
-		var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, builder.k, tail);
+		var notAppended = ($elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(builder.l)) - tailLen;
+		var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, builder.l, tail);
 		return (notAppended < 0) ? {
 			m: A2(
 				$elm$core$List$cons,
 				$elm$core$Array$Leaf(appended),
 				builder.m),
-			i: builder.i + 1,
-			k: A3($elm$core$Elm$JsArray$slice, notAppended, tailLen, tail)
+			j: builder.j + 1,
+			l: A3($elm$core$Elm$JsArray$slice, notAppended, tailLen, tail)
 		} : ((!notAppended) ? {
 			m: A2(
 				$elm$core$List$cons,
 				$elm$core$Array$Leaf(appended),
 				builder.m),
-			i: builder.i + 1,
-			k: $elm$core$Elm$JsArray$empty
-		} : {m: builder.m, i: builder.i, k: appended});
+			j: builder.j + 1,
+			l: $elm$core$Elm$JsArray$empty
+		} : {m: builder.m, j: builder.j, l: appended});
 	});
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
 var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Elm$JsArray$push = _JsArray_push;
@@ -9393,8 +9258,8 @@ var $elm$core$Array$builderFromArray = function (_v0) {
 		});
 	return {
 		m: A3($elm$core$Elm$JsArray$foldl, helper, _List_Nil, tree),
-		i: (len / $elm$core$Array$branchFactor) | 0,
-		k: tail
+		j: (len / $elm$core$Array$branchFactor) | 0,
+		l: tail
 	};
 };
 var $elm$core$Array$append = F2(
@@ -9535,186 +9400,188 @@ var $justgook$elm_game_logic$Logic$Entity$with = F2(
 			$justgook$elm_game_logic$Logic$Component$spawn,
 			entityID,
 			component,
-			spec.A(world));
+			spec.C(world));
 		var updatedWorld = A2(spec.dw, updatedComponents, world);
 		return _Utils_Tuple2(entityID, updatedWorld);
 	});
-var $author$project$Main$spawn = function (w) {
-	var prey = F2(
-		function (pos, w_) {
-			return A2(
+var $author$project$Main$guardian = F2(
+	function (pos, world) {
+		return A2(
+			$justgook$elm_game_logic$Logic$Entity$with,
+			_Utils_Tuple2($author$project$Components$facings, 1),
+			A2(
 				$justgook$elm_game_logic$Logic$Entity$with,
-				_Utils_Tuple2($author$project$Components$facings, 1),
+				_Utils_Tuple2($author$project$Components$directions, pos),
 				A2(
 					$justgook$elm_game_logic$Logic$Entity$with,
-					_Utils_Tuple2($author$project$Components$directions, pos),
+					_Utils_Tuple2(
+						$author$project$Components$collisions,
+						$elm$core$Set$fromList(
+							A2(
+								$elm$core$List$map,
+								$author$project$Components$kindToString,
+								_List_fromArray(
+									[2, 1, 0])))),
 					A2(
 						$justgook$elm_game_logic$Logic$Entity$with,
 						_Utils_Tuple2(
-							$author$project$Components$collisions,
-							$elm$core$Set$fromList(
+							$author$project$Components$follows,
+							$elm$core$Set$singleton(
+								$author$project$Components$kindToString(1))),
+						A2(
+							$justgook$elm_game_logic$Logic$Entity$with,
+							_Utils_Tuple2($author$project$Components$speeds, $author$project$Main$defaultSpeed / 3),
+							A2(
+								$justgook$elm_game_logic$Logic$Entity$with,
+								_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize * 2),
 								A2(
-									$elm$core$List$map,
-									$author$project$Components$kindToString,
-									_List_fromArray(
-										[2, 0])))),
+									$justgook$elm_game_logic$Logic$Entity$with,
+									_Utils_Tuple2($author$project$Components$positions, pos),
+									A2(
+										$justgook$elm_game_logic$Logic$Entity$with,
+										_Utils_Tuple2($author$project$Components$kinds, 2),
+										$author$project$Components$addEntity(world))))))))).b;
+	});
+var $author$project$Components$avoids = A2(
+	$justgook$elm_game_logic$Logic$Component$Spec,
+	function ($) {
+		return $.aj;
+	},
+	F2(
+		function (comps, components) {
+			return _Utils_update(
+				components,
+				{aj: comps});
+		}));
+var $author$project$Main$predator = F2(
+	function (pos, world) {
+		return A2(
+			$justgook$elm_game_logic$Logic$Entity$with,
+			_Utils_Tuple2($author$project$Components$facings, 1),
+			A2(
+				$justgook$elm_game_logic$Logic$Entity$with,
+				_Utils_Tuple2($author$project$Components$directions, pos),
+				A2(
+					$justgook$elm_game_logic$Logic$Entity$with,
+					_Utils_Tuple2(
+						$author$project$Components$collisions,
+						$elm$core$Set$fromList(
+							A2(
+								$elm$core$List$map,
+								$author$project$Components$kindToString,
+								_List_fromArray(
+									[2, 1])))),
+					A2(
+						$justgook$elm_game_logic$Logic$Entity$with,
+						_Utils_Tuple2(
+							$author$project$Components$follows,
+							$elm$core$Set$singleton(
+								$author$project$Components$kindToString(0))),
 						A2(
 							$justgook$elm_game_logic$Logic$Entity$with,
 							_Utils_Tuple2(
 								$author$project$Components$avoids,
-								$elm$core$Dict$fromList(
-									_List_fromArray(
-										[
-											_Utils_Tuple2(
-											$author$project$Components$kindToString(2),
-											1.1),
-											_Utils_Tuple2(
-											$author$project$Components$kindToString(0),
-											0.5)
-										]))),
+								A2(
+									$elm$core$Dict$singleton,
+									$author$project$Components$kindToString(2),
+									2)),
 							A2(
 								$justgook$elm_game_logic$Logic$Entity$with,
-								_Utils_Tuple2($author$project$Components$speeds, $author$project$Main$defaultSpeed * 1.1),
+								_Utils_Tuple2($author$project$Components$speeds, $author$project$Main$defaultSpeed * 1),
 								A2(
 									$justgook$elm_game_logic$Logic$Entity$with,
-									_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize / 2),
+									_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize),
 									A2(
 										$justgook$elm_game_logic$Logic$Entity$with,
 										_Utils_Tuple2($author$project$Components$positions, pos),
 										A2(
 											$justgook$elm_game_logic$Logic$Entity$with,
-											_Utils_Tuple2($author$project$Components$userInputs, 0),
-											A2(
-												$justgook$elm_game_logic$Logic$Entity$with,
-												_Utils_Tuple2($author$project$Components$kinds, 0),
-												$author$project$Components$addEntity(w_)))))))))).b;
-		});
-	var predator = F2(
-		function (pos, w_) {
-			return A2(
+											_Utils_Tuple2($author$project$Components$kinds, 1),
+											$author$project$Components$addEntity(world)))))))))).b;
+	});
+var $author$project$Components$UserInput = 0;
+var $author$project$Components$userInputs = A2(
+	$justgook$elm_game_logic$Logic$Component$Spec,
+	function ($) {
+		return $.aC;
+	},
+	F2(
+		function (comps, components) {
+			return _Utils_update(
+				components,
+				{aC: comps});
+		}));
+var $author$project$Main$prey = F2(
+	function (pos, world) {
+		return A2(
+			$justgook$elm_game_logic$Logic$Entity$with,
+			_Utils_Tuple2($author$project$Components$facings, 1),
+			A2(
 				$justgook$elm_game_logic$Logic$Entity$with,
-				_Utils_Tuple2($author$project$Components$facings, 1),
+				_Utils_Tuple2($author$project$Components$directions, pos),
 				A2(
 					$justgook$elm_game_logic$Logic$Entity$with,
-					_Utils_Tuple2($author$project$Components$directions, pos),
+					_Utils_Tuple2(
+						$author$project$Components$collisions,
+						$elm$core$Set$fromList(
+							A2(
+								$elm$core$List$map,
+								$author$project$Components$kindToString,
+								_List_fromArray(
+									[2, 0])))),
 					A2(
 						$justgook$elm_game_logic$Logic$Entity$with,
 						_Utils_Tuple2(
-							$author$project$Components$collisions,
-							$elm$core$Set$fromList(
-								A2(
-									$elm$core$List$map,
-									$author$project$Components$kindToString,
-									_List_fromArray(
-										[2, 1])))),
-						A2(
-							$justgook$elm_game_logic$Logic$Entity$with,
-							_Utils_Tuple2(
-								$author$project$Components$follows,
-								$elm$core$Set$singleton(
-									$author$project$Components$kindToString(0))),
-							A2(
-								$justgook$elm_game_logic$Logic$Entity$with,
-								_Utils_Tuple2(
-									$author$project$Components$avoids,
-									A2(
-										$elm$core$Dict$singleton,
+							$author$project$Components$avoids,
+							$elm$core$Dict$fromList(
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
 										$author$project$Components$kindToString(2),
-										2)),
-								A2(
-									$justgook$elm_game_logic$Logic$Entity$with,
-									_Utils_Tuple2($author$project$Components$speeds, $author$project$Main$defaultSpeed * 1),
-									A2(
-										$justgook$elm_game_logic$Logic$Entity$with,
-										_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize),
-										A2(
-											$justgook$elm_game_logic$Logic$Entity$with,
-											_Utils_Tuple2($author$project$Components$positions, pos),
-											A2(
-												$justgook$elm_game_logic$Logic$Entity$with,
-												_Utils_Tuple2($author$project$Components$kinds, 1),
-												$author$project$Components$addEntity(w_)))))))))).b;
-		});
-	var many = F3(
-		function (n, fn, w_) {
-			return A3(
-				$elm$core$List$foldl,
-				F2(
-					function (_v0, w__) {
-						var x = _v0.a;
-						var y = _v0.b;
-						return A2(
-							fn,
-							{F: x, G: y},
-							w__);
-					}),
-				w_,
-				A2(
-					$elm$random$Random$step,
-					A2(
-						$elm$random$Random$list,
-						n,
-						A2(
-							$elm$random$Random$pair,
-							A2($elm$random$Random$float, $author$project$Main$viewport.a2, $author$project$Main$viewport.aL),
-							A2($elm$random$Random$float, $author$project$Main$viewport.bd, $author$project$Main$viewport.bF))),
-					$elm$random$Random$initialSeed(24)).a);
-		});
-	var guardian = F2(
-		function (pos, w_) {
-			return A2(
-				$justgook$elm_game_logic$Logic$Entity$with,
-				_Utils_Tuple2($author$project$Components$facings, 1),
-				A2(
-					$justgook$elm_game_logic$Logic$Entity$with,
-					_Utils_Tuple2($author$project$Components$directions, pos),
-					A2(
-						$justgook$elm_game_logic$Logic$Entity$with,
-						_Utils_Tuple2(
-							$author$project$Components$collisions,
-							$elm$core$Set$fromList(
-								A2(
-									$elm$core$List$map,
-									$author$project$Components$kindToString,
-									_List_fromArray(
-										[2, 1, 0])))),
+										1.1),
+										_Utils_Tuple2(
+										$author$project$Components$kindToString(0),
+										0.5)
+									]))),
 						A2(
 							$justgook$elm_game_logic$Logic$Entity$with,
-							_Utils_Tuple2(
-								$author$project$Components$follows,
-								$elm$core$Set$singleton(
-									$author$project$Components$kindToString(1))),
+							_Utils_Tuple2($author$project$Components$speeds, $author$project$Main$defaultSpeed * 1.1),
 							A2(
 								$justgook$elm_game_logic$Logic$Entity$with,
-								_Utils_Tuple2($author$project$Components$speeds, $author$project$Main$defaultSpeed / 3),
+								_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize / 2),
 								A2(
 									$justgook$elm_game_logic$Logic$Entity$with,
-									_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize * 2),
+									_Utils_Tuple2($author$project$Components$positions, pos),
 									A2(
 										$justgook$elm_game_logic$Logic$Entity$with,
-										_Utils_Tuple2($author$project$Components$positions, pos),
+										_Utils_Tuple2($author$project$Components$userInputs, 0),
 										A2(
 											$justgook$elm_game_logic$Logic$Entity$with,
-											_Utils_Tuple2($author$project$Components$kinds, 2),
-											$author$project$Components$addEntity(w_))))))))).b;
-		});
+											_Utils_Tuple2($author$project$Components$kinds, 0),
+											$author$project$Components$addEntity(world)))))))))).b;
+	});
+var $author$project$Components$set = F2(
+	function (w, c) {
+		return _Utils_update(
+			w,
+			{c1: c});
+	});
+var $author$project$Main$spawnMenu = function (w) {
 	return A2(
 		$author$project$Components$set,
 		w,
 		A2(
-			prey,
-			{F: $author$project$Main$viewport.a2 + 20, G: 0},
+			$author$project$Main$prey,
+			{r: $author$project$Main$viewport.aJ + 20, s: 0},
 			A2(
-				guardian,
-				{F: 0, G: 0},
+				$author$project$Main$guardian,
+				{r: 0, s: 0},
 				A2(
-					predator,
-					{F: $author$project$Main$viewport.aL - 10, G: $author$project$Main$viewport.l / 10},
-					A2(
-						predator,
-						{F: $author$project$Main$viewport.aL - 10, G: (-$author$project$Main$viewport.l) / 10},
-						w.c0)))));
+					$author$project$Main$predator,
+					{r: $author$project$Main$viewport.aw - 10, s: $author$project$Main$viewport.f / 10},
+					w.c1))));
 };
+var $author$project$Main$Playing = 1;
 var $author$project$Components$Left = 0;
 var $justgook$elm_game_logic$Logic$System$applyIf = F3(
 	function (bool, f, world) {
@@ -9722,24 +9589,24 @@ var $justgook$elm_game_logic$Logic$System$applyIf = F3(
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$add = F2(
 	function (a, b) {
-		return {F: a.F + b.F, G: a.G + b.G};
+		return {r: a.r + b.r, s: a.s + b.s};
 	});
 var $elm$core$Basics$sqrt = _Basics_sqrt;
 var $justgook$alt_linear_algebra$AltMath$Vector2$direction = F2(
 	function (a, b) {
-		var c = {F: a.F - b.F, G: a.G - b.G};
-		var len = $elm$core$Basics$sqrt((c.F * c.F) + (c.G * c.G));
-		return {F: c.F / len, G: c.G / len};
+		var c = {r: a.r - b.r, s: a.s - b.s};
+		var len = $elm$core$Basics$sqrt((c.r * c.r) + (c.s * c.s));
+		return {r: c.r / len, s: c.s / len};
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$distanceSquared = F2(
 	function (a, b) {
-		var c = {F: a.F - b.F, G: a.G - b.G};
-		return (c.F * c.F) + (c.G * c.G);
+		var c = {r: a.r - b.r, s: a.s - b.s};
+		return (c.r * c.r) + (c.s * c.s);
 	});
 var $elm$core$Basics$pow = _Basics_pow;
 var $justgook$alt_linear_algebra$AltMath$Vector2$scale = F2(
 	function (s, v2) {
-		return {F: s * v2.F, G: s * v2.G};
+		return {r: s * v2.r, s: s * v2.s};
 	});
 var $author$project$Main$followPoint = F2(
 	function (point, _v0) {
@@ -9884,11 +9751,11 @@ var $justgook$elm_game_logic$Logic$System$step3 = F5(
 				return _Utils_update(
 					acc,
 					{
-						aY: A3(
+						a_: A3(
 							$elm$core$Array$set,
 							i,
 							$elm$core$Maybe$Just(b),
-							acc.aY)
+							acc.a_)
 					});
 			});
 		var set1 = F3(
@@ -9896,17 +9763,17 @@ var $justgook$elm_game_logic$Logic$System$step3 = F5(
 				return _Utils_update(
 					acc,
 					{
-						f: A3(
+						g: A3(
 							$elm$core$Array$set,
 							i,
 							$elm$core$Maybe$Just(a),
-							acc.f)
+							acc.g)
 					});
 			});
 		var combined = {
-			f: spec1.A(world),
-			aY: spec2.A(world),
-			b: spec3.A(world)
+			g: spec1.C(world),
+			a_: spec2.C(world),
+			b: spec3.C(world)
 		};
 		var result = A3(
 			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
@@ -9933,28 +9800,28 @@ var $justgook$elm_game_logic$Logic$System$step3 = F5(
 										acc);
 								}),
 							value,
-							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.aY),
+							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.a_),
 							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.b)));
 				}),
 			combined,
-			combined.f);
+			combined.g);
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
 			!_Utils_eq(result.b, combined.b),
 			spec3.dw(result.b),
 			A3(
 				$justgook$elm_game_logic$Logic$System$applyIf,
-				!_Utils_eq(result.aY, combined.aY),
-				spec2.dw(result.aY),
+				!_Utils_eq(result.a_, combined.a_),
+				spec2.dw(result.a_),
 				A3(
 					$justgook$elm_game_logic$Logic$System$applyIf,
-					!_Utils_eq(result.f, combined.f),
-					spec1.dw(result.f),
+					!_Utils_eq(result.g, combined.g),
+					spec1.dw(result.g),
 					world)));
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$sub = F2(
 	function (a, b) {
-		return {F: a.F - b.F, G: a.G - b.G};
+		return {r: a.r - b.r, s: a.s - b.s};
 	});
 var $author$project$Main$applyDirection = function (components) {
 	return A5(
@@ -9985,7 +9852,7 @@ var $author$project$Main$applyDirection = function (components) {
 					var position = _v0.a;
 					var direction = _v1.a;
 					var setFacing = _v2.b;
-					var facing = (A2($justgook$alt_linear_algebra$AltMath$Vector2$sub, direction, position).F < 1) ? 0 : 1;
+					var facing = (A2($justgook$alt_linear_algebra$AltMath$Vector2$sub, direction, position).r < 1) ? 0 : 1;
 					return A3(
 						$justgook$elm_game_logic$Logic$System$applyIf,
 						!_Utils_eq(direction, position),
@@ -10067,9 +9934,9 @@ var $author$project$Main$avoid = function (components) {
 											_Utils_Tuple2(avoidPosition, avoidSize),
 											_Utils_Tuple2(positionAcc2, speed)) : positionAcc2;
 									}),
-								$author$project$Components$kinds.A(components),
-								$author$project$Components$positions.A(components),
-								$author$project$Components$sizes.A(components),
+								$author$project$Components$kinds.C(components),
+								$author$project$Components$positions.C(components),
+								$author$project$Components$sizes.C(components),
 								positionAcc1);
 						}),
 					position,
@@ -10111,11 +9978,11 @@ var $justgook$elm_game_logic$Logic$System$step2 = F4(
 				return _Utils_update(
 					acc,
 					{
-						aY: A3(
+						a_: A3(
 							$elm$core$Array$set,
 							i,
 							$elm$core$Maybe$Just(b),
-							acc.aY)
+							acc.a_)
 					});
 			});
 		var set1 = F3(
@@ -10123,16 +9990,16 @@ var $justgook$elm_game_logic$Logic$System$step2 = F4(
 				return _Utils_update(
 					acc,
 					{
-						f: A3(
+						g: A3(
 							$elm$core$Array$set,
 							i,
 							$elm$core$Maybe$Just(a),
-							acc.f)
+							acc.g)
 					});
 			});
 		var combined = {
-			f: spec1.A(world),
-			aY: spec2.A(world)
+			g: spec1.C(world),
+			a_: spec2.C(world)
 		};
 		var result = A3(
 			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
@@ -10156,18 +10023,18 @@ var $justgook$elm_game_logic$Logic$System$step2 = F4(
 										acc);
 								}),
 							value,
-							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.aY)));
+							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.a_)));
 				}),
 			combined,
-			combined.f);
+			combined.g);
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
-			!_Utils_eq(result.aY, combined.aY),
-			spec2.dw(result.aY),
+			!_Utils_eq(result.a_, combined.a_),
+			spec2.dw(result.a_),
 			A3(
 				$justgook$elm_game_logic$Logic$System$applyIf,
-				!_Utils_eq(result.f, combined.f),
-				spec1.dw(result.f),
+				!_Utils_eq(result.g, combined.g),
+				spec1.dw(result.g),
 				world));
 	});
 var $author$project$Main$boundedBy = F2(
@@ -10182,8 +10049,8 @@ var $author$project$Main$boundedBy = F2(
 					return A2(
 						setPosition,
 						{
-							F: A3($elm$core$Basics$clamp, screen.a2 + (size / 2), screen.aL - (size / 2), position.F),
-							G: A3($elm$core$Basics$clamp, screen.bd + (size / 2), screen.bF - (size / 2), position.G)
+							r: A3($elm$core$Basics$clamp, screen.aJ + (size / 2), screen.aw - (size / 2), position.r),
+							s: A3($elm$core$Basics$clamp, screen.bd + (size / 2), screen.bG - (size / 2), position.s)
 						},
 						xs);
 				}),
@@ -10229,8 +10096,8 @@ var $author$project$Main$closest = F3(
 						return acc;
 					}
 				}),
-			$author$project$Components$kinds.A(components),
-			$author$project$Components$positions.A(components),
+			$author$project$Components$kinds.C(components),
+			$author$project$Components$positions.C(components),
 			_Utils_Tuple2(1 / 0, origin)).b;
 	});
 var $author$project$Main$follow = function (components) {
@@ -10254,13 +10121,13 @@ var $author$project$Main$follow = function (components) {
 		components);
 };
 var $author$project$Main$scalingFactor = function (screen) {
-	return (_Utils_cmp(screen.l / screen.e, $author$project$Main$viewport.l / $author$project$Main$viewport.e) > 0) ? (screen.e / ($author$project$Main$viewport.e + ($author$project$Main$sprites10.D * 3))) : (screen.l / ($author$project$Main$viewport.l + ($author$project$Main$sprites10.D * 3)));
+	return (_Utils_cmp(screen.f / screen.c, $author$project$Main$viewport.f / $author$project$Main$viewport.c) > 0) ? (screen.c / ($author$project$Main$viewport.c + ($author$project$Main$sprites10.F * 3))) : (screen.f / ($author$project$Main$viewport.f + ($author$project$Main$sprites10.F * 3)));
 };
 var $author$project$Main$toViewport = F2(
 	function (screen, coords) {
 		return {
-			F: coords.F / $author$project$Main$scalingFactor(screen),
-			G: coords.G / $author$project$Main$scalingFactor(screen)
+			r: coords.r / $author$project$Main$scalingFactor(screen),
+			s: coords.s / $author$project$Main$scalingFactor(screen)
 		};
 	});
 var $author$project$Main$mouseInput = F3(
@@ -10270,7 +10137,7 @@ var $author$project$Main$mouseInput = F3(
 			F3(
 				function (_v0, _v1, cs) {
 					var setDirection = _v1.b;
-					return mouse.c7 ? A2(
+					return mouse.bQ ? A2(
 						setDirection,
 						A2($author$project$Main$toViewport, screen, mouse),
 						cs) : cs;
@@ -10356,11 +10223,11 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 				return _Utils_update(
 					acc,
 					{
-						aY: A3(
+						a_: A3(
 							$elm$core$Array$set,
 							i,
 							$elm$core$Maybe$Just(b),
-							acc.aY)
+							acc.a_)
 					});
 			});
 		var set1 = F3(
@@ -10368,18 +10235,18 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 				return _Utils_update(
 					acc,
 					{
-						f: A3(
+						g: A3(
 							$elm$core$Array$set,
 							i,
 							$elm$core$Maybe$Just(a),
-							acc.f)
+							acc.g)
 					});
 			});
 		var combined = {
-			f: spec1.A(world),
-			aY: spec2.A(world),
-			b: spec3.A(world),
-			o: spec4.A(world)
+			g: spec1.C(world),
+			a_: spec2.C(world),
+			b: spec3.C(world),
+			o: spec4.C(world)
 		};
 		var result = A3(
 			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
@@ -10409,12 +10276,12 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 										acc);
 								}),
 							value,
-							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.aY),
+							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.a_),
 							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.b),
 							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.o)));
 				}),
 			combined,
-			combined.f);
+			combined.g);
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
 			!_Utils_eq(result.o, combined.o),
@@ -10425,12 +10292,12 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 				spec3.dw(result.b),
 				A3(
 					$justgook$elm_game_logic$Logic$System$applyIf,
-					!_Utils_eq(result.aY, combined.aY),
-					spec2.dw(result.aY),
+					!_Utils_eq(result.a_, combined.a_),
+					spec2.dw(result.a_),
 					A3(
 						$justgook$elm_game_logic$Logic$System$applyIf,
-						!_Utils_eq(result.f, combined.f),
-						spec1.dw(result.f),
+						!_Utils_eq(result.g, combined.g),
+						spec1.dw(result.g),
 						world))));
 	});
 var $author$project$Main$resolveCollisions = function (components) {
@@ -10455,9 +10322,9 @@ var $author$project$Main$resolveCollisions = function (components) {
 								_Utils_Tuple2(targetPosition, targetSize),
 								_Utils_Tuple3(correctedPosition, size, speed)) : correctedPosition;
 						}),
-					$author$project$Components$kinds.A(components),
-					$author$project$Components$positions.A(components),
-					$author$project$Components$sizes.A(components),
+					$author$project$Components$kinds.C(components),
+					$author$project$Components$positions.C(components),
+					$author$project$Components$sizes.C(components),
 					position);
 				return (!_Utils_eq(newPosition, position)) ? A2(setPosition, newPosition, xs) : xs;
 			}),
@@ -10467,11 +10334,93 @@ var $author$project$Main$resolveCollisions = function (components) {
 		$author$project$Components$speeds,
 		components);
 };
+var $author$project$Main$spawnPlaying = function (w) {
+	return A2(
+		$author$project$Components$set,
+		w,
+		A2(
+			$author$project$Main$prey,
+			{r: $author$project$Main$viewport.aJ + 20, s: 0},
+			A2(
+				$author$project$Main$guardian,
+				{r: 0, s: 0},
+				A2(
+					$author$project$Main$predator,
+					{r: $author$project$Main$viewport.aw - 10, s: $author$project$Main$viewport.f / 10},
+					A2(
+						$author$project$Main$predator,
+						{r: $author$project$Main$viewport.aw - 10, s: (-$author$project$Main$viewport.f) / 10},
+						w.c1)))));
+};
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $author$project$Playground$toFrac = F2(
+	function (period, _v0) {
+		var now = _v0.ab;
+		var p = period * 1000;
+		var ms = now;
+		return A2(
+			$elm$core$Basics$modBy,
+			$elm$core$Basics$round(p),
+			ms) / p;
+	});
+var $elm$core$Basics$pi = _Basics_pi;
+var $elm$core$Basics$turns = function (angleInTurns) {
+	return (2 * $elm$core$Basics$pi) * angleInTurns;
+};
+var $author$project$Playground$wave = F4(
+	function (lo, hi, period, time) {
+		return lo + (((hi - lo) * (1 + $elm$core$Basics$cos(
+			$elm$core$Basics$turns(
+				A2($author$project$Playground$toFrac, period, time))))) / 2);
+	});
+var $author$project$Main$updateMenu = F2(
+	function (_v0, world) {
+		var mouse = _v0.bq;
+		var screen = _v0.aN;
+		var time = _v0.bE;
+		if (mouse.bN) {
+			return $author$project$Main$spawnPlaying(
+				_Utils_update(
+					world,
+					{c1: $author$project$Components$empty, aO: 1}));
+		} else {
+			var t = 3;
+			return A2(
+				$author$project$Components$set,
+				world,
+				A2(
+					$author$project$Main$boundedBy,
+					$author$project$Main$viewport,
+					$author$project$Main$resolveCollisions(
+						$author$project$Main$avoid(
+							$author$project$Main$applyDirection(
+								$author$project$Main$follow(
+									A3(
+										$author$project$Main$mouseInput,
+										screen,
+										{
+											bN: true,
+											bQ: true,
+											r: A4($author$project$Playground$wave, -$author$project$Main$viewport.f, $author$project$Main$viewport.f, t, time),
+											s: A4(
+												$author$project$Playground$wave,
+												-$author$project$Main$viewport.c,
+												$author$project$Main$viewport.c,
+												t,
+												_Utils_update(
+													time,
+													{
+														ab: time.ab - $elm$core$Basics$round((t / 4) * 1000)
+													}))
+										},
+										world.c1)))))));
+		}
+	});
 var $author$project$Main$updatePlaying = F2(
 	function (_v0, world) {
 		var mouse = _v0.bq;
 		var keyboard = _v0.dk;
-		var screen = _v0.a6;
+		var screen = _v0.aN;
 		return A2(
 			$author$project$Components$set,
 			world,
@@ -10482,17 +10431,13 @@ var $author$project$Main$updatePlaying = F2(
 					$author$project$Main$avoid(
 						$author$project$Main$applyDirection(
 							$author$project$Main$follow(
-								A3($author$project$Main$mouseInput, screen, mouse, world.c0)))))));
+								A3($author$project$Main$mouseInput, screen, mouse, world.c1)))))));
 	});
 var $author$project$Main$update = F2(
 	function (computer, world) {
-		var mouse = computer.bq;
-		var _v0 = world.aM;
+		var _v0 = world.aO;
 		if (!_v0) {
-			return mouse.c_ ? $author$project$Main$spawn(
-				_Utils_update(
-					world,
-					{aM: 1})) : world;
+			return A2($author$project$Main$updateMenu, computer, world);
 		} else {
 			return A2($author$project$Main$updatePlaying, computer, world);
 		}
@@ -10502,29 +10447,29 @@ var $justgook$webgl_shape$WebGL$Shape2d$Group = function (a) {
 };
 var $author$project$Playground$group = function (shapes) {
 	return {
-		f: 0,
-		h: $justgook$webgl_shape$WebGL$Shape2d$Group(shapes),
-		g: 1,
-		c: 1,
+		g: 0,
+		i: $justgook$webgl_shape$WebGL$Shape2d$Group(shapes),
+		h: 1,
 		d: 1,
-		F: 0,
-		G: 0,
-		t: 0
+		e: 1,
+		r: 0,
+		s: 0,
+		v: 0
 	};
 };
 var $author$project$Playground$scale = F2(
 	function (ns, _v0) {
 		var shape = _v0;
-		var x = shape.F;
-		var y = shape.G;
-		var a = shape.f;
-		var sx = shape.c;
-		var sy = shape.d;
-		var o = shape.g;
-		var form = shape.h;
+		var x = shape.r;
+		var y = shape.s;
+		var a = shape.g;
+		var sx = shape.d;
+		var sy = shape.e;
+		var o = shape.h;
+		var form = shape.i;
 		return _Utils_update(
 			shape,
-			{c: sx * ns, d: sy * ns});
+			{d: sx * ns, e: sy * ns});
 	});
 var $author$project$Main$adaptToViewport = F2(
 	function (screen, shapes) {
@@ -10536,120 +10481,6 @@ var $author$project$Main$adaptToViewport = F2(
 				$author$project$Playground$group(shapes))
 			]);
 	});
-var $author$project$Playground$intFromHexChar = function (s) {
-	switch (s) {
-		case '0':
-			return $elm$core$Maybe$Just(0);
-		case '1':
-			return $elm$core$Maybe$Just(1);
-		case '2':
-			return $elm$core$Maybe$Just(2);
-		case '3':
-			return $elm$core$Maybe$Just(3);
-		case '4':
-			return $elm$core$Maybe$Just(4);
-		case '5':
-			return $elm$core$Maybe$Just(5);
-		case '6':
-			return $elm$core$Maybe$Just(6);
-		case '7':
-			return $elm$core$Maybe$Just(7);
-		case '8':
-			return $elm$core$Maybe$Just(8);
-		case '9':
-			return $elm$core$Maybe$Just(9);
-		case 'a':
-			return $elm$core$Maybe$Just(10);
-		case 'b':
-			return $elm$core$Maybe$Just(11);
-		case 'c':
-			return $elm$core$Maybe$Just(12);
-		case 'd':
-			return $elm$core$Maybe$Just(13);
-		case 'e':
-			return $elm$core$Maybe$Just(14);
-		case 'f':
-			return $elm$core$Maybe$Just(15);
-		default:
-			return $elm$core$Maybe$Nothing;
-	}
-};
-var $author$project$Playground$maybeMap6 = F7(
-	function (func, ma, mb, mc, md, me, mf) {
-		if (ma.$ === 1) {
-			return $elm$core$Maybe$Nothing;
-		} else {
-			var a = ma.a;
-			if (mb.$ === 1) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var b = mb.a;
-				if (mc.$ === 1) {
-					return $elm$core$Maybe$Nothing;
-				} else {
-					var c = mc.a;
-					if (md.$ === 1) {
-						return $elm$core$Maybe$Nothing;
-					} else {
-						var d = md.a;
-						if (me.$ === 1) {
-							return $elm$core$Maybe$Nothing;
-						} else {
-							var e = me.a;
-							if (mf.$ === 1) {
-								return $elm$core$Maybe$Nothing;
-							} else {
-								var f = mf.a;
-								return $elm$core$Maybe$Just(
-									A6(func, a, b, c, d, e, f));
-							}
-						}
-					}
-				}
-			}
-		}
-	});
-var $elm$core$String$foldr = _String_foldr;
-var $elm$core$String$toList = function (string) {
-	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
-};
-var $elm_explorations$linear_algebra$Math$Vector3$vec3 = _MJS_v3;
-var $author$project$Playground$hexColor2Vec3 = function (str) {
-	var withoutHash = A2($elm$core$String$startsWith, '#', str) ? A2($elm$core$String$dropLeft, 1, str) : str;
-	var _v0 = $elm$core$String$toList(withoutHash);
-	if ((((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && _v0.b.b.b.b.b) && _v0.b.b.b.b.b.b) && (!_v0.b.b.b.b.b.b.b)) {
-		var r1 = _v0.a;
-		var _v1 = _v0.b;
-		var r2 = _v1.a;
-		var _v2 = _v1.b;
-		var g1 = _v2.a;
-		var _v3 = _v2.b;
-		var g2 = _v3.a;
-		var _v4 = _v3.b;
-		var b1 = _v4.a;
-		var _v5 = _v4.b;
-		var b2 = _v5.a;
-		return A7(
-			$author$project$Playground$maybeMap6,
-			F6(
-				function (a, b, c, d, e, f) {
-					return A3($elm_explorations$linear_algebra$Math$Vector3$vec3, ((a * 16) + b) / 255, ((c * 16) + d) / 255, ((e * 16) + f) / 255);
-				}),
-			$author$project$Playground$intFromHexChar(r1),
-			$author$project$Playground$intFromHexChar(r2),
-			$author$project$Playground$intFromHexChar(g1),
-			$author$project$Playground$intFromHexChar(g2),
-			$author$project$Playground$intFromHexChar(b1),
-			$author$project$Playground$intFromHexChar(b2));
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
-var $author$project$Playground$darkPurple = A2(
-	$elm$core$Maybe$withDefault,
-	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
-	$author$project$Playground$hexColor2Vec3('#5c3566'));
-var $author$project$Main$defaultFontSize = 12;
 var $justgook$elm_image$Image$Info$FromData = function (a) {
 	return {$: 3, a: a};
 };
@@ -10667,32 +10498,64 @@ var $justgook$elm_image$Image$fromList = F2(
 			$justgook$elm_image$Image$Internal$ImageData$List,
 			$justgook$elm_image$Image$Info$FromData(
 				{
-					ak: $justgook$elm_image$Image$Info$FromDataChannel4(3),
-					e: ($elm$core$List$length(l) / w) | 0,
-					l: w
+					al: $justgook$elm_image$Image$Info$FromDataChannel4(3),
+					c: ($elm$core$List$length(l) / w) | 0,
+					f: w
 				}),
 			l);
 	});
-var $elm$core$List$repeatHelp = F3(
-	function (result, n, value) {
-		repeatHelp:
+var $elm$random$Random$Seed = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $elm$random$Random$next = function (_v0) {
+	var state0 = _v0.a;
+	var incr = _v0.b;
+	return A2($elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
+};
+var $elm$random$Random$initialSeed = function (x) {
+	var _v0 = $elm$random$Random$next(
+		A2($elm$random$Random$Seed, 0, 1013904223));
+	var state1 = _v0.a;
+	var incr = _v0.b;
+	var state2 = (state1 + x) >>> 0;
+	return $elm$random$Random$next(
+		A2($elm$random$Random$Seed, state2, incr));
+};
+var $elm$random$Random$Generator = $elm$core$Basics$identity;
+var $elm$random$Random$listHelp = F4(
+	function (revList, n, gen, seed) {
+		listHelp:
 		while (true) {
-			if (n <= 0) {
-				return result;
+			if (n < 1) {
+				return _Utils_Tuple2(revList, seed);
 			} else {
-				var $temp$result = A2($elm$core$List$cons, value, result),
+				var _v0 = gen(seed);
+				var value = _v0.a;
+				var newSeed = _v0.b;
+				var $temp$revList = A2($elm$core$List$cons, value, revList),
 					$temp$n = n - 1,
-					$temp$value = value;
-				result = $temp$result;
+					$temp$gen = gen,
+					$temp$seed = newSeed;
+				revList = $temp$revList;
 				n = $temp$n;
-				value = $temp$value;
-				continue repeatHelp;
+				gen = $temp$gen;
+				seed = $temp$seed;
+				continue listHelp;
 			}
 		}
 	});
-var $elm$core$List$repeat = F2(
-	function (n, value) {
-		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+var $elm$random$Random$list = F2(
+	function (n, _v0) {
+		var gen = _v0;
+		return function (seed) {
+			return A4($elm$random$Random$listHelp, _List_Nil, n, gen, seed);
+		};
+	});
+var $elm$random$Random$step = F2(
+	function (_v0, seed) {
+		var generator = _v0;
+		return generator(seed);
 	});
 var $justgook$webgl_shape$WebGL$Shape2d$Form = F3(
 	function (a, b, c) {
@@ -10724,12 +10587,12 @@ var $elm_explorations$webgl$WebGL$Internal$Blend = function (a) {
 	};
 };
 var $elm_explorations$webgl$WebGL$Settings$Blend$custom = function (_v0) {
-	var r = _v0.a4;
-	var g = _v0.a0;
-	var b = _v0.aY;
-	var a = _v0.f;
-	var color = _v0.ak;
-	var alpha = _v0.ah;
+	var r = _v0.a5;
+	var g = _v0.a2;
+	var b = _v0.a_;
+	var a = _v0.g;
+	var color = _v0.al;
+	var alpha = _v0.ai;
 	var expand = F2(
 		function (_v1, _v2) {
 			var eq1 = _v1.a;
@@ -10756,12 +10619,12 @@ var $elm_explorations$webgl$WebGL$Settings$Blend$add = F2(
 	function (factor1, factor2) {
 		return $elm_explorations$webgl$WebGL$Settings$Blend$custom(
 			{
-				f: 0,
-				ah: A2($elm_explorations$webgl$WebGL$Settings$Blend$customAdd, factor1, factor2),
-				aY: 0,
-				ak: A2($elm_explorations$webgl$WebGL$Settings$Blend$customAdd, factor1, factor2),
-				a0: 0,
-				a4: 0
+				g: 0,
+				ai: A2($elm_explorations$webgl$WebGL$Settings$Blend$customAdd, factor1, factor2),
+				a_: 0,
+				al: A2($elm_explorations$webgl$WebGL$Settings$Blend$customAdd, factor1, factor2),
+				a2: 0,
+				a5: 0
 			});
 	});
 var $elm_explorations$webgl$WebGL$Internal$ColorMask = F4(
@@ -10808,41 +10671,41 @@ var $elm_explorations$webgl$WebGL$Mesh1 = F2(
 		return {$: 0, a: a, b: b};
 	});
 var $elm_explorations$webgl$WebGL$triangleStrip = $elm_explorations$webgl$WebGL$Mesh1(
-	{bO: 1, b4: 0, cq: 5});
+	{bR: 1, b7: 0, ct: 5});
 var $elm_explorations$linear_algebra$Math$Vector2$vec2 = _MJS_v2;
 var $author$project$Playground$Shader$mesh = $elm_explorations$webgl$WebGL$triangleStrip(
 	_List_fromArray(
 		[
 			{
-			aX: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, -1, -1)
+			aZ: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, -1, -1)
 		},
 			{
-			aX: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, -1, 1)
+			aZ: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, -1, 1)
 		},
 			{
-			aX: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 1, -1)
+			aZ: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 1, -1)
 		},
 			{
-			aX: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 1, 1)
+			aZ: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, 1, 1)
 		}
 		]));
 var $elm_explorations$webgl$WebGL$Texture$size = _Texture_size;
 var $author$project$Playground$Shader$vertImage = {
 	src: '\n            precision mediump float;\n            attribute vec2 aP;\n            uniform vec4 uT;\n            uniform vec2 uP;\n            uniform float z;\n            varying vec2 uv;\n            vec2 edgeFix = vec2(0.0000001, -0.0000001);\n            void main () {\n                uv = aP * .5 + 0.5 + edgeFix;\n                gl_Position = vec4(aP * mat2(uT) + uP, z  * -1.19209304e-7, 1.0);\n            }\n        ',
-	attributes: {aP: 'aX'},
-	uniforms: {uP: 'dH', uT: 'dI', z: 't'}
+	attributes: {aP: 'aZ'},
+	uniforms: {uP: 'dH', uT: 'dI', z: 'v'}
 };
 var $author$project$Playground$Extra$Tilemap$tilemap = F4(
 	function (tileW, tileH, tileset, lut) {
 		return {
-			f: 0,
-			h: A2(
+			g: 0,
+			i: A2(
 				$justgook$webgl_shape$WebGL$Shape2d$Textured,
 				tileset,
 				function (tileset_) {
 					return {
-						f: 0,
-						h: A2(
+						g: 0,
+						i: A2(
 							$justgook$webgl_shape$WebGL$Shape2d$Textured,
 							lut,
 							function (lut_) {
@@ -10861,8 +10724,8 @@ var $author$project$Playground$Extra$Tilemap$tilemap = F4(
 								var w1 = _v1.a;
 								var h1 = _v1.b;
 								return {
-									f: 0,
-									h: A3(
+									g: 0,
+									i: A3(
 										$justgook$webgl_shape$WebGL$Shape2d$Form,
 										w2 * tileW,
 										h2 * tileH,
@@ -10883,31 +10746,31 @@ var $author$project$Playground$Extra$Tilemap$tilemap = F4(
 														dH: translate,
 														dI: scaleRotateSkew,
 														dJ: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, tileW, tileH),
-														t: z
+														v: z
 													});
 											})),
-									g: 1,
-									c: 1,
+									h: 1,
 									d: 1,
-									F: 0,
-									G: 0,
-									t: 0
+									e: 1,
+									r: 0,
+									s: 0,
+									v: 0
 								};
 							}),
-						g: 1,
-						c: 1,
+						h: 1,
 						d: 1,
-						F: 0,
-						G: 0,
-						t: 0
+						e: 1,
+						r: 0,
+						s: 0,
+						v: 0
 					};
 				}),
-			g: 1,
-			c: 1,
+			h: 1,
 			d: 1,
-			F: 0,
-			G: 0,
-			t: 0
+			e: 1,
+			r: 0,
+			s: 0,
+			v: 0
 		};
 	});
 var $author$project$Playground$Extra$tilemap = $author$project$Playground$Extra$Tilemap$tilemap;
@@ -11272,7 +11135,7 @@ var $elm$bytes$Bytes$Decode$succeed = function (a) {
 };
 var $elm$bytes$Bytes$Decode$unsignedInt8 = _Bytes_read_u8;
 var $danfishgold$base64_bytes$Decode$loopHelp = function (_v0) {
-	var remaining = _v0.a5;
+	var remaining = _v0.a6;
 	var string = _v0.a7;
 	if (remaining >= 18) {
 		return A2(
@@ -11280,7 +11143,7 @@ var $danfishgold$base64_bytes$Decode$loopHelp = function (_v0) {
 			function (result) {
 				return $elm$bytes$Bytes$Decode$Loop(
 					{
-						a5: remaining - 18,
+						a6: remaining - 18,
 						a7: _Utils_ap(string, result)
 					});
 			},
@@ -11292,7 +11155,7 @@ var $danfishgold$base64_bytes$Decode$loopHelp = function (_v0) {
 					var combined = ((a << 16) | (b << 8)) | c;
 					return $elm$bytes$Bytes$Decode$Loop(
 						{
-							a5: remaining - 3,
+							a6: remaining - 3,
 							a7: _Utils_ap(
 								string,
 								A2($danfishgold$base64_bytes$Decode$bitsToChars, combined, 0))
@@ -11332,7 +11195,7 @@ var $danfishgold$base64_bytes$Decode$loopHelp = function (_v0) {
 var $danfishgold$base64_bytes$Decode$decoder = function (width) {
 	return A2(
 		$elm$bytes$Bytes$Decode$loop,
-		{a5: width, a7: ''},
+		{a6: width, a7: ''},
 		$danfishgold$base64_bytes$Decode$loopHelp);
 };
 var $elm$bytes$Bytes$width = _Bytes_width;
@@ -11346,7 +11209,7 @@ var $danfishgold$base64_bytes$Decode$fromBytes = function (bytes) {
 var $danfishgold$base64_bytes$Base64$fromBytes = $danfishgold$base64_bytes$Decode$fromBytes;
 var $justgook$elm_image$Image$Internal$ImageData$RGBA = 0;
 var $justgook$elm_image$Image$Internal$ImageData$RightDown = 0;
-var $justgook$elm_image$Image$Internal$ImageData$defaultOptions = {bS: 0, cu: 0};
+var $justgook$elm_image$Image$Internal$ImageData$defaultOptions = {bV: 0, cx: 0};
 var $elm$bytes$Bytes$Encode$encode = _Bytes_encode;
 var $elm$bytes$Bytes$Encode$Bytes = function (a) {
 	return {$: 10, a: a};
@@ -11388,6 +11251,7 @@ var $folkertdev$elm_flate$Checksum$Crc32$tinf_crc32case = function (i) {
 			return 3183342108;
 	}
 };
+var $elm$core$Bitwise$xor = _Bitwise_xor;
 var $folkertdev$elm_flate$Checksum$Crc32$step = F2(
 	function (_byte, crc) {
 		var a = (crc ^ _byte) >>> 0;
@@ -11396,8 +11260,8 @@ var $folkertdev$elm_flate$Checksum$Crc32$step = F2(
 		return c;
 	});
 var $folkertdev$elm_flate$Checksum$Crc32$crc32Help = function (_v0) {
-	var remaining = _v0.a5;
-	var crc = _v0.a$;
+	var remaining = _v0.a6;
+	var crc = _v0.a1;
 	return (remaining >= 8) ? A3(
 		$elm$bytes$Bytes$Decode$map2,
 		F2(
@@ -11412,7 +11276,7 @@ var $folkertdev$elm_flate$Checksum$Crc32$crc32Help = function (_v0) {
 				var byte1 = 255 & (word1 >>> 24);
 				return $elm$bytes$Bytes$Decode$Loop(
 					{
-						a$: A2(
+						a1: A2(
 							$folkertdev$elm_flate$Checksum$Crc32$step,
 							byte8,
 							A2(
@@ -11434,7 +11298,7 @@ var $folkertdev$elm_flate$Checksum$Crc32$crc32Help = function (_v0) {
 													$folkertdev$elm_flate$Checksum$Crc32$step,
 													byte2,
 													A2($folkertdev$elm_flate$Checksum$Crc32$step, byte1, crc)))))))),
-						a5: remaining - 8
+						a6: remaining - 8
 					});
 			}),
 		$elm$bytes$Bytes$Decode$unsignedInt32(1),
@@ -11443,8 +11307,8 @@ var $folkertdev$elm_flate$Checksum$Crc32$crc32Help = function (_v0) {
 		function (_byte) {
 			return $elm$bytes$Bytes$Decode$Loop(
 				{
-					a$: A2($folkertdev$elm_flate$Checksum$Crc32$step, _byte, crc),
-					a5: remaining - 1
+					a1: A2($folkertdev$elm_flate$Checksum$Crc32$step, _byte, crc),
+					a6: remaining - 1
 				});
 		},
 		$elm$bytes$Bytes$Decode$unsignedInt8) : $elm$bytes$Bytes$Decode$succeed(
@@ -11460,7 +11324,7 @@ var $folkertdev$elm_flate$Checksum$Crc32$tinf_crc32 = function (buffer) {
 			$elm$bytes$Bytes$Decode$decode,
 			A2(
 				$elm$bytes$Bytes$Decode$loop,
-				{a$: initialCrc, a5: length},
+				{a1: initialCrc, a6: length},
 				$folkertdev$elm_flate$Checksum$Crc32$crc32Help),
 			buffer));
 };
@@ -11525,7 +11389,7 @@ var $folkertdev$elm_flate$Flate$Dynamic = function (a) {
 var $folkertdev$elm_flate$Flate$WithWindowSize = function (a) {
 	return {$: 1, a: a};
 };
-var $folkertdev$elm_flate$Checksum$Adler32$a32 = {ba: 65521, cs: 5552};
+var $folkertdev$elm_flate$Checksum$Adler32$a32 = {ba: 65521, cv: 5552};
 var $folkertdev$elm_flate$Checksum$Adler32$step8Bytes = F5(
 	function (remaining, s1, s2, word1, word2) {
 		var byte8 = 255 & word2;
@@ -11553,12 +11417,12 @@ var $folkertdev$elm_flate$Checksum$Adler32$step8Bytes = F5(
 		var s2b_3 = s2b_2 + s1b_3;
 		var s2b_4 = s2b_3 + s1b_4;
 		return $elm$bytes$Bytes$Decode$Loop(
-			{a5: remaining - 8, B: s1b_4, C: s2b_4});
+			{a6: remaining - 8, D: s1b_4, E: s2b_4});
 	});
 var $folkertdev$elm_flate$Checksum$Adler32$processChunkHelp = function (_v0) {
-	var remaining = _v0.a5;
-	var s1 = _v0.B;
-	var s2 = _v0.C;
+	var remaining = _v0.a6;
+	var s1 = _v0.D;
+	var s2 = _v0.E;
 	return (remaining >= 8) ? A3(
 		$elm$bytes$Bytes$Decode$map2,
 		A3($folkertdev$elm_flate$Checksum$Adler32$step8Bytes, remaining, s1, s2),
@@ -11567,40 +11431,40 @@ var $folkertdev$elm_flate$Checksum$Adler32$processChunkHelp = function (_v0) {
 		$elm$bytes$Bytes$Decode$map,
 		function (_byte) {
 			return $elm$bytes$Bytes$Decode$Loop(
-				{a5: remaining - 1, B: s1 + _byte, C: (s1 + _byte) + s2});
+				{a6: remaining - 1, D: s1 + _byte, E: (s1 + _byte) + s2});
 		},
 		$elm$bytes$Bytes$Decode$unsignedInt8) : $elm$bytes$Bytes$Decode$succeed(
 		$elm$bytes$Bytes$Decode$Done(
-			{B: s1 % $folkertdev$elm_flate$Checksum$Adler32$a32.ba, C: s2 % $folkertdev$elm_flate$Checksum$Adler32$a32.ba})));
+			{D: s1 % $folkertdev$elm_flate$Checksum$Adler32$a32.ba, E: s2 % $folkertdev$elm_flate$Checksum$Adler32$a32.ba})));
 };
 var $folkertdev$elm_flate$Checksum$Adler32$processChunk = function (config) {
 	return A2($elm$bytes$Bytes$Decode$loop, config, $folkertdev$elm_flate$Checksum$Adler32$processChunkHelp);
 };
 var $folkertdev$elm_flate$Checksum$Adler32$chunkedFold = function (_v0) {
-	var bufferSize = _v0.bK;
-	var maxBlockSize = _v0.co;
+	var bufferSize = _v0.bL;
+	var maxBlockSize = _v0.cr;
 	var go = function (_v1) {
 		var remainingLength = _v1.bw;
-		var s1 = _v1.B;
-		var s2 = _v1.C;
+		var s1 = _v1.D;
+		var s2 = _v1.E;
 		return (!remainingLength) ? $elm$bytes$Bytes$Decode$succeed(
 			$elm$bytes$Bytes$Decode$Done(
-				{B: s1, C: s2})) : ((_Utils_cmp(remainingLength, maxBlockSize) < 0) ? A2(
+				{D: s1, E: s2})) : ((_Utils_cmp(remainingLength, maxBlockSize) < 0) ? A2(
 			$elm$bytes$Bytes$Decode$map,
 			$elm$bytes$Bytes$Decode$Done,
 			$folkertdev$elm_flate$Checksum$Adler32$processChunk(
-				{a5: remainingLength, B: s1, C: s2})) : A2(
+				{a6: remainingLength, D: s1, E: s2})) : A2(
 			$elm$bytes$Bytes$Decode$map,
 			function (result) {
 				return $elm$bytes$Bytes$Decode$Loop(
-					{bw: remainingLength - maxBlockSize, B: result.B, C: result.C});
+					{bw: remainingLength - maxBlockSize, D: result.D, E: result.E});
 			},
 			$folkertdev$elm_flate$Checksum$Adler32$processChunk(
-				{a5: maxBlockSize, B: s1, C: s2})));
+				{a6: maxBlockSize, D: s1, E: s2})));
 	};
 	return A2(
 		$elm$bytes$Bytes$Decode$loop,
-		{bw: bufferSize, B: 1, C: 0},
+		{bw: bufferSize, D: 1, E: 0},
 		go);
 };
 var $folkertdev$elm_flate$Checksum$Adler32$adler32 = function (buffer) {
@@ -11608,15 +11472,15 @@ var $folkertdev$elm_flate$Checksum$Adler32$adler32 = function (buffer) {
 		$elm$bytes$Bytes$Decode$decode,
 		$folkertdev$elm_flate$Checksum$Adler32$chunkedFold(
 			{
-				bK: $elm$bytes$Bytes$width(buffer),
-				co: $folkertdev$elm_flate$Checksum$Adler32$a32.cs
+				bL: $elm$bytes$Bytes$width(buffer),
+				cr: $folkertdev$elm_flate$Checksum$Adler32$a32.cv
 			}),
 		buffer);
 	if (_v0.$ === 1) {
 		return 0;
 	} else {
-		var s1 = _v0.a.B;
-		var s2 = _v0.a.C;
+		var s1 = _v0.a.D;
+		var s2 = _v0.a.E;
 		return ((s2 << 16) | s1) >>> 0;
 	}
 };
@@ -11699,7 +11563,6 @@ var $folkertdev$elm_flate$Deflate$Symbol$code = function (symbol) {
 			return ((length >= 3) && (length <= 10)) ? ((257 + length) - 3) : (((length >= 11) && (length <= 18)) ? (265 + (((length - 11) / 2) | 0)) : (((length >= 19) && (length <= 34)) ? (269 + (((length - 19) / 4) | 0)) : (((length >= 35) && (length <= 66)) ? (273 + (((length - 35) / 8) | 0)) : (((length >= 67) && (length <= 130)) ? (277 + (((length - 67) / 16) | 0)) : (((length >= 131) && (length <= 257)) ? (281 + (((length - 131) / 32) | 0)) : ((length === 258) ? 285 : (-1)))))));
 	}
 };
-var $elm$core$Basics$modBy = _Basics_modBy;
 var $folkertdev$elm_flate$Deflate$Symbol$distance = function (symbol) {
 	if (symbol.$ === 2) {
 		var distance_ = symbol.b;
@@ -11874,7 +11737,7 @@ var $elm$core$Array$fromListHelp = F3(
 				return A2(
 					$elm$core$Array$builderToArray,
 					true,
-					{m: nodeList, i: nodeListSize, k: jsArray});
+					{m: nodeList, j: nodeListSize, l: jsArray});
 			} else {
 				var $temp$list = remainingItems,
 					$temp$nodeList = A2(
@@ -11916,8 +11779,8 @@ var $elm$core$Array$indexedMap = F2(
 		var tail = _v0.d;
 		var initialBuilder = {
 			m: _List_Nil,
-			i: 0,
-			k: A3(
+			j: 0,
+			l: A3(
 				$elm$core$Elm$JsArray$indexedMap,
 				func,
 				$elm$core$Array$tailIndex(len),
@@ -11930,13 +11793,13 @@ var $elm$core$Array$indexedMap = F2(
 					return A3($elm$core$Elm$JsArray$foldl, helper, builder, subTree);
 				} else {
 					var leaf = node.a;
-					var offset = builder.i * $elm$core$Array$branchFactor;
+					var offset = builder.j * $elm$core$Array$branchFactor;
 					var mappedLeaf = $elm$core$Array$Leaf(
 						A3($elm$core$Elm$JsArray$indexedMap, func, offset, leaf));
 					return {
 						m: A2($elm$core$List$cons, mappedLeaf, builder.m),
-						i: builder.i + 1,
-						k: builder.k
+						j: builder.j + 1,
+						l: builder.l
 					};
 				}
 			});
@@ -12025,7 +11888,7 @@ var $folkertdev$elm_flate$LengthLimitedHuffmanCodes$merge = F2(
 var $folkertdev$elm_flate$LengthLimitedHuffmanCodes$mergeNodes = F2(
 	function (node1, node2) {
 		return {
-			ae: A2($elm$core$Array$append, node1.ae, node2.ae),
+			af: A2($elm$core$Array$append, node1.af, node2.af),
 			N: node1.N + node2.N
 		};
 	});
@@ -12066,7 +11929,7 @@ var $folkertdev$elm_flate$LengthLimitedHuffmanCodes$package = function (nodes) {
 var $folkertdev$elm_flate$LengthLimitedHuffmanCodes$singletonNode = F2(
 	function (symbol, weight) {
 		return {
-			ae: A2($elm$core$Array$repeat, 1, symbol),
+			af: A2($elm$core$Array$repeat, 1, symbol),
 			N: weight
 		};
 	});
@@ -12174,7 +12037,7 @@ var $folkertdev$elm_flate$LengthLimitedHuffmanCodes$calculate = F2(
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.ae;
+					return $.af;
 				},
 				$elm$core$Array$toList),
 			$elm$core$Array$toList(
@@ -12205,7 +12068,7 @@ var $folkertdev$elm_flate$Huffman$new = function (n) {
 		$elm$core$Array$repeat,
 		n,
 		$folkertdev$elm_flate$Huffman$codeFromRecord(
-			{a: 0, l: 0}));
+			{a: 0, f: 0}));
 };
 var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
 var $folkertdev$elm_flate$Huffman$inverseEndianLoop = F4(
@@ -12228,10 +12091,10 @@ var $folkertdev$elm_flate$Huffman$inverseEndianLoop = F4(
 		}
 	});
 var $folkertdev$elm_flate$Huffman$inverseEndian = function (_v0) {
-	var width = _v0.l;
+	var width = _v0.f;
 	var bits = _v0.a;
 	var inverseBits = A4($folkertdev$elm_flate$Huffman$inverseEndianLoop, 0, width, bits, 0);
-	return {a: inverseBits, l: width};
+	return {a: inverseBits, f: width};
 };
 var $folkertdev$elm_flate$Huffman$setMapping = F3(
 	function (symbol, code, _v0) {
@@ -12268,7 +12131,7 @@ var $folkertdev$elm_flate$Huffman$restoreCanonicalHuffmanCodes = F2(
 				var prevWidth = _v2.b;
 				var currentTree = _v2.c;
 				var newBits = code << (bitWidth - prevWidth);
-				var nextCode = {a: newBits, l: bitWidth};
+				var nextCode = {a: newBits, f: bitWidth};
 				return _Utils_Tuple3(
 					newBits + 1,
 					bitWidth,
@@ -13042,7 +12905,7 @@ var $folkertdev$elm_flate$Huffman$encode = F2(
 		if (_v1.$ === 1) {
 			return A2($folkertdev$elm_flate$Deflate$BitWriter$writeBits, 0, 0);
 		} else {
-			var width = _v1.a.l;
+			var width = _v1.a.f;
 			var bits = _v1.a.a;
 			return A2($folkertdev$elm_flate$Deflate$BitWriter$writeBits, width, bits);
 		}
@@ -13182,7 +13045,7 @@ var $folkertdev$elm_flate$Deflate$Symbol$calculateCodes = function (runLengths) 
 	return A3($elm$core$Array$foldl, folder, $elm$core$Array$empty, runLengths);
 };
 var $folkertdev$elm_flate$Huffman$getWidth = function (_v0) {
-	var width = _v0.l;
+	var width = _v0.f;
 	return width;
 };
 var $folkertdev$elm_flate$Huffman$lookup = F2(
@@ -13447,7 +13310,7 @@ var $folkertdev$elm_flate$Huffman$usedMaxSymbol = function (_v0) {
 			$folkertdev$elm_flate$Huffman$positionFromTheEnd,
 			function (_v1) {
 				var value = _v1;
-				return value.l > 0;
+				return value.f > 0;
 			},
 			array));
 };
@@ -13712,8 +13575,8 @@ var $elm$core$Array$sliceLeft = F2(
 					var firstSlice = from - (skipNodes * $elm$core$Array$branchFactor);
 					var initialBuilder = {
 						m: _List_Nil,
-						i: 0,
-						k: A3(
+						j: 0,
+						l: A3(
 							$elm$core$Elm$JsArray$slice,
 							firstSlice,
 							$elm$core$Elm$JsArray$length(head),
@@ -13970,328 +13833,328 @@ var $folkertdev$elm_flate$Huffman$hardcodedStaticHuffmanTree = {
 	X: $folkertdev$elm_flate$Huffman$fromList(
 		_List_fromArray(
 			[
-				{a: 0, l: 5},
-				{a: 16, l: 5},
-				{a: 8, l: 5},
-				{a: 24, l: 5},
-				{a: 4, l: 5},
-				{a: 20, l: 5},
-				{a: 12, l: 5},
-				{a: 28, l: 5},
-				{a: 2, l: 5},
-				{a: 18, l: 5},
-				{a: 10, l: 5},
-				{a: 26, l: 5},
-				{a: 6, l: 5},
-				{a: 22, l: 5},
-				{a: 14, l: 5},
-				{a: 30, l: 5},
-				{a: 1, l: 5},
-				{a: 17, l: 5},
-				{a: 9, l: 5},
-				{a: 25, l: 5},
-				{a: 5, l: 5},
-				{a: 21, l: 5},
-				{a: 13, l: 5},
-				{a: 29, l: 5},
-				{a: 3, l: 5},
-				{a: 19, l: 5},
-				{a: 11, l: 5},
-				{a: 27, l: 5},
-				{a: 7, l: 5},
-				{a: 23, l: 5}
+				{a: 0, f: 5},
+				{a: 16, f: 5},
+				{a: 8, f: 5},
+				{a: 24, f: 5},
+				{a: 4, f: 5},
+				{a: 20, f: 5},
+				{a: 12, f: 5},
+				{a: 28, f: 5},
+				{a: 2, f: 5},
+				{a: 18, f: 5},
+				{a: 10, f: 5},
+				{a: 26, f: 5},
+				{a: 6, f: 5},
+				{a: 22, f: 5},
+				{a: 14, f: 5},
+				{a: 30, f: 5},
+				{a: 1, f: 5},
+				{a: 17, f: 5},
+				{a: 9, f: 5},
+				{a: 25, f: 5},
+				{a: 5, f: 5},
+				{a: 21, f: 5},
+				{a: 13, f: 5},
+				{a: 29, f: 5},
+				{a: 3, f: 5},
+				{a: 19, f: 5},
+				{a: 11, f: 5},
+				{a: 27, f: 5},
+				{a: 7, f: 5},
+				{a: 23, f: 5}
 			])),
 	aa: $folkertdev$elm_flate$Huffman$fromList(
 		_List_fromArray(
 			[
-				{a: 12, l: 8},
-				{a: 140, l: 8},
-				{a: 76, l: 8},
-				{a: 204, l: 8},
-				{a: 44, l: 8},
-				{a: 172, l: 8},
-				{a: 108, l: 8},
-				{a: 236, l: 8},
-				{a: 28, l: 8},
-				{a: 156, l: 8},
-				{a: 92, l: 8},
-				{a: 220, l: 8},
-				{a: 60, l: 8},
-				{a: 188, l: 8},
-				{a: 124, l: 8},
-				{a: 252, l: 8},
-				{a: 2, l: 8},
-				{a: 130, l: 8},
-				{a: 66, l: 8},
-				{a: 194, l: 8},
-				{a: 34, l: 8},
-				{a: 162, l: 8},
-				{a: 98, l: 8},
-				{a: 226, l: 8},
-				{a: 18, l: 8},
-				{a: 146, l: 8},
-				{a: 82, l: 8},
-				{a: 210, l: 8},
-				{a: 50, l: 8},
-				{a: 178, l: 8},
-				{a: 114, l: 8},
-				{a: 242, l: 8},
-				{a: 10, l: 8},
-				{a: 138, l: 8},
-				{a: 74, l: 8},
-				{a: 202, l: 8},
-				{a: 42, l: 8},
-				{a: 170, l: 8},
-				{a: 106, l: 8},
-				{a: 234, l: 8},
-				{a: 26, l: 8},
-				{a: 154, l: 8},
-				{a: 90, l: 8},
-				{a: 218, l: 8},
-				{a: 58, l: 8},
-				{a: 186, l: 8},
-				{a: 122, l: 8},
-				{a: 250, l: 8},
-				{a: 6, l: 8},
-				{a: 134, l: 8},
-				{a: 70, l: 8},
-				{a: 198, l: 8},
-				{a: 38, l: 8},
-				{a: 166, l: 8},
-				{a: 102, l: 8},
-				{a: 230, l: 8},
-				{a: 22, l: 8},
-				{a: 150, l: 8},
-				{a: 86, l: 8},
-				{a: 214, l: 8},
-				{a: 54, l: 8},
-				{a: 182, l: 8},
-				{a: 118, l: 8},
-				{a: 246, l: 8},
-				{a: 14, l: 8},
-				{a: 142, l: 8},
-				{a: 78, l: 8},
-				{a: 206, l: 8},
-				{a: 46, l: 8},
-				{a: 174, l: 8},
-				{a: 110, l: 8},
-				{a: 238, l: 8},
-				{a: 30, l: 8},
-				{a: 158, l: 8},
-				{a: 94, l: 8},
-				{a: 222, l: 8},
-				{a: 62, l: 8},
-				{a: 190, l: 8},
-				{a: 126, l: 8},
-				{a: 254, l: 8},
-				{a: 1, l: 8},
-				{a: 129, l: 8},
-				{a: 65, l: 8},
-				{a: 193, l: 8},
-				{a: 33, l: 8},
-				{a: 161, l: 8},
-				{a: 97, l: 8},
-				{a: 225, l: 8},
-				{a: 17, l: 8},
-				{a: 145, l: 8},
-				{a: 81, l: 8},
-				{a: 209, l: 8},
-				{a: 49, l: 8},
-				{a: 177, l: 8},
-				{a: 113, l: 8},
-				{a: 241, l: 8},
-				{a: 9, l: 8},
-				{a: 137, l: 8},
-				{a: 73, l: 8},
-				{a: 201, l: 8},
-				{a: 41, l: 8},
-				{a: 169, l: 8},
-				{a: 105, l: 8},
-				{a: 233, l: 8},
-				{a: 25, l: 8},
-				{a: 153, l: 8},
-				{a: 89, l: 8},
-				{a: 217, l: 8},
-				{a: 57, l: 8},
-				{a: 185, l: 8},
-				{a: 121, l: 8},
-				{a: 249, l: 8},
-				{a: 5, l: 8},
-				{a: 133, l: 8},
-				{a: 69, l: 8},
-				{a: 197, l: 8},
-				{a: 37, l: 8},
-				{a: 165, l: 8},
-				{a: 101, l: 8},
-				{a: 229, l: 8},
-				{a: 21, l: 8},
-				{a: 149, l: 8},
-				{a: 85, l: 8},
-				{a: 213, l: 8},
-				{a: 53, l: 8},
-				{a: 181, l: 8},
-				{a: 117, l: 8},
-				{a: 245, l: 8},
-				{a: 13, l: 8},
-				{a: 141, l: 8},
-				{a: 77, l: 8},
-				{a: 205, l: 8},
-				{a: 45, l: 8},
-				{a: 173, l: 8},
-				{a: 109, l: 8},
-				{a: 237, l: 8},
-				{a: 29, l: 8},
-				{a: 157, l: 8},
-				{a: 93, l: 8},
-				{a: 221, l: 8},
-				{a: 61, l: 8},
-				{a: 189, l: 8},
-				{a: 125, l: 8},
-				{a: 253, l: 8},
-				{a: 19, l: 9},
-				{a: 275, l: 9},
-				{a: 147, l: 9},
-				{a: 403, l: 9},
-				{a: 83, l: 9},
-				{a: 339, l: 9},
-				{a: 211, l: 9},
-				{a: 467, l: 9},
-				{a: 51, l: 9},
-				{a: 307, l: 9},
-				{a: 179, l: 9},
-				{a: 435, l: 9},
-				{a: 115, l: 9},
-				{a: 371, l: 9},
-				{a: 243, l: 9},
-				{a: 499, l: 9},
-				{a: 11, l: 9},
-				{a: 267, l: 9},
-				{a: 139, l: 9},
-				{a: 395, l: 9},
-				{a: 75, l: 9},
-				{a: 331, l: 9},
-				{a: 203, l: 9},
-				{a: 459, l: 9},
-				{a: 43, l: 9},
-				{a: 299, l: 9},
-				{a: 171, l: 9},
-				{a: 427, l: 9},
-				{a: 107, l: 9},
-				{a: 363, l: 9},
-				{a: 235, l: 9},
-				{a: 491, l: 9},
-				{a: 27, l: 9},
-				{a: 283, l: 9},
-				{a: 155, l: 9},
-				{a: 411, l: 9},
-				{a: 91, l: 9},
-				{a: 347, l: 9},
-				{a: 219, l: 9},
-				{a: 475, l: 9},
-				{a: 59, l: 9},
-				{a: 315, l: 9},
-				{a: 187, l: 9},
-				{a: 443, l: 9},
-				{a: 123, l: 9},
-				{a: 379, l: 9},
-				{a: 251, l: 9},
-				{a: 507, l: 9},
-				{a: 7, l: 9},
-				{a: 263, l: 9},
-				{a: 135, l: 9},
-				{a: 391, l: 9},
-				{a: 71, l: 9},
-				{a: 327, l: 9},
-				{a: 199, l: 9},
-				{a: 455, l: 9},
-				{a: 39, l: 9},
-				{a: 295, l: 9},
-				{a: 167, l: 9},
-				{a: 423, l: 9},
-				{a: 103, l: 9},
-				{a: 359, l: 9},
-				{a: 231, l: 9},
-				{a: 487, l: 9},
-				{a: 23, l: 9},
-				{a: 279, l: 9},
-				{a: 151, l: 9},
-				{a: 407, l: 9},
-				{a: 87, l: 9},
-				{a: 343, l: 9},
-				{a: 215, l: 9},
-				{a: 471, l: 9},
-				{a: 55, l: 9},
-				{a: 311, l: 9},
-				{a: 183, l: 9},
-				{a: 439, l: 9},
-				{a: 119, l: 9},
-				{a: 375, l: 9},
-				{a: 247, l: 9},
-				{a: 503, l: 9},
-				{a: 15, l: 9},
-				{a: 271, l: 9},
-				{a: 143, l: 9},
-				{a: 399, l: 9},
-				{a: 79, l: 9},
-				{a: 335, l: 9},
-				{a: 207, l: 9},
-				{a: 463, l: 9},
-				{a: 47, l: 9},
-				{a: 303, l: 9},
-				{a: 175, l: 9},
-				{a: 431, l: 9},
-				{a: 111, l: 9},
-				{a: 367, l: 9},
-				{a: 239, l: 9},
-				{a: 495, l: 9},
-				{a: 31, l: 9},
-				{a: 287, l: 9},
-				{a: 159, l: 9},
-				{a: 415, l: 9},
-				{a: 95, l: 9},
-				{a: 351, l: 9},
-				{a: 223, l: 9},
-				{a: 479, l: 9},
-				{a: 63, l: 9},
-				{a: 319, l: 9},
-				{a: 191, l: 9},
-				{a: 447, l: 9},
-				{a: 127, l: 9},
-				{a: 383, l: 9},
-				{a: 255, l: 9},
-				{a: 511, l: 9},
-				{a: 0, l: 7},
-				{a: 64, l: 7},
-				{a: 32, l: 7},
-				{a: 96, l: 7},
-				{a: 16, l: 7},
-				{a: 80, l: 7},
-				{a: 48, l: 7},
-				{a: 112, l: 7},
-				{a: 8, l: 7},
-				{a: 72, l: 7},
-				{a: 40, l: 7},
-				{a: 104, l: 7},
-				{a: 24, l: 7},
-				{a: 88, l: 7},
-				{a: 56, l: 7},
-				{a: 120, l: 7},
-				{a: 4, l: 7},
-				{a: 68, l: 7},
-				{a: 36, l: 7},
-				{a: 100, l: 7},
-				{a: 20, l: 7},
-				{a: 84, l: 7},
-				{a: 52, l: 7},
-				{a: 116, l: 7},
-				{a: 3, l: 8},
-				{a: 131, l: 8},
-				{a: 67, l: 8},
-				{a: 195, l: 8},
-				{a: 35, l: 8},
-				{a: 163, l: 8},
-				{a: 99, l: 8},
-				{a: 227, l: 8}
+				{a: 12, f: 8},
+				{a: 140, f: 8},
+				{a: 76, f: 8},
+				{a: 204, f: 8},
+				{a: 44, f: 8},
+				{a: 172, f: 8},
+				{a: 108, f: 8},
+				{a: 236, f: 8},
+				{a: 28, f: 8},
+				{a: 156, f: 8},
+				{a: 92, f: 8},
+				{a: 220, f: 8},
+				{a: 60, f: 8},
+				{a: 188, f: 8},
+				{a: 124, f: 8},
+				{a: 252, f: 8},
+				{a: 2, f: 8},
+				{a: 130, f: 8},
+				{a: 66, f: 8},
+				{a: 194, f: 8},
+				{a: 34, f: 8},
+				{a: 162, f: 8},
+				{a: 98, f: 8},
+				{a: 226, f: 8},
+				{a: 18, f: 8},
+				{a: 146, f: 8},
+				{a: 82, f: 8},
+				{a: 210, f: 8},
+				{a: 50, f: 8},
+				{a: 178, f: 8},
+				{a: 114, f: 8},
+				{a: 242, f: 8},
+				{a: 10, f: 8},
+				{a: 138, f: 8},
+				{a: 74, f: 8},
+				{a: 202, f: 8},
+				{a: 42, f: 8},
+				{a: 170, f: 8},
+				{a: 106, f: 8},
+				{a: 234, f: 8},
+				{a: 26, f: 8},
+				{a: 154, f: 8},
+				{a: 90, f: 8},
+				{a: 218, f: 8},
+				{a: 58, f: 8},
+				{a: 186, f: 8},
+				{a: 122, f: 8},
+				{a: 250, f: 8},
+				{a: 6, f: 8},
+				{a: 134, f: 8},
+				{a: 70, f: 8},
+				{a: 198, f: 8},
+				{a: 38, f: 8},
+				{a: 166, f: 8},
+				{a: 102, f: 8},
+				{a: 230, f: 8},
+				{a: 22, f: 8},
+				{a: 150, f: 8},
+				{a: 86, f: 8},
+				{a: 214, f: 8},
+				{a: 54, f: 8},
+				{a: 182, f: 8},
+				{a: 118, f: 8},
+				{a: 246, f: 8},
+				{a: 14, f: 8},
+				{a: 142, f: 8},
+				{a: 78, f: 8},
+				{a: 206, f: 8},
+				{a: 46, f: 8},
+				{a: 174, f: 8},
+				{a: 110, f: 8},
+				{a: 238, f: 8},
+				{a: 30, f: 8},
+				{a: 158, f: 8},
+				{a: 94, f: 8},
+				{a: 222, f: 8},
+				{a: 62, f: 8},
+				{a: 190, f: 8},
+				{a: 126, f: 8},
+				{a: 254, f: 8},
+				{a: 1, f: 8},
+				{a: 129, f: 8},
+				{a: 65, f: 8},
+				{a: 193, f: 8},
+				{a: 33, f: 8},
+				{a: 161, f: 8},
+				{a: 97, f: 8},
+				{a: 225, f: 8},
+				{a: 17, f: 8},
+				{a: 145, f: 8},
+				{a: 81, f: 8},
+				{a: 209, f: 8},
+				{a: 49, f: 8},
+				{a: 177, f: 8},
+				{a: 113, f: 8},
+				{a: 241, f: 8},
+				{a: 9, f: 8},
+				{a: 137, f: 8},
+				{a: 73, f: 8},
+				{a: 201, f: 8},
+				{a: 41, f: 8},
+				{a: 169, f: 8},
+				{a: 105, f: 8},
+				{a: 233, f: 8},
+				{a: 25, f: 8},
+				{a: 153, f: 8},
+				{a: 89, f: 8},
+				{a: 217, f: 8},
+				{a: 57, f: 8},
+				{a: 185, f: 8},
+				{a: 121, f: 8},
+				{a: 249, f: 8},
+				{a: 5, f: 8},
+				{a: 133, f: 8},
+				{a: 69, f: 8},
+				{a: 197, f: 8},
+				{a: 37, f: 8},
+				{a: 165, f: 8},
+				{a: 101, f: 8},
+				{a: 229, f: 8},
+				{a: 21, f: 8},
+				{a: 149, f: 8},
+				{a: 85, f: 8},
+				{a: 213, f: 8},
+				{a: 53, f: 8},
+				{a: 181, f: 8},
+				{a: 117, f: 8},
+				{a: 245, f: 8},
+				{a: 13, f: 8},
+				{a: 141, f: 8},
+				{a: 77, f: 8},
+				{a: 205, f: 8},
+				{a: 45, f: 8},
+				{a: 173, f: 8},
+				{a: 109, f: 8},
+				{a: 237, f: 8},
+				{a: 29, f: 8},
+				{a: 157, f: 8},
+				{a: 93, f: 8},
+				{a: 221, f: 8},
+				{a: 61, f: 8},
+				{a: 189, f: 8},
+				{a: 125, f: 8},
+				{a: 253, f: 8},
+				{a: 19, f: 9},
+				{a: 275, f: 9},
+				{a: 147, f: 9},
+				{a: 403, f: 9},
+				{a: 83, f: 9},
+				{a: 339, f: 9},
+				{a: 211, f: 9},
+				{a: 467, f: 9},
+				{a: 51, f: 9},
+				{a: 307, f: 9},
+				{a: 179, f: 9},
+				{a: 435, f: 9},
+				{a: 115, f: 9},
+				{a: 371, f: 9},
+				{a: 243, f: 9},
+				{a: 499, f: 9},
+				{a: 11, f: 9},
+				{a: 267, f: 9},
+				{a: 139, f: 9},
+				{a: 395, f: 9},
+				{a: 75, f: 9},
+				{a: 331, f: 9},
+				{a: 203, f: 9},
+				{a: 459, f: 9},
+				{a: 43, f: 9},
+				{a: 299, f: 9},
+				{a: 171, f: 9},
+				{a: 427, f: 9},
+				{a: 107, f: 9},
+				{a: 363, f: 9},
+				{a: 235, f: 9},
+				{a: 491, f: 9},
+				{a: 27, f: 9},
+				{a: 283, f: 9},
+				{a: 155, f: 9},
+				{a: 411, f: 9},
+				{a: 91, f: 9},
+				{a: 347, f: 9},
+				{a: 219, f: 9},
+				{a: 475, f: 9},
+				{a: 59, f: 9},
+				{a: 315, f: 9},
+				{a: 187, f: 9},
+				{a: 443, f: 9},
+				{a: 123, f: 9},
+				{a: 379, f: 9},
+				{a: 251, f: 9},
+				{a: 507, f: 9},
+				{a: 7, f: 9},
+				{a: 263, f: 9},
+				{a: 135, f: 9},
+				{a: 391, f: 9},
+				{a: 71, f: 9},
+				{a: 327, f: 9},
+				{a: 199, f: 9},
+				{a: 455, f: 9},
+				{a: 39, f: 9},
+				{a: 295, f: 9},
+				{a: 167, f: 9},
+				{a: 423, f: 9},
+				{a: 103, f: 9},
+				{a: 359, f: 9},
+				{a: 231, f: 9},
+				{a: 487, f: 9},
+				{a: 23, f: 9},
+				{a: 279, f: 9},
+				{a: 151, f: 9},
+				{a: 407, f: 9},
+				{a: 87, f: 9},
+				{a: 343, f: 9},
+				{a: 215, f: 9},
+				{a: 471, f: 9},
+				{a: 55, f: 9},
+				{a: 311, f: 9},
+				{a: 183, f: 9},
+				{a: 439, f: 9},
+				{a: 119, f: 9},
+				{a: 375, f: 9},
+				{a: 247, f: 9},
+				{a: 503, f: 9},
+				{a: 15, f: 9},
+				{a: 271, f: 9},
+				{a: 143, f: 9},
+				{a: 399, f: 9},
+				{a: 79, f: 9},
+				{a: 335, f: 9},
+				{a: 207, f: 9},
+				{a: 463, f: 9},
+				{a: 47, f: 9},
+				{a: 303, f: 9},
+				{a: 175, f: 9},
+				{a: 431, f: 9},
+				{a: 111, f: 9},
+				{a: 367, f: 9},
+				{a: 239, f: 9},
+				{a: 495, f: 9},
+				{a: 31, f: 9},
+				{a: 287, f: 9},
+				{a: 159, f: 9},
+				{a: 415, f: 9},
+				{a: 95, f: 9},
+				{a: 351, f: 9},
+				{a: 223, f: 9},
+				{a: 479, f: 9},
+				{a: 63, f: 9},
+				{a: 319, f: 9},
+				{a: 191, f: 9},
+				{a: 447, f: 9},
+				{a: 127, f: 9},
+				{a: 383, f: 9},
+				{a: 255, f: 9},
+				{a: 511, f: 9},
+				{a: 0, f: 7},
+				{a: 64, f: 7},
+				{a: 32, f: 7},
+				{a: 96, f: 7},
+				{a: 16, f: 7},
+				{a: 80, f: 7},
+				{a: 48, f: 7},
+				{a: 112, f: 7},
+				{a: 8, f: 7},
+				{a: 72, f: 7},
+				{a: 40, f: 7},
+				{a: 104, f: 7},
+				{a: 24, f: 7},
+				{a: 88, f: 7},
+				{a: 56, f: 7},
+				{a: 120, f: 7},
+				{a: 4, f: 7},
+				{a: 68, f: 7},
+				{a: 36, f: 7},
+				{a: 100, f: 7},
+				{a: 20, f: 7},
+				{a: 84, f: 7},
+				{a: 52, f: 7},
+				{a: 116, f: 7},
+				{a: 3, f: 8},
+				{a: 131, f: 8},
+				{a: 67, f: 8},
+				{a: 195, f: 8},
+				{a: 35, f: 8},
+				{a: 163, f: 8},
+				{a: 99, f: 8},
+				{a: 227, f: 8}
 			]))
 };
 var $folkertdev$elm_flate$Deflate$Internal$encodeCompressStatic = F3(
@@ -14450,7 +14313,7 @@ var $justgook$elm_image$Image$Internal$PNG$encodePixel32 = F2(
 	});
 var $justgook$elm_image$Image$Internal$PNG$encodeIDAT = F2(
 	function (_v0, arr) {
-		var order = _v0.cu;
+		var order = _v0.cx;
 		var scanLineFilter = $elm$bytes$Bytes$Encode$unsignedInt8(1);
 		var _v1 = function () {
 			switch (order) {
@@ -14501,7 +14364,7 @@ var $justgook$elm_image$Image$Internal$PNG$encodeIDAT = F2(
 	});
 var $justgook$elm_image$Image$Internal$PNG$encodeIHDR = F3(
 	function (width, height, _v0) {
-		var format = _v0.bS;
+		var format = _v0.bV;
 		var interlace = 0;
 		var _v1 = function () {
 			switch (format) {
@@ -14544,21 +14407,21 @@ var $justgook$elm_image$Image$Internal$PNG$encodeSignature = $elm$bytes$Bytes$En
 var $justgook$elm_image$Image$Info$dimensions = function (meta) {
 	switch (meta.$) {
 		case 0:
-			var width = meta.a.l;
-			var height = meta.a.e;
-			return {e: height, l: width};
+			var width = meta.a.f;
+			var height = meta.a.c;
+			return {c: height, f: width};
 		case 1:
-			var width = meta.a.l;
-			var height = meta.a.e;
-			return {e: height, l: width};
+			var width = meta.a.f;
+			var height = meta.a.c;
+			return {c: height, f: width};
 		case 2:
-			var width = meta.a.l;
-			var height = meta.a.e;
-			return {e: height, l: width};
+			var width = meta.a.f;
+			var height = meta.a.c;
+			return {c: height, f: width};
 		default:
-			var width = meta.a.l;
-			var height = meta.a.e;
-			return {e: height, l: width};
+			var width = meta.a.f;
+			var height = meta.a.c;
+			return {c: height, f: width};
 	}
 };
 var $justgook$elm_image$Image$Internal$ImageData$splitAt = F2(
@@ -14678,7 +14541,7 @@ var $justgook$elm_image$Image$Internal$ImageData$toArray2d = function (image) {
 				var l = image.b;
 				return A3(
 					$justgook$elm_image$Image$Internal$ImageData$fromList,
-					$justgook$elm_image$Image$Info$dimensions(meta).l,
+					$justgook$elm_image$Image$Info$dimensions(meta).f,
 					l,
 					$elm$core$Array$fromList(
 						_List_fromArray(
@@ -14695,7 +14558,7 @@ var $justgook$elm_image$Image$Internal$ImageData$toArray2d = function (image) {
 				var arr = image.b;
 				return A3(
 					$justgook$elm_image$Image$Internal$ImageData$fromArray,
-					$justgook$elm_image$Image$Info$dimensions(meta).l,
+					$justgook$elm_image$Image$Info$dimensions(meta).f,
 					arr,
 					$elm$core$Array$empty);
 			case 3:
@@ -14865,7 +14728,7 @@ var $justgook$elm_image$Image$Internal$Pixel$toBit32 = function (image) {
 	var _v0 = $justgook$elm_image$Image$Internal$ImageData$getInfo(image);
 	switch (_v0.$) {
 		case 0:
-			var color = _v0.a.ak;
+			var color = _v0.a.al;
 			switch (color.$) {
 				case 0:
 					return image;
@@ -14879,7 +14742,7 @@ var $justgook$elm_image$Image$Internal$Pixel$toBit32 = function (image) {
 					return image;
 			}
 		case 1:
-			var bitsPerPixel = _v0.a.cW;
+			var bitsPerPixel = _v0.a.cY;
 			switch (bitsPerPixel) {
 				case 0:
 					return A2($justgook$elm_image$Image$Internal$ImageData$map, $justgook$elm_image$Image$Internal$Pixel$px8to32, image);
@@ -14893,7 +14756,7 @@ var $justgook$elm_image$Image$Internal$Pixel$toBit32 = function (image) {
 		case 2:
 			return image;
 		default:
-			var color = _v0.a.ak;
+			var color = _v0.a.al;
 			switch (color.$) {
 				case 0:
 					return image;
@@ -14917,444 +14780,30 @@ var $justgook$elm_image$Image$toPngUrl = A2(
 			$elm$core$Basics$composeR,
 			$elm$core$Maybe$withDefault(''),
 			$elm$core$Basics$append('data:image/png;base64,'))));
-var $author$project$Main$fullScreenBackgroundTile = function () {
-	var _v0 = _Utils_Tuple2(
-		$elm$core$Basics$round($author$project$Main$viewport.l / $author$project$Main$sprites10.D),
-		$elm$core$Basics$round($author$project$Main$viewport.e / $author$project$Main$sprites10.D));
-	var horizontalTiles = _v0.a;
-	var verticalTiles = _v0.b;
-	var lookupImage = $justgook$elm_image$Image$toPngUrl(
-		A2(
-			$justgook$elm_image$Image$fromList,
-			horizontalTiles,
-			A2($elm$core$List$repeat, horizontalTiles * verticalTiles, $author$project$Main$sprites10.bG)));
-	return A4($author$project$Playground$Extra$tilemap, $author$project$Main$sprites10.D, $author$project$Main$sprites10.D, $author$project$Main$sprites10.bj, lookupImage);
-}();
-var $author$project$Playground$move = F3(
-	function (dx, dy, _v0) {
-		var shape = _v0;
-		var x = shape.F;
-		var y = shape.G;
-		var a = shape.f;
-		var sx = shape.c;
-		var sy = shape.d;
-		var o = shape.g;
-		var form = shape.h;
-		return _Utils_update(
-			shape,
-			{F: x + dx, G: y + dy});
-	});
-var $author$project$Playground$moveDown = F2(
-	function (dy, _v0) {
-		var shape = _v0;
-		var x = shape.F;
-		var y = shape.G;
-		var a = shape.f;
-		var sx = shape.c;
-		var sy = shape.d;
-		var o = shape.g;
-		var form = shape.h;
-		return _Utils_update(
-			shape,
-			{G: y - dy});
-	});
-var $author$project$Playground$moveLeft = F2(
-	function (dx, _v0) {
-		var shape = _v0;
-		var x = shape.F;
-		var y = shape.G;
-		var a = shape.f;
-		var sx = shape.c;
-		var sy = shape.d;
-		var o = shape.g;
-		var form = shape.h;
-		return _Utils_update(
-			shape,
-			{F: x - dx});
-	});
-var $author$project$Main$fullScreenBackground = function (screen) {
-	var tilesInRow = (($elm$core$Basics$ceiling((screen.l / 2) / ($author$project$Main$viewport.l / 2)) - 1) * 2) + 1;
-	var tilesInColumn = (($elm$core$Basics$ceiling((screen.e / 2) / ($author$project$Main$viewport.e / 2)) - 1) * 2) + 1;
-	var numTiles = tilesInRow * tilesInColumn;
-	var shapes = A2(
-		$elm$core$List$indexedMap,
-		F2(
-			function (i, shape) {
-				var _v0 = _Utils_Tuple2(
-					A2($elm$core$Basics$modBy, tilesInRow, i),
-					(i / tilesInRow) | 0);
-				var x = _v0.a;
-				var y = _v0.b;
-				return A2(
-					$author$project$Playground$moveLeft,
-					screen.l / 2,
-					A2(
-						$author$project$Playground$moveDown,
-						screen.e / 2,
-						A3($author$project$Playground$move, (x * $author$project$Main$viewport.l) + ($author$project$Main$viewport.l / 2), (y * $author$project$Main$viewport.e) + ($author$project$Main$viewport.e / 2), shape)));
-			}),
-		A2($elm$core$List$repeat, numTiles, $author$project$Main$fullScreenBackgroundTile));
-	return $author$project$Playground$group(shapes);
+var $elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
 };
-var $author$project$Playground$lightPurple = A2(
-	$elm$core$Maybe$withDefault,
-	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
-	$author$project$Playground$hexColor2Vec3('#ad7fa8'));
-var $author$project$Playground$moveX = F2(
-	function (dx, _v0) {
-		var shape = _v0;
-		var x = shape.F;
-		var y = shape.G;
-		var a = shape.f;
-		var sx = shape.c;
-		var sy = shape.d;
-		var o = shape.g;
-		var form = shape.h;
-		return _Utils_update(
-			shape,
-			{F: x + dx});
-	});
-var $author$project$Playground$moveRight = $author$project$Playground$moveX;
-var $author$project$Playground$moveY = F2(
-	function (dy, _v0) {
-		var shape = _v0;
-		var x = shape.F;
-		var y = shape.G;
-		var a = shape.f;
-		var sx = shape.c;
-		var sy = shape.d;
-		var o = shape.g;
-		var form = shape.h;
-		return _Utils_update(
-			shape,
-			{G: y + dy});
-	});
-var $author$project$Playground$moveUp = $author$project$Playground$moveY;
-var $author$project$Playground$purple = A2(
-	$elm$core$Maybe$withDefault,
-	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
-	$author$project$Playground$hexColor2Vec3('#75507b'));
-var $elm$core$Basics$pi = _Basics_pi;
-var $elm$core$Basics$degrees = function (angleInDegrees) {
-	return (angleInDegrees * $elm$core$Basics$pi) / 180;
+var $elm$random$Random$peel = function (_v0) {
+	var state = _v0.a;
+	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
 };
-var $author$project$Playground$rotate = F2(
-	function (da, _v0) {
-		var shape = _v0;
-		var x = shape.F;
-		var y = shape.G;
-		var a = shape.f;
-		var sx = shape.c;
-		var sy = shape.d;
-		var o = shape.g;
-		var form = shape.h;
-		return _Utils_update(
-			shape,
-			{
-				f: a + $elm$core$Basics$degrees(da)
-			});
-	});
-var $author$project$Playground$scaleY = F2(
-	function (sy, _v0) {
-		var shape = _v0;
-		return _Utils_update(
-			shape,
-			{d: shape.d * sy});
-	});
-var $author$project$Playground$toFrac = F2(
-	function (period, _v0) {
-		var now = _v0.aK;
-		var p = period * 1000;
-		var ms = now;
-		return A2(
-			$elm$core$Basics$modBy,
-			$elm$core$Basics$round(p),
-			ms) / p;
-	});
-var $elm$core$Basics$turns = function (angleInTurns) {
-	return (2 * $elm$core$Basics$pi) * angleInTurns;
-};
-var $author$project$Playground$wave = F4(
-	function (lo, hi, period, time) {
-		return lo + (((hi - lo) * (1 + $elm$core$Basics$cos(
-			$elm$core$Basics$turns(
-				A2($author$project$Playground$toFrac, period, time))))) / 2);
-	});
-var $author$project$Playground$white = A2(
-	$elm$core$Maybe$withDefault,
-	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
-	$author$project$Playground$hexColor2Vec3('#ffffff'));
-var $author$project$Playground$Shader$fragImageColor = {
-	src: '\n        precision mediump float;\n        varying vec2 uv;\n        uniform vec2 uImgSize;\n        uniform sampler2D uImg;\n        uniform vec4 color;\n        void main () {\n            vec2 pixel = ((floor(uv * uImgSize) + 0.5) * 2.0 ) / uImgSize / 2.0;\n            gl_FragColor = texture2D(uImg, pixel) * color;\n            if(gl_FragColor.a <= 0.025) discard;\n        }\n    ',
-	attributes: {},
-	uniforms: {color: 'ak', uImg: 'aS', uImgSize: 'aT'}
-};
-var $elm_explorations$linear_algebra$Math$Vector3$toRecord = _MJS_v3toRecord;
-var $elm_explorations$linear_algebra$Math$Vector4$vec4 = _MJS_v4;
-var $author$project$Playground$Render$setAlpha = A2(
-	$elm$core$Basics$composeR,
-	$elm_explorations$linear_algebra$Math$Vector3$toRecord,
-	function (a) {
-		return A3($elm_explorations$linear_algebra$Math$Vector4$vec4, a.F, a.G, a.t);
-	});
-var $author$project$Playground$Shader$vertTile = {
-	src: '\n            precision mediump float;\n            attribute vec2 aP;\n            uniform vec4 uT;\n            uniform vec2 uP;\n            uniform float z;\n            uniform float index;\n            uniform vec2 spriteSize;\n            uniform vec2 uImgSize;\n            varying vec2 uv;\n            vec2 edgeFix = vec2(0.0000001, -0.0000001);\n            void main () {\n                vec2 ratio = spriteSize / uImgSize;\n                float row = (uImgSize.y / spriteSize.y - 1.0) - floor((index + 0.5) * ratio.x);\n                float column = floor(mod((index + 0.5), uImgSize.x / spriteSize.x));\n                vec2 offset = vec2(column, row) * ratio;\n                uv = (aP * 0.5 + 0.5) * ratio + offset + edgeFix;\n                gl_Position = vec4(aP * mat2(uT) + uP, z  * -1.19209304e-7, 1.0);\n            }\n        ',
-	attributes: {aP: 'aX'},
-	uniforms: {index: 'b3', spriteSize: 'cH', uImgSize: 'aT', uP: 'dH', uT: 'dI', z: 't'}
-};
-var $author$project$Playground$Render$tileWithColor = F9(
-	function (spriteSheet, spriteSize, imageSize, color, index, translate, scaleRotateSkew, z, opacity) {
-		return A5(
-			$elm_explorations$webgl$WebGL$entityWith,
-			$author$project$Playground$Render$defaultEntitySettings,
-			$author$project$Playground$Shader$vertTile,
-			$author$project$Playground$Shader$fragImageColor,
-			$author$project$Playground$Shader$mesh,
-			{
-				ak: A2($author$project$Playground$Render$setAlpha, color, opacity),
-				b3: index,
-				cH: spriteSize,
-				dC: opacity,
-				aS: spriteSheet,
-				aT: imageSize,
-				dH: translate,
-				dI: scaleRotateSkew,
-				t: z
-			});
-	});
-var $author$project$Playground$Extra$Font$char = F8(
-	function (spriteSheet, imageSize, color, w, h, x, y, index) {
-		return {
-			f: 0,
-			h: A3(
-				$justgook$webgl_shape$WebGL$Shape2d$Form,
-				w,
-				h,
-				A5(
-					$author$project$Playground$Render$tileWithColor,
-					spriteSheet,
-					A2($elm_explorations$linear_algebra$Math$Vector2$vec2, w, h),
-					imageSize,
-					color,
-					index)),
-			g: 1,
-			c: 1,
-			d: 1,
-			F: x,
-			G: y,
-			t: 0
+var $elm$random$Random$float = F2(
+	function (a, b) {
+		return function (seed0) {
+			var seed1 = $elm$random$Random$next(seed0);
+			var range = $elm$core$Basics$abs(b - a);
+			var n1 = $elm$random$Random$peel(seed1);
+			var n0 = $elm$random$Random$peel(seed0);
+			var lo = (134217727 & n1) * 1.0;
+			var hi = (67108863 & n0) * 1.0;
+			var val = ((hi * 134217728.0) + lo) / 9007199254740992.0;
+			var scaled = (val * range) + a;
+			return _Utils_Tuple2(
+				scaled,
+				$elm$random$Random$next(seed1));
 		};
 	});
-var $author$project$Playground$Extra$Font$outputFold = F6(
-	function (toChar, getIndex, w, h, c, _v0) {
-		var chars = _v0.aD;
-		var x = _v0.F;
-		var y = _v0.G;
-		var width = _v0.l;
-		return (c === '\n') ? {
-			aD: chars,
-			l: A2($elm$core$Basics$max, width, x),
-			F: w,
-			G: y - h
-		} : {
-			aD: A2(
-				$elm$core$List$cons,
-				A3(
-					toChar,
-					x,
-					y,
-					getIndex(c)),
-				chars),
-			l: width,
-			F: x + w,
-			G: y
-		};
-	});
-var $author$project$Playground$Extra$Font$tileFont = F3(
-	function (_v0, color, string) {
-		var charW = _v0.cZ;
-		var charH = _v0.cY;
-		var src = _v0.dA;
-		var getIndex = _v0.df;
-		return {
-			f: 0,
-			h: A2(
-				$justgook$webgl_shape$WebGL$Shape2d$Textured,
-				src,
-				function (t) {
-					var _v1 = A3(
-						$elm$core$Tuple$mapBoth,
-						$elm$core$Basics$toFloat,
-						$elm$core$Basics$toFloat,
-						$elm_explorations$webgl$WebGL$Texture$size(t));
-					var imgW = _v1.a;
-					var imgH = _v1.b;
-					var imgSize = A2($elm_explorations$linear_algebra$Math$Vector2$vec2, imgW, imgH);
-					var toChar = A5($author$project$Playground$Extra$Font$char, t, imgSize, color, charW, charH);
-					var output = A3(
-						$elm$core$List$foldl,
-						A4($author$project$Playground$Extra$Font$outputFold, toChar, getIndex, charW, charH),
-						{aD: _List_Nil, l: 0, F: charW, G: charH},
-						$elm$core$String$toList(string));
-					return {
-						f: 0,
-						h: $justgook$webgl_shape$WebGL$Shape2d$Group(output.aD),
-						g: 1,
-						c: 1,
-						d: 1,
-						F: A2($elm$core$Basics$max, output.F, output.l) * (-0.5),
-						G: (output.G * (-0.5)) + (0.5 * (-charH)),
-						t: 0
-					};
-				}),
-			g: 1,
-			c: 1,
-			d: 1,
-			F: 0,
-			G: 0,
-			t: 0
-		};
-	});
-var $author$project$Playground$Font$SimpleMood$image = 'data:image/png;base64,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';
-var $author$project$Playground$Font$SimpleMood$letters_ = $elm$core$Dict$fromList(
-	A2(
-		$elm$core$List$indexedMap,
-		F2(
-			function (a, b) {
-				return _Utils_Tuple2(b, a);
-			}),
-		$elm$core$List$concat(
-			_List_fromArray(
-				[
-					_List_fromArray(
-					['\u0000', '☺', '☻', '♥', '♦', '♣', '♠', '•', '◘', '○', '◙', '♂', '♀', '♪', '♫', '☼']),
-					_List_fromArray(
-					['►', '◄', '↕', '‼', '¶', '§', '▬', '↨', '↑', '↓', '→', '←', '∟', '↔', '▲', '▼']),
-					_List_fromArray(
-					[' ', '!', '\"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/']),
-					_List_fromArray(
-					['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?']),
-					_List_fromArray(
-					['@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']),
-					_List_fromArray(
-					['P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_']),
-					_List_fromArray(
-					['`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o']),
-					_List_fromArray(
-					['p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~', '⌂']),
-					_List_fromArray(
-					['Ç', 'ü', 'é', 'â', 'ä', 'à', 'å', 'ç', 'ê', 'ë', 'è', 'ï', 'î', 'ì', 'Ä', 'Å']),
-					_List_fromArray(
-					['É', 'æ', 'Æ', 'ô', 'ö', 'ò', 'û', 'ù', 'ÿ', 'Ö', 'Ü', '¢', '£', '¥', '₧', 'ƒ']),
-					_List_fromArray(
-					['á', 'í', 'ó', 'ú', 'ñ', 'Ñ', 'ª', 'º', '¿', '⌐', '¬', '½', '¼', '¡', '«', '»']),
-					_List_fromArray(
-					['░', '▒', '▓', '│', '┤', '╡', '╢', '╖', '╕', '╣', '║', '╗', '╝', '╜', '╛', '┐']),
-					_List_fromArray(
-					['└', '┴', '┬', '├', '─', '┼', '╞', '╟', '╚', '╔', '╩', '╦', '╠', '═', '╬', '╧']),
-					_List_fromArray(
-					['╨', '╤', '╥', '╙', '╘', '╒', '╓', '╫', '╪', '┘', '┌', '█', '▄', '▌', '▐', '▀']),
-					_List_fromArray(
-					['α', 'ß', 'Γ', 'π', 'Σ', 'σ', 'µ', 'τ', 'Φ', 'Θ', 'Ω', 'δ', '∞', 'φ', 'ε', '∩']),
-					_List_fromArray(
-					['≡', '±', '≥', '≤', '⌠', '⌡', '÷', '≈', '°', '∙', '·', '√', 'ⁿ', '²', '■', '\u00A0'])
-				]))));
-var $author$project$Playground$Font$SimpleMood$letters = function (c) {
-	return A2(
-		$elm$core$Maybe$withDefault,
-		0,
-		A2($elm$core$Dict$get, c, $author$project$Playground$Font$SimpleMood$letters_));
-};
-var $author$project$Playground$wordsConfig = {cY: 16, cZ: 16, df: $author$project$Playground$Font$SimpleMood$letters, dA: $author$project$Playground$Font$SimpleMood$image};
-var $author$project$Playground$words = $author$project$Playground$Extra$Font$tileFont($author$project$Playground$wordsConfig);
-var $author$project$Main$viewMenu = function (_v0) {
-	var time = _v0.cK;
-	var screen = _v0.a6;
-	var mouse = _v0.bq;
-	var titleScale = ($author$project$Main$viewport.e / $author$project$Main$defaultFontSize) / 6;
-	var titleShadowOffset = ($author$project$Main$defaultFontSize * titleScale) / 20;
-	var moveTitle = F2(
-		function (delay, shape) {
-			var t = _Utils_update(
-				time,
-				{aK: time.aK - delay});
-			var _v1 = _Utils_Tuple2($author$project$Main$viewport.l / 13, $author$project$Main$viewport.e / 20);
-			var mx = _v1.a;
-			var my = _v1.b;
-			return A2(
-				$author$project$Playground$scale,
-				A4($author$project$Playground$wave, 1, 1.1, 2, t),
-				A3(
-					$author$project$Playground$move,
-					A4($author$project$Playground$wave, -mx, mx, 10, t),
-					A4($author$project$Playground$wave, -my, my, 2, t),
-					A2(
-						$author$project$Playground$rotate,
-						A4($author$project$Playground$wave, -5, 5, 8, t),
-						shape)));
-		});
-	return _List_fromArray(
-		[
-			$author$project$Main$fullScreenBackground(screen),
-			A2(
-			$author$project$Playground$moveUp,
-			$author$project$Main$viewport.e / 6,
-			$author$project$Playground$group(
-				_List_fromArray(
-					[
-						A2(
-						moveTitle,
-						60,
-						A2(
-							$author$project$Playground$scale,
-							titleScale,
-							A2(
-								$author$project$Playground$moveRight,
-								titleShadowOffset * 2,
-								A2(
-									$author$project$Playground$moveDown,
-									titleShadowOffset * 2,
-									A2($author$project$Playground$words, $author$project$Playground$darkPurple, 'Flee!'))))),
-						A2(
-						moveTitle,
-						30,
-						A2(
-							$author$project$Playground$scale,
-							titleScale,
-							A2(
-								$author$project$Playground$moveRight,
-								titleShadowOffset,
-								A2(
-									$author$project$Playground$moveDown,
-									titleShadowOffset,
-									A2($author$project$Playground$words, $author$project$Playground$purple, 'Flee!'))))),
-						A2(
-						moveTitle,
-						0,
-						A2(
-							$author$project$Playground$scale,
-							titleScale,
-							A2($author$project$Playground$words, $author$project$Playground$lightPurple, 'Flee!')))
-					]))),
-			function () {
-			var my = $author$project$Main$viewport.e / 40;
-			var fontScale = 1.5;
-			return A2(
-				$author$project$Playground$moveDown,
-				A4($author$project$Playground$wave, -my, my, 5, time),
-				A2(
-					$author$project$Playground$moveDown,
-					$author$project$Main$viewport.e / 4,
-					A2(
-						$author$project$Playground$scale,
-						($author$project$Main$viewport.e / ($author$project$Main$defaultFontSize * fontScale)) / 32,
-						A2(
-							$author$project$Playground$scaleY,
-							fontScale,
-							A2($author$project$Playground$words, $author$project$Playground$white, 'Click to start!')))));
-		}()
-		]);
-};
 var $elm$random$Random$getByWeight = F3(
 	function (_v0, others, countdown) {
 		getByWeight:
@@ -15412,8 +14861,8 @@ var $elm$random$Random$weighted = F2(
 	});
 var $author$project$Main$background = function () {
 	var _v0 = _Utils_Tuple2(
-		2 + $elm$core$Basics$round($author$project$Main$viewport.l / $author$project$Main$sprites10.D),
-		2 + $elm$core$Basics$round($author$project$Main$viewport.e / $author$project$Main$sprites10.D));
+		2 + $elm$core$Basics$round($author$project$Main$viewport.f / $author$project$Main$sprites10.F),
+		2 + $elm$core$Basics$round($author$project$Main$viewport.c / $author$project$Main$sprites10.F));
 	var horizontalTiles = _v0.a;
 	var verticalTiles = _v0.b;
 	var numTiles = horizontalTiles * verticalTiles;
@@ -15422,15 +14871,15 @@ var $author$project$Main$background = function () {
 		numTiles,
 		A2(
 			$elm$random$Random$weighted,
-			_Utils_Tuple2(5, $author$project$Main$sprites10.bU),
+			_Utils_Tuple2(5, $author$project$Main$sprites10.bX),
 			_List_fromArray(
 				[
-					_Utils_Tuple2(10, $author$project$Main$sprites10.bV),
-					_Utils_Tuple2(20, $author$project$Main$sprites10.bW),
-					_Utils_Tuple2(2, $author$project$Main$sprites10.bX),
-					_Utils_Tuple2(2, $author$project$Main$sprites10.bY),
-					_Utils_Tuple2(10, $author$project$Main$sprites10.bZ),
-					_Utils_Tuple2(10, $author$project$Main$sprites10.b_)
+					_Utils_Tuple2(10, $author$project$Main$sprites10.bY),
+					_Utils_Tuple2(20, $author$project$Main$sprites10.bZ),
+					_Utils_Tuple2(2, $author$project$Main$sprites10.b_),
+					_Utils_Tuple2(2, $author$project$Main$sprites10.b$),
+					_Utils_Tuple2(10, $author$project$Main$sprites10.b0),
+					_Utils_Tuple2(10, $author$project$Main$sprites10.b1)
 				])));
 	var lookupImage = $justgook$elm_image$Image$toPngUrl(
 		A2(
@@ -15440,21 +14889,306 @@ var $author$project$Main$background = function () {
 				$elm$core$List$indexedMap,
 				F2(
 					function (i, x) {
-						return ((!i) || (_Utils_eq(i, horizontalTiles - 1) || (_Utils_eq(i, numTiles - horizontalTiles) || _Utils_eq(i, numTiles - 1)))) ? $author$project$Main$sprites10.bG : ((_Utils_cmp(i, horizontalTiles) < 0) ? $author$project$Main$sprites10.cO : ((_Utils_cmp(i, numTiles - horizontalTiles) > -1) ? $author$project$Main$sprites10.cL : ((!A2($elm$core$Basics$modBy, horizontalTiles, i)) ? $author$project$Main$sprites10.cM : (_Utils_eq(
+						return ((!i) || (_Utils_eq(i, horizontalTiles - 1) || (_Utils_eq(i, numTiles - horizontalTiles) || _Utils_eq(i, numTiles - 1)))) ? $author$project$Main$sprites10.bH : ((_Utils_cmp(i, horizontalTiles) < 0) ? $author$project$Main$sprites10.cQ : ((_Utils_cmp(i, numTiles - horizontalTiles) > -1) ? $author$project$Main$sprites10.cN : ((!A2($elm$core$Basics$modBy, horizontalTiles, i)) ? $author$project$Main$sprites10.cO : (_Utils_eq(
 							A2($elm$core$Basics$modBy, horizontalTiles, i),
-							horizontalTiles - 1) ? $author$project$Main$sprites10.cN : x))));
+							horizontalTiles - 1) ? $author$project$Main$sprites10.cP : x))));
 					}),
 				A2(
 					$elm$random$Random$step,
 					randomIndexes,
 					$elm$random$Random$initialSeed(42)).a)));
-	return A4($author$project$Playground$Extra$tilemap, $author$project$Main$sprites10.D, $author$project$Main$sprites10.D, $author$project$Main$sprites10.bj, lookupImage);
+	return A4($author$project$Playground$Extra$tilemap, $author$project$Main$sprites10.F, $author$project$Main$sprites10.F, $author$project$Main$sprites10.bj, lookupImage);
 }();
+var $author$project$Playground$intFromHexChar = function (s) {
+	switch (s) {
+		case '0':
+			return $elm$core$Maybe$Just(0);
+		case '1':
+			return $elm$core$Maybe$Just(1);
+		case '2':
+			return $elm$core$Maybe$Just(2);
+		case '3':
+			return $elm$core$Maybe$Just(3);
+		case '4':
+			return $elm$core$Maybe$Just(4);
+		case '5':
+			return $elm$core$Maybe$Just(5);
+		case '6':
+			return $elm$core$Maybe$Just(6);
+		case '7':
+			return $elm$core$Maybe$Just(7);
+		case '8':
+			return $elm$core$Maybe$Just(8);
+		case '9':
+			return $elm$core$Maybe$Just(9);
+		case 'a':
+			return $elm$core$Maybe$Just(10);
+		case 'b':
+			return $elm$core$Maybe$Just(11);
+		case 'c':
+			return $elm$core$Maybe$Just(12);
+		case 'd':
+			return $elm$core$Maybe$Just(13);
+		case 'e':
+			return $elm$core$Maybe$Just(14);
+		case 'f':
+			return $elm$core$Maybe$Just(15);
+		default:
+			return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Playground$maybeMap6 = F7(
+	function (func, ma, mb, mc, md, me, mf) {
+		if (ma.$ === 1) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var a = ma.a;
+			if (mb.$ === 1) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var b = mb.a;
+				if (mc.$ === 1) {
+					return $elm$core$Maybe$Nothing;
+				} else {
+					var c = mc.a;
+					if (md.$ === 1) {
+						return $elm$core$Maybe$Nothing;
+					} else {
+						var d = md.a;
+						if (me.$ === 1) {
+							return $elm$core$Maybe$Nothing;
+						} else {
+							var e = me.a;
+							if (mf.$ === 1) {
+								return $elm$core$Maybe$Nothing;
+							} else {
+								var f = mf.a;
+								return $elm$core$Maybe$Just(
+									A6(func, a, b, c, d, e, f));
+							}
+						}
+					}
+				}
+			}
+		}
+	});
+var $elm$core$String$foldr = _String_foldr;
+var $elm$core$String$toList = function (string) {
+	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
+};
+var $elm_explorations$linear_algebra$Math$Vector3$vec3 = _MJS_v3;
+var $author$project$Playground$hexColor2Vec3 = function (str) {
+	var withoutHash = A2($elm$core$String$startsWith, '#', str) ? A2($elm$core$String$dropLeft, 1, str) : str;
+	var _v0 = $elm$core$String$toList(withoutHash);
+	if ((((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && _v0.b.b.b.b.b) && _v0.b.b.b.b.b.b) && (!_v0.b.b.b.b.b.b.b)) {
+		var r1 = _v0.a;
+		var _v1 = _v0.b;
+		var r2 = _v1.a;
+		var _v2 = _v1.b;
+		var g1 = _v2.a;
+		var _v3 = _v2.b;
+		var g2 = _v3.a;
+		var _v4 = _v3.b;
+		var b1 = _v4.a;
+		var _v5 = _v4.b;
+		var b2 = _v5.a;
+		return A7(
+			$author$project$Playground$maybeMap6,
+			F6(
+				function (a, b, c, d, e, f) {
+					return A3($elm_explorations$linear_algebra$Math$Vector3$vec3, ((a * 16) + b) / 255, ((c * 16) + d) / 255, ((e * 16) + f) / 255);
+				}),
+			$author$project$Playground$intFromHexChar(r1),
+			$author$project$Playground$intFromHexChar(r2),
+			$author$project$Playground$intFromHexChar(g1),
+			$author$project$Playground$intFromHexChar(g2),
+			$author$project$Playground$intFromHexChar(b1),
+			$author$project$Playground$intFromHexChar(b2));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Playground$darkPurple = A2(
+	$elm$core$Maybe$withDefault,
+	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
+	$author$project$Playground$hexColor2Vec3('#5c3566'));
+var $author$project$Main$defaultFontSize = 12;
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $author$project$Main$fullScreenBackgroundTile = function () {
+	var _v0 = _Utils_Tuple2(
+		$elm$core$Basics$round($author$project$Main$viewport.f / $author$project$Main$sprites10.F),
+		$elm$core$Basics$round($author$project$Main$viewport.c / $author$project$Main$sprites10.F));
+	var horizontalTiles = _v0.a;
+	var verticalTiles = _v0.b;
+	var lookupImage = $justgook$elm_image$Image$toPngUrl(
+		A2(
+			$justgook$elm_image$Image$fromList,
+			horizontalTiles,
+			A2($elm$core$List$repeat, horizontalTiles * verticalTiles, $author$project$Main$sprites10.bH)));
+	return A4($author$project$Playground$Extra$tilemap, $author$project$Main$sprites10.F, $author$project$Main$sprites10.F, $author$project$Main$sprites10.bj, lookupImage);
+}();
+var $author$project$Playground$move = F3(
+	function (dx, dy, _v0) {
+		var shape = _v0;
+		var x = shape.r;
+		var y = shape.s;
+		var a = shape.g;
+		var sx = shape.d;
+		var sy = shape.e;
+		var o = shape.h;
+		var form = shape.i;
+		return _Utils_update(
+			shape,
+			{r: x + dx, s: y + dy});
+	});
+var $author$project$Playground$moveDown = F2(
+	function (dy, _v0) {
+		var shape = _v0;
+		var x = shape.r;
+		var y = shape.s;
+		var a = shape.g;
+		var sx = shape.d;
+		var sy = shape.e;
+		var o = shape.h;
+		var form = shape.i;
+		return _Utils_update(
+			shape,
+			{s: y - dy});
+	});
+var $author$project$Playground$moveLeft = F2(
+	function (dx, _v0) {
+		var shape = _v0;
+		var x = shape.r;
+		var y = shape.s;
+		var a = shape.g;
+		var sx = shape.d;
+		var sy = shape.e;
+		var o = shape.h;
+		var form = shape.i;
+		return _Utils_update(
+			shape,
+			{r: x - dx});
+	});
+var $author$project$Main$fullScreenBackground = function (screen) {
+	var tilesInRow = (($elm$core$Basics$ceiling((screen.f / 2) / ($author$project$Main$viewport.f / 2)) - 1) * 2) + 1;
+	var tilesInColumn = (($elm$core$Basics$ceiling((screen.c / 2) / ($author$project$Main$viewport.c / 2)) - 1) * 2) + 1;
+	var numTiles = tilesInRow * tilesInColumn;
+	var shapes = A2(
+		$elm$core$List$indexedMap,
+		F2(
+			function (i, shape) {
+				var _v0 = _Utils_Tuple2(
+					A2($elm$core$Basics$modBy, tilesInRow, i),
+					(i / tilesInRow) | 0);
+				var x = _v0.a;
+				var y = _v0.b;
+				return A2(
+					$author$project$Playground$moveLeft,
+					screen.f / 2,
+					A2(
+						$author$project$Playground$moveDown,
+						screen.c / 2,
+						A3($author$project$Playground$move, (x * $author$project$Main$viewport.f) + ($author$project$Main$viewport.f / 2), (y * $author$project$Main$viewport.c) + ($author$project$Main$viewport.c / 2), shape)));
+			}),
+		A2($elm$core$List$repeat, numTiles, $author$project$Main$fullScreenBackgroundTile));
+	return $author$project$Playground$group(shapes);
+};
+var $author$project$Playground$lightPurple = A2(
+	$elm$core$Maybe$withDefault,
+	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
+	$author$project$Playground$hexColor2Vec3('#ad7fa8'));
+var $author$project$Playground$moveX = F2(
+	function (dx, _v0) {
+		var shape = _v0;
+		var x = shape.r;
+		var y = shape.s;
+		var a = shape.g;
+		var sx = shape.d;
+		var sy = shape.e;
+		var o = shape.h;
+		var form = shape.i;
+		return _Utils_update(
+			shape,
+			{r: x + dx});
+	});
+var $author$project$Playground$moveRight = $author$project$Playground$moveX;
+var $author$project$Playground$moveY = F2(
+	function (dy, _v0) {
+		var shape = _v0;
+		var x = shape.r;
+		var y = shape.s;
+		var a = shape.g;
+		var sx = shape.d;
+		var sy = shape.e;
+		var o = shape.h;
+		var form = shape.i;
+		return _Utils_update(
+			shape,
+			{s: y + dy});
+	});
+var $author$project$Playground$moveUp = $author$project$Playground$moveY;
+var $author$project$Playground$moveZ = F2(
+	function (z, _v0) {
+		var shape = _v0;
+		return _Utils_update(
+			shape,
+			{v: z});
+	});
+var $author$project$Playground$purple = A2(
+	$elm$core$Maybe$withDefault,
+	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
+	$author$project$Playground$hexColor2Vec3('#75507b'));
+var $elm$core$Basics$degrees = function (angleInDegrees) {
+	return (angleInDegrees * $elm$core$Basics$pi) / 180;
+};
+var $author$project$Playground$rotate = F2(
+	function (da, _v0) {
+		var shape = _v0;
+		var x = shape.r;
+		var y = shape.s;
+		var a = shape.g;
+		var sx = shape.d;
+		var sy = shape.e;
+		var o = shape.h;
+		var form = shape.i;
+		return _Utils_update(
+			shape,
+			{
+				g: a + $elm$core$Basics$degrees(da)
+			});
+	});
+var $author$project$Playground$scaleY = F2(
+	function (sy, _v0) {
+		var shape = _v0;
+		return _Utils_update(
+			shape,
+			{e: shape.e * sy});
+	});
 var $author$project$Playground$flipX = function (_v0) {
 	var shape = _v0;
 	return _Utils_update(
 		shape,
-		{c: shape.c * (-1)});
+		{d: shape.d * (-1)});
 };
 var $justgook$elm_game_logic$Logic$System$foldl5 = F6(
 	function (f, comp1, comp2, comp3, comp4, acc_) {
@@ -15479,13 +15213,6 @@ var $justgook$elm_game_logic$Logic$System$foldl5 = F6(
 			acc_,
 			comp1);
 	});
-var $author$project$Playground$moveZ = F2(
-	function (z, _v0) {
-		var shape = _v0;
-		return _Utils_update(
-			shape,
-			{t: z});
-	});
 var $author$project$Playground$Extra$size = function (t) {
 	return function (_v0) {
 		var w = _v0.a;
@@ -15497,7 +15224,12 @@ var $author$project$Playground$Extra$size = function (t) {
 var $author$project$Playground$Shader$fragImage = {
 	src: '\n        precision mediump float;\n        varying vec2 uv;\n        uniform vec2 uImgSize;\n        uniform sampler2D uImg;\n        uniform float uA;\n        void main () {\n            vec2 pixel = (floor(uv * uImgSize) + 0.5) / uImgSize;\n            gl_FragColor = texture2D(uImg, pixel);\n            gl_FragColor.a *= uA;\n            if(gl_FragColor.a <= 0.025) discard;\n        }\n    ',
 	attributes: {},
-	uniforms: {uA: 'dC', uImg: 'aS', uImgSize: 'aT'}
+	uniforms: {uA: 'dC', uImg: 'aU', uImgSize: 'aV'}
+};
+var $author$project$Playground$Shader$vertTile = {
+	src: '\n            precision mediump float;\n            attribute vec2 aP;\n            uniform vec4 uT;\n            uniform vec2 uP;\n            uniform float z;\n            uniform float index;\n            uniform vec2 spriteSize;\n            uniform vec2 uImgSize;\n            varying vec2 uv;\n            vec2 edgeFix = vec2(0.0000001, -0.0000001);\n            void main () {\n                vec2 ratio = spriteSize / uImgSize;\n                float row = (uImgSize.y / spriteSize.y - 1.0) - floor((index + 0.5) * ratio.x);\n                float column = floor(mod((index + 0.5), uImgSize.x / spriteSize.x));\n                vec2 offset = vec2(column, row) * ratio;\n                uv = (aP * 0.5 + 0.5) * ratio + offset + edgeFix;\n                gl_Position = vec4(aP * mat2(uT) + uP, z  * -1.19209304e-7, 1.0);\n            }\n        ',
+	attributes: {aP: 'aZ'},
+	uniforms: {index: 'b6', spriteSize: 'cK', uImgSize: 'aV', uP: 'dH', uT: 'dI', z: 'v'}
 };
 var $author$project$Playground$Render$tile = F8(
 	function (spriteSheet, spriteSize, imageSize, index, translate, scaleRotateSkew, z, opacity) {
@@ -15507,19 +15239,19 @@ var $author$project$Playground$Render$tile = F8(
 			$author$project$Playground$Shader$vertTile,
 			$author$project$Playground$Shader$fragImage,
 			$author$project$Playground$Shader$mesh,
-			{b3: index, cH: spriteSize, dC: opacity, aS: spriteSheet, aT: imageSize, dH: translate, dI: scaleRotateSkew, t: z});
+			{b6: index, cK: spriteSize, dC: opacity, aU: spriteSheet, aV: imageSize, dH: translate, dI: scaleRotateSkew, v: z});
 	});
 var $author$project$Playground$Extra$tile = F4(
 	function (tileW, tileH, tileset, index) {
 		return {
-			f: 0,
-			h: A2(
+			g: 0,
+			i: A2(
 				$justgook$webgl_shape$WebGL$Shape2d$Textured,
 				tileset,
 				function (t) {
 					return {
-						f: 0,
-						h: A3(
+						g: 0,
+						i: A3(
 							$justgook$webgl_shape$WebGL$Shape2d$Form,
 							tileW,
 							tileH,
@@ -15529,77 +15261,361 @@ var $author$project$Playground$Extra$tile = F4(
 								A2($elm_explorations$linear_algebra$Math$Vector2$vec2, tileW, tileH),
 								$author$project$Playground$Extra$size(t),
 								index)),
-						g: 1,
-						c: 1,
+						h: 1,
 						d: 1,
-						F: 0,
-						G: 0,
-						t: 0
+						e: 1,
+						r: 0,
+						s: 0,
+						v: 0
 					};
 				}),
-			g: 1,
-			c: 1,
+			h: 1,
 			d: 1,
-			F: 0,
-			G: 0,
-			t: 0
+			e: 1,
+			r: 0,
+			s: 0,
+			v: 0
 		};
 	});
-var $author$project$Main$viewPlaying = F2(
+var $author$project$Main$viewEntities = F2(
+	function (time, world) {
+		return $author$project$Playground$group(
+			A6(
+				$justgook$elm_game_logic$Logic$System$foldl5,
+				F5(
+					function (kind, position, size, facing, shapes) {
+						var tilesheet = A3($author$project$Playground$Extra$tile, 40, 40, 'sprites20.png');
+						var shape = function () {
+							switch (kind) {
+								case 2:
+									return tilesheet(
+										A2($elm$core$Basics$modBy, 13, (time.ab / 80) | 0) + 11);
+								case 1:
+									return tilesheet(
+										A2($elm$core$Basics$modBy, 6, (time.ab / 80) | 0) + 5);
+								default:
+									return tilesheet(
+										A2($elm$core$Basics$modBy, 3, (time.ab / 100) | 0) + 1);
+							}
+						}();
+						return A2(
+							$elm$core$List$cons,
+							A2(
+								$author$project$Playground$moveZ,
+								$elm$core$Basics$round((-(position.s - size)) + ($author$project$Main$viewport.c / 2)),
+								A3(
+									$justgook$elm_game_logic$Logic$System$applyIf,
+									!facing,
+									$author$project$Playground$flipX,
+									A3($author$project$Playground$move, position.r, position.s, shape))),
+							shapes);
+					}),
+				$author$project$Components$kinds.C(world.c1),
+				$author$project$Components$positions.C(world.c1),
+				$author$project$Components$sizes.C(world.c1),
+				$author$project$Components$facings.C(world.c1),
+				_List_Nil));
+	});
+var $author$project$Playground$white = A2(
+	$elm$core$Maybe$withDefault,
+	A3($elm_explorations$linear_algebra$Math$Vector3$vec3, 0, 0, 0),
+	$author$project$Playground$hexColor2Vec3('#ffffff'));
+var $author$project$Playground$Shader$fragImageColor = {
+	src: '\n        precision mediump float;\n        varying vec2 uv;\n        uniform vec2 uImgSize;\n        uniform sampler2D uImg;\n        uniform vec4 color;\n        void main () {\n            vec2 pixel = ((floor(uv * uImgSize) + 0.5) * 2.0 ) / uImgSize / 2.0;\n            gl_FragColor = texture2D(uImg, pixel) * color;\n            if(gl_FragColor.a <= 0.025) discard;\n        }\n    ',
+	attributes: {},
+	uniforms: {color: 'al', uImg: 'aU', uImgSize: 'aV'}
+};
+var $elm_explorations$linear_algebra$Math$Vector3$toRecord = _MJS_v3toRecord;
+var $elm_explorations$linear_algebra$Math$Vector4$vec4 = _MJS_v4;
+var $author$project$Playground$Render$setAlpha = A2(
+	$elm$core$Basics$composeR,
+	$elm_explorations$linear_algebra$Math$Vector3$toRecord,
+	function (a) {
+		return A3($elm_explorations$linear_algebra$Math$Vector4$vec4, a.r, a.s, a.v);
+	});
+var $author$project$Playground$Render$tileWithColor = F9(
+	function (spriteSheet, spriteSize, imageSize, color, index, translate, scaleRotateSkew, z, opacity) {
+		return A5(
+			$elm_explorations$webgl$WebGL$entityWith,
+			$author$project$Playground$Render$defaultEntitySettings,
+			$author$project$Playground$Shader$vertTile,
+			$author$project$Playground$Shader$fragImageColor,
+			$author$project$Playground$Shader$mesh,
+			{
+				al: A2($author$project$Playground$Render$setAlpha, color, opacity),
+				b6: index,
+				cK: spriteSize,
+				dC: opacity,
+				aU: spriteSheet,
+				aV: imageSize,
+				dH: translate,
+				dI: scaleRotateSkew,
+				v: z
+			});
+	});
+var $author$project$Playground$Extra$Font$char = F8(
+	function (spriteSheet, imageSize, color, w, h, x, y, index) {
+		return {
+			g: 0,
+			i: A3(
+				$justgook$webgl_shape$WebGL$Shape2d$Form,
+				w,
+				h,
+				A5(
+					$author$project$Playground$Render$tileWithColor,
+					spriteSheet,
+					A2($elm_explorations$linear_algebra$Math$Vector2$vec2, w, h),
+					imageSize,
+					color,
+					index)),
+			h: 1,
+			d: 1,
+			e: 1,
+			r: x,
+			s: y,
+			v: 0
+		};
+	});
+var $author$project$Playground$Extra$Font$outputFold = F6(
+	function (toChar, getIndex, w, h, c, _v0) {
+		var chars = _v0.aF;
+		var x = _v0.r;
+		var y = _v0.s;
+		var width = _v0.f;
+		return (c === '\n') ? {
+			aF: chars,
+			f: A2($elm$core$Basics$max, width, x),
+			r: w,
+			s: y - h
+		} : {
+			aF: A2(
+				$elm$core$List$cons,
+				A3(
+					toChar,
+					x,
+					y,
+					getIndex(c)),
+				chars),
+			f: width,
+			r: x + w,
+			s: y
+		};
+	});
+var $author$project$Playground$Extra$Font$tileFont = F3(
+	function (_v0, color, string) {
+		var charW = _v0.c$;
+		var charH = _v0.c_;
+		var src = _v0.dA;
+		var getIndex = _v0.df;
+		return {
+			g: 0,
+			i: A2(
+				$justgook$webgl_shape$WebGL$Shape2d$Textured,
+				src,
+				function (t) {
+					var _v1 = A3(
+						$elm$core$Tuple$mapBoth,
+						$elm$core$Basics$toFloat,
+						$elm$core$Basics$toFloat,
+						$elm_explorations$webgl$WebGL$Texture$size(t));
+					var imgW = _v1.a;
+					var imgH = _v1.b;
+					var imgSize = A2($elm_explorations$linear_algebra$Math$Vector2$vec2, imgW, imgH);
+					var toChar = A5($author$project$Playground$Extra$Font$char, t, imgSize, color, charW, charH);
+					var output = A3(
+						$elm$core$List$foldl,
+						A4($author$project$Playground$Extra$Font$outputFold, toChar, getIndex, charW, charH),
+						{aF: _List_Nil, f: 0, r: charW, s: charH},
+						$elm$core$String$toList(string));
+					return {
+						g: 0,
+						i: $justgook$webgl_shape$WebGL$Shape2d$Group(output.aF),
+						h: 1,
+						d: 1,
+						e: 1,
+						r: A2($elm$core$Basics$max, output.r, output.f) * (-0.5),
+						s: (output.s * (-0.5)) + (0.5 * (-charH)),
+						v: 0
+					};
+				}),
+			h: 1,
+			d: 1,
+			e: 1,
+			r: 0,
+			s: 0,
+			v: 0
+		};
+	});
+var $author$project$Playground$Font$SimpleMood$image = 'data:image/png;base64,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';
+var $author$project$Playground$Font$SimpleMood$letters_ = $elm$core$Dict$fromList(
+	A2(
+		$elm$core$List$indexedMap,
+		F2(
+			function (a, b) {
+				return _Utils_Tuple2(b, a);
+			}),
+		$elm$core$List$concat(
+			_List_fromArray(
+				[
+					_List_fromArray(
+					['\u0000', '☺', '☻', '♥', '♦', '♣', '♠', '•', '◘', '○', '◙', '♂', '♀', '♪', '♫', '☼']),
+					_List_fromArray(
+					['►', '◄', '↕', '‼', '¶', '§', '▬', '↨', '↑', '↓', '→', '←', '∟', '↔', '▲', '▼']),
+					_List_fromArray(
+					[' ', '!', '\"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/']),
+					_List_fromArray(
+					['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?']),
+					_List_fromArray(
+					['@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']),
+					_List_fromArray(
+					['P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_']),
+					_List_fromArray(
+					['`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o']),
+					_List_fromArray(
+					['p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~', '⌂']),
+					_List_fromArray(
+					['Ç', 'ü', 'é', 'â', 'ä', 'à', 'å', 'ç', 'ê', 'ë', 'è', 'ï', 'î', 'ì', 'Ä', 'Å']),
+					_List_fromArray(
+					['É', 'æ', 'Æ', 'ô', 'ö', 'ò', 'û', 'ù', 'ÿ', 'Ö', 'Ü', '¢', '£', '¥', '₧', 'ƒ']),
+					_List_fromArray(
+					['á', 'í', 'ó', 'ú', 'ñ', 'Ñ', 'ª', 'º', '¿', '⌐', '¬', '½', '¼', '¡', '«', '»']),
+					_List_fromArray(
+					['░', '▒', '▓', '│', '┤', '╡', '╢', '╖', '╕', '╣', '║', '╗', '╝', '╜', '╛', '┐']),
+					_List_fromArray(
+					['└', '┴', '┬', '├', '─', '┼', '╞', '╟', '╚', '╔', '╩', '╦', '╠', '═', '╬', '╧']),
+					_List_fromArray(
+					['╨', '╤', '╥', '╙', '╘', '╒', '╓', '╫', '╪', '┘', '┌', '█', '▄', '▌', '▐', '▀']),
+					_List_fromArray(
+					['α', 'ß', 'Γ', 'π', 'Σ', 'σ', 'µ', 'τ', 'Φ', 'Θ', 'Ω', 'δ', '∞', 'φ', 'ε', '∩']),
+					_List_fromArray(
+					['≡', '±', '≥', '≤', '⌠', '⌡', '÷', '≈', '°', '∙', '·', '√', 'ⁿ', '²', '■', '\u00A0'])
+				]))));
+var $author$project$Playground$Font$SimpleMood$letters = function (c) {
+	return A2(
+		$elm$core$Maybe$withDefault,
+		0,
+		A2($elm$core$Dict$get, c, $author$project$Playground$Font$SimpleMood$letters_));
+};
+var $author$project$Playground$wordsConfig = {c_: 16, c$: 16, df: $author$project$Playground$Font$SimpleMood$letters, dA: $author$project$Playground$Font$SimpleMood$image};
+var $author$project$Playground$words = $author$project$Playground$Extra$Font$tileFont($author$project$Playground$wordsConfig);
+var $author$project$Main$viewMenu = F2(
 	function (_v0, world) {
-		var time = _v0.cK;
-		var screen = _v0.a6;
+		var time = _v0.bE;
+		var screen = _v0.aN;
+		var mouse = _v0.bq;
+		var titleScale = ($author$project$Main$viewport.c / $author$project$Main$defaultFontSize) / 6;
+		var titleShadowOffset = ($author$project$Main$defaultFontSize * titleScale) / 20;
+		var moveTitle = F2(
+			function (delay, shape) {
+				var t = _Utils_update(
+					time,
+					{ab: time.ab - delay});
+				var _v1 = _Utils_Tuple2($author$project$Main$viewport.f / 13, $author$project$Main$viewport.c / 20);
+				var mx = _v1.a;
+				var my = _v1.b;
+				return A2(
+					$author$project$Playground$scale,
+					A4($author$project$Playground$wave, 1, 1.1, 2, t),
+					A3(
+						$author$project$Playground$move,
+						A4($author$project$Playground$wave, -mx, mx, 10, t),
+						A4($author$project$Playground$wave, -my, my, 2, t),
+						A2(
+							$author$project$Playground$rotate,
+							A4($author$project$Playground$wave, -5, 5, 8, t),
+							shape)));
+			});
 		return _List_fromArray(
 			[
 				$author$project$Main$fullScreenBackground(screen),
 				$author$project$Main$background,
+				A2($author$project$Main$viewEntities, time, world),
+				A2(
+				$author$project$Playground$moveZ,
+				$elm$core$Basics$round($author$project$Main$viewport.c),
 				$author$project$Playground$group(
-				A6(
-					$justgook$elm_game_logic$Logic$System$foldl5,
-					F5(
-						function (kind, position, size, facing, shapes) {
-							var tilesheet = A3($author$project$Playground$Extra$tile, 40, 40, 'sprites20.png');
-							var shape = function () {
-								switch (kind) {
-									case 2:
-										return tilesheet(
-											A2($elm$core$Basics$modBy, 13, (time.aK / 80) | 0) + 11);
-									case 1:
-										return tilesheet(
-											A2($elm$core$Basics$modBy, 6, (time.aK / 80) | 0) + 5);
-									default:
-										return tilesheet(
-											A2($elm$core$Basics$modBy, 3, (time.aK / 100) | 0) + 1);
-								}
-							}();
+					_List_fromArray(
+						[
+							A2(
+							$author$project$Playground$moveUp,
+							$author$project$Main$viewport.c / 6,
+							$author$project$Playground$group(
+								_List_fromArray(
+									[
+										A2(
+										moveTitle,
+										60,
+										A2(
+											$author$project$Playground$scale,
+											titleScale,
+											A2(
+												$author$project$Playground$moveRight,
+												titleShadowOffset * 2,
+												A2(
+													$author$project$Playground$moveDown,
+													titleShadowOffset * 2,
+													A2($author$project$Playground$words, $author$project$Playground$darkPurple, 'Flee!'))))),
+										A2(
+										moveTitle,
+										30,
+										A2(
+											$author$project$Playground$scale,
+											titleScale,
+											A2(
+												$author$project$Playground$moveRight,
+												titleShadowOffset,
+												A2(
+													$author$project$Playground$moveDown,
+													titleShadowOffset,
+													A2($author$project$Playground$words, $author$project$Playground$purple, 'Flee!'))))),
+										A2(
+										moveTitle,
+										0,
+										A2(
+											$author$project$Playground$scale,
+											titleScale,
+											A2($author$project$Playground$words, $author$project$Playground$lightPurple, 'Flee!')))
+									]))),
+							function () {
+							var my = $author$project$Main$viewport.c / 40;
+							var fontScale = 1.5;
 							return A2(
-								$elm$core$List$cons,
+								$author$project$Playground$moveDown,
+								A4($author$project$Playground$wave, -my, my, 5, time),
 								A2(
-									$author$project$Playground$moveZ,
-									$elm$core$Basics$round((-(position.G - size)) + ($author$project$Main$viewport.e / 2)),
-									A3(
-										$justgook$elm_game_logic$Logic$System$applyIf,
-										!facing,
-										$author$project$Playground$flipX,
-										A3($author$project$Playground$move, position.F, position.G, shape))),
-								shapes);
-						}),
-					$author$project$Components$kinds.A(world.c0),
-					$author$project$Components$positions.A(world.c0),
-					$author$project$Components$sizes.A(world.c0),
-					$author$project$Components$facings.A(world.c0),
-					_List_Nil))
+									$author$project$Playground$moveDown,
+									$author$project$Main$viewport.c / 4,
+									A2(
+										$author$project$Playground$scale,
+										($author$project$Main$viewport.c / ($author$project$Main$defaultFontSize * fontScale)) / 32,
+										A2(
+											$author$project$Playground$scaleY,
+											fontScale,
+											A2($author$project$Playground$words, $author$project$Playground$white, 'Click to start!')))));
+						}()
+						])))
+			]);
+	});
+var $author$project$Main$viewPlaying = F2(
+	function (_v0, world) {
+		var time = _v0.bE;
+		var screen = _v0.aN;
+		return _List_fromArray(
+			[
+				$author$project$Main$fullScreenBackground(screen),
+				$author$project$Main$background,
+				A2($author$project$Main$viewEntities, time, world)
 			]);
 	});
 var $author$project$Main$view = F2(
 	function (computer, world) {
 		return A2(
 			$author$project$Main$adaptToViewport,
-			computer.a6,
+			computer.aN,
 			function () {
-				var _v0 = world.aM;
+				var _v0 = world.aO;
 				if (!_v0) {
-					return $author$project$Main$viewMenu(computer);
+					return A2($author$project$Main$viewMenu, computer, world);
 				} else {
 					return A2($author$project$Main$viewPlaying, computer, world);
 				}
@@ -15609,6 +15625,7 @@ var $author$project$Main$main = A3(
 	$author$project$Playground$game,
 	$author$project$Main$view,
 	$author$project$Main$update,
-	{c0: $author$project$Components$empty, aM: 0});
+	$author$project$Main$spawnMenu(
+		{c1: $author$project$Components$empty, aO: 0}));
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
