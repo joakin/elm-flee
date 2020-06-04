@@ -2,14 +2,16 @@
 
 ## TODO
 
-- [ ] Add the tree borders to the level
+- [ ] Offset animations by some number to avoid all animals running at the same time
 - [ ] Add timer countdown before start with some instructions instead of text in level
 - [ ] Flesh out game mechanics
 - [ ] Make touch input work. Hard with playground. Unsure on how to proceed now.
 
 Later:
 
-- [ ] FX for menu, timer, and gameplay
+- [ ] FX for menu
+- [ ] FX for timer
+- [ ] FX for gameplay
 
 ## Inspiration
 
