@@ -87,7 +87,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 11.aseprite": {
+   "sprites20 (guardian shadow) 11.aseprite": {
     "frame": { "x": 40, "y": 80, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -95,7 +95,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 12.aseprite": {
+   "sprites20 (guardian shadow) 12.aseprite": {
     "frame": { "x": 80, "y": 80, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -103,7 +103,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 13.aseprite": {
+   "sprites20 (guardian shadow) 13.aseprite": {
     "frame": { "x": 120, "y": 80, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -111,7 +111,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 14.aseprite": {
+   "sprites20 (guardian shadow) 14.aseprite": {
     "frame": { "x": 160, "y": 80, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -119,7 +119,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 15.aseprite": {
+   "sprites20 (guardian shadow) 15.aseprite": {
     "frame": { "x": 0, "y": 120, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -127,7 +127,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 16.aseprite": {
+   "sprites20 (guardian shadow) 16.aseprite": {
     "frame": { "x": 40, "y": 120, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -135,7 +135,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 17.aseprite": {
+   "sprites20 (guardian shadow) 17.aseprite": {
     "frame": { "x": 80, "y": 120, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -143,7 +143,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 18.aseprite": {
+   "sprites20 (guardian shadow) 18.aseprite": {
     "frame": { "x": 120, "y": 120, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -151,7 +151,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 19.aseprite": {
+   "sprites20 (guardian shadow) 19.aseprite": {
     "frame": { "x": 160, "y": 120, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -159,7 +159,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 20.aseprite": {
+   "sprites20 (guardian shadow) 20.aseprite": {
     "frame": { "x": 0, "y": 160, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -167,7 +167,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 21.aseprite": {
+   "sprites20 (guardian shadow) 21.aseprite": {
     "frame": { "x": 40, "y": 160, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -175,7 +175,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 22.aseprite": {
+   "sprites20 (guardian shadow) 22.aseprite": {
     "frame": { "x": 80, "y": 160, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -183,7 +183,7 @@
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
    },
-   "sprites20 (guardian) 23.aseprite": {
+   "sprites20 (guardian shadow) 23.aseprite": {
     "frame": { "x": 120, "y": 160, "w": 40, "h": 40 },
     "rotated": false,
     "trimmed": false,
@@ -207,7 +207,7 @@
   "layers": [
    { "name": "prey", "opacity": 255, "blendMode": "normal" },
    { "name": "predator", "opacity": 255, "blendMode": "normal" },
-   { "name": "guardian", "opacity": 255, "blendMode": "normal" }
+   { "name": "guardian shadow", "opacity": 255, "blendMode": "normal" }
   ]
  }
 }
