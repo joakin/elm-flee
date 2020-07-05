@@ -7,9 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="./index.css" />
     <link rel="icon" href="./favicon.svg" />
+    <script src="./howler.js"></script>
     <script src="./elm.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        let music = new Howl({
+          src: ["rolemusic_-_if_pigs_could_sing.mp3"],
+          autoplay: true,
+          loop: true,
+          volume: 0.3,
+        });
+        music.play();
+
         let app = Elm.Main.init({ flags: null, node: document.body });
       });
     </script>
