@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 import AltMath.Vector2 as Vec2 exposing (Vec2)
+import Array
 import Components exposing (..)
 import Dict exposing (Dict)
 import Game
@@ -8,6 +9,7 @@ import Image
 import Logic.Component as Component exposing (Spec)
 import Logic.Entity as Entity
 import Logic.System as System exposing (System, applyIf)
+import Logic.System.Extra as System
 import Playground exposing (..)
 import Playground.Extra exposing (..)
 import Random
@@ -53,48 +55,70 @@ type State
     | Playing
 
 
-predator pos world =
-    world
+predator pos ( world, seed ) =
+    let
+        ( randomAnimationOffset, seed_ ) =
+            Random.step (Random.int 0 100) seed
+    in
+    ( world
         |> Components.addEntity
         |> Entity.with ( kinds, Predator )
         |> Entity.with ( positions, pos )
         |> Entity.with ( sizes, defaultSize )
         |> Entity.with ( speeds, defaultSpeed * 1 )
-        |> Entity.with ( avoids, Dict.singleton (kindToString Guardian) 2 )
+        |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 2 ), ( kindToString Predator, 0.5 ) ] )
         |> Entity.with ( follows, Set.singleton (kindToString Prey) )
         |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator ] )
         |> Entity.with ( directions, pos )
         |> Entity.with ( facings, Right )
+        |> Entity.with ( animationOffsets, randomAnimationOffset )
         |> Tuple.second
+    , seed_
+    )
 
 
-guardian pos world =
-    world
+guardian pos ( world, seed ) =
+    let
+        ( randomAnimationOffset, seed_ ) =
+            Random.step (Random.int 0 100) seed
+    in
+    ( world
         |> Components.addEntity
         |> Entity.with ( kinds, Guardian )
         |> Entity.with ( positions, pos )
         |> Entity.with ( sizes, defaultSize * 2 )
         |> Entity.with ( speeds, defaultSpeed / 3 )
+        |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 1 ) ] )
         |> Entity.with ( follows, Set.singleton (kindToString Predator) )
         |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator, Prey ] )
         |> Entity.with ( directions, pos )
         |> Entity.with ( facings, Right )
+        |> Entity.with ( animationOffsets, randomAnimationOffset )
         |> Tuple.second
+    , seed_
+    )
 
 
-prey pos world =
-    world
+prey pos ( world, seed ) =
+    let
+        ( randomAnimationOffset, seed_ ) =
+            Random.step (Random.int 0 100) seed
+    in
+    ( world
         |> Components.addEntity
         |> Entity.with ( kinds, Prey )
         |> Entity.with ( userInputs, UserInput )
         |> Entity.with ( positions, pos )
         |> Entity.with ( sizes, defaultSize / 2 )
-        |> Entity.with ( speeds, defaultSpeed * 1.1 )
+        |> Entity.with ( speeds, defaultSpeed * 1.4 )
         |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 1.1 ), ( kindToString Prey, 0.5 ) ] )
         |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Prey ] )
         |> Entity.with ( directions, pos )
         |> Entity.with ( facings, Right )
+        |> Entity.with ( animationOffsets, randomAnimationOffset )
         |> Tuple.second
+    , seed_
+    )
 
 
 many n fn world =
@@ -116,23 +140,25 @@ many n fn world =
 
 spawnMenu : World -> World
 spawnMenu w =
-    w.components
+    ( w.components, Random.initialSeed 42 )
         |> predator { x = viewport.right - 10, y = viewport.width / 10 }
         |> guardian { x = 0, y = 0 }
         |> prey { x = viewport.left + 20, y = 0 }
+        |> Tuple.first
         |> Components.set w
 
 
 spawnPlaying : World -> World
 spawnPlaying w =
-    w.components
+    ( w.components, Random.initialSeed 42 )
         |> predator { x = viewport.right - 10, y = -viewport.width / 10 }
         |> predator { x = viewport.right - 10, y = viewport.width / 10 }
         |> guardian { x = 0, y = 0 }
         |> prey { x = viewport.left + 20, y = 0 }
         -- |> many 40 prey
-        -- |> many 10 predator
-        -- |> many 3 guardian
+        |> many 10 predator
+        |> many 3 guardian
+        |> Tuple.first
         |> Components.set w
 
 
@@ -381,8 +407,8 @@ viewPlaying { time, screen } world =
 
 viewEntities : Time -> World -> Shape
 viewEntities time world =
-    System.foldl5
-        (\kind position size facing shapes ->
+    System.foldl5_
+        (\kind position size facing animationOffset shapes ->
             let
                 tilesheet =
                     tile 40 40 "sprites20.png"
@@ -390,13 +416,13 @@ viewEntities time world =
                 shape =
                     case kind of
                         Guardian ->
-                            tilesheet ((time.now // 80 |> modBy 13) + 11)
+                            tilesheet (((time.now // 80 - animationOffset) |> modBy 13) + 11)
 
                         Predator ->
-                            tilesheet ((time.now // 80 |> modBy 6) + 5)
+                            tilesheet (((time.now // 80 - animationOffset) |> modBy 6) + 5)
 
                         Prey ->
-                            tilesheet ((time.now // 100 |> modBy 3) + 1)
+                            tilesheet (((time.now // 100 - animationOffset) |> modBy 3) + 1)
             in
             (shape
                 |> move position.x position.y
@@ -409,6 +435,7 @@ viewEntities time world =
         (positions.get world.components)
         (sizes.get world.components)
         (facings.get world.components)
+        (animationOffsets.get world.components)
         []
         |> group
 

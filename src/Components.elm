@@ -11,6 +11,7 @@ module Components exposing
     , Collision, collisions
     , Direction, directions
     , Facing(..), facings
+    , AnimationOffset, animationOffsets
     )
 
 {-|
@@ -54,6 +55,8 @@ module Components exposing
 
 @docs Facing, facings
 
+@docs AnimationOffset, animationOffsets
+
 -}
 
 import AltMath.Vector2 as Vec2 exposing (Vec2)
@@ -79,6 +82,7 @@ type alias Components =
     , collisions : Component.Set Collision
     , directions : Component.Set Direction
     , facings : Component.Set Facing
+    , animationOffsets : Component.Set AnimationOffset
     }
 
 
@@ -95,6 +99,7 @@ empty =
     , collisions = Component.empty
     , directions = Component.empty
     , facings = Component.empty
+    , animationOffsets = Component.empty
     }
 
 
@@ -143,6 +148,7 @@ removeEntity entityID components =
       , collisions = Component.remove entityID components.collisions
       , directions = Component.remove entityID components.directions
       , facings = Component.remove entityID components.facings
+      , animationOffsets = Component.remove entityID components.animationOffsets
       }
     )
 
@@ -255,3 +261,12 @@ type Facing
 facings : Spec Facing Components
 facings =
     Spec .facings (\comps components -> { components | facings = comps })
+
+
+type alias AnimationOffset =
+    Int
+
+
+animationOffsets : Spec AnimationOffset Components
+animationOffsets =
+    Spec .animationOffsets (\comps components -> { components | animationOffsets = comps })
