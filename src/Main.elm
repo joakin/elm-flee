@@ -3,6 +3,7 @@ module Main exposing (main)
 import AltMath.Vector2 as Vec2 exposing (Vec2)
 import Components exposing (..)
 import Dict exposing (Dict)
+import Game
 import Image
 import Logic.Component as Component exposing (Spec)
 import Logic.Entity as Entity
@@ -135,16 +136,17 @@ spawnPlaying w =
         |> Components.set w
 
 
-main : Program () (Playground World) Msg
+main : Program () (Game.Model World) Game.Msg
 main =
-    game
-        view
-        update
+    Game.program
+        "Flee"
         ({ state = Menu
          , components = Components.empty
          }
             |> spawnMenu
         )
+        update
+        view
 
 
 view : Computer -> World -> List Shape
@@ -360,7 +362,7 @@ viewMenu { time, screen, mouse } world =
                 my =
                     viewport.height / 40
               in
-              words white "Click to start!"
+              words white "Click/Tap to start!"
                 |> scaleY fontScale
                 |> scale ((viewport.height / (defaultFontSize * fontScale)) / 32)
                 |> moveDown (viewport.height / 4)
@@ -423,7 +425,7 @@ update computer world =
 
 updateMenu : Computer -> World -> World
 updateMenu { mouse, screen, time } world =
-    if mouse.click then
+    if mouse.click || mouse.down then
         { world
             | state = Playing
             , components = Components.empty
