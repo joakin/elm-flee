@@ -130,26 +130,42 @@ prey pos ( world, seed ) =
         |> Entity.with ( facings, Right )
         |> Entity.with ( animationOffsets, randomAnimationOffset )
         |> Entity.with ( healths, { lastUpdated = 0, amount = 3 } )
+        |> Entity.with ( eats, Set.fromList <| List.map kindToString [ Fruit ] )
         |> Tuple.second
     , seed2
     )
 
 
-many n fn world =
-    Random.initialSeed 24
-        |> Random.step
-            (Random.list n
-                (Random.pair
-                    (Random.float viewport.left viewport.right)
-                    (Random.float viewport.bottom viewport.top)
-                )
-            )
-        |> Tuple.first
-        |> List.foldl
-            (\( x, y ) w__ ->
-                w__ |> fn { x = x, y = y }
-            )
-            world
+fruit pos ( world, seed ) =
+    ( world
+        |> Components.addEntity
+        |> Entity.with ( kinds, Fruit )
+        |> Entity.with ( positions, pos )
+        |> Entity.with ( sizes, defaultSize * 2 )
+        |> Entity.with ( healths, { lastUpdated = 0, amount = 1 } )
+        |> Tuple.second
+    , seed
+    )
+
+
+many n fn ( world, seed ) =
+    let
+        ( pos, seed_ ) =
+            seed
+                |> Random.step
+                    (Random.list n
+                        (Random.pair
+                            (Random.float viewport.left viewport.right)
+                            (Random.float viewport.bottom viewport.top)
+                        )
+                    )
+    in
+    List.foldl
+        (\( x, y ) acc ->
+            acc |> fn { x = x, y = y }
+        )
+        ( world, seed_ )
+        pos
 
 
 spawnMenu : World -> World
@@ -453,9 +469,13 @@ viewPlaying { score, status } { time, screen, mouse } world =
                 |> fade 0.5
             , words white (String.fromInt score ++ " points!")
                 |> moveUp 20
+                |> scale (wave 1 1.3 2 time)
+                |> moveDown (wave -5 5 5 time)
+                |> rotate (wave -5 5 3 time)
             , words brightPurple "Click/Tap to try again!"
                 |> scale 0.5
                 |> moveDown 20
+                |> moveDown (wave -5 5 8 time)
             ]
 
         CountingDown n ->
@@ -485,9 +505,15 @@ viewPlaying { score, status } { time, screen, mouse } world =
 
 viewEntities : Time -> World -> Shape
 viewEntities time world =
-    System.foldl6
-        (\kind position size facing animationOffset health shapes ->
+    System.indexedFoldl4
+        (\id kind position size health shapes ->
             let
+                maybeFacing =
+                    Component.get id (facings.get world.components)
+
+                maybeAnimationOffset =
+                    Component.get id (animationOffsets.get world.components)
+
                 dead =
                     health.amount <= 0
 
@@ -505,6 +531,10 @@ viewEntities time world =
                     tile 40 40 "sprites20.png"
 
                 shape =
+                    let
+                        animationOffset =
+                            maybeAnimationOffset |> Maybe.withDefault 0
+                    in
                     case kind of
                         Guardian ->
                             tilesheet (((tileAnimationTime // 80 - animationOffset) |> modBy 13) + 11)
@@ -517,16 +547,25 @@ viewEntities time world =
                         Prey ->
                             tilesheet (((tileAnimationTime // 100 - animationOffset) |> modBy 3) + 1)
                                 |> moveUp 2
+
+                        Fruit ->
+                            tilesheet 24
+                                |> moveUp (wave -2 2 1 time)
             in
-            -- (group
-            -- [ circle (rgb 200 80 40) (size / 2)
-            --     |> move position.x position.y
-            -- ]
+            -- group
+            --     [ circle (rgb 200 80 40) (size / 2)
+            --         |> move position.x position.y
             (shape
                 |> move position.x position.y
-                |> applyIf (facing == Left) flipX
-                |> applyIf (not dead && timeSinceLastHealthUpdate <= invulnerabilityTime) (fade (wave 0.5 1 0.3 time))
-                |> applyIf dead (scaleY 0.5)
+                |> applyIf
+                    (maybeFacing |> Maybe.map (\facing -> facing == Left) |> Maybe.withDefault False)
+                    flipX
+                |> applyIf
+                    (not dead
+                        && (timeSinceLastHealthUpdate <= invulnerabilityTime)
+                    )
+                    (fade (wave 0.5 1 0.3 time))
+                |> applyIf dead (scaleY (wave 0.2 0.8 1 time))
                 |> applyIf dead (fade (1 - (toFloat timeSinceLastHealthUpdate / removeDeadAfter)))
                 |> moveZ (round (-(position.y - size / 2) + viewport.height / 2))
             )
@@ -535,8 +574,6 @@ viewEntities time world =
         (kinds.get world.components)
         (positions.get world.components)
         (sizes.get world.components)
-        (facings.get world.components)
-        (animationOffsets.get world.components)
         (healths.get world.components)
         []
         |> group
@@ -650,9 +687,42 @@ updatePlaying ({ status, score, lastFrameTime, startTime } as playingState) { mo
 
                     else
                         score
+
+                spawnPredator w =
+                    if ((time.now // 1000) |> modBy 5) == 1 && ((lastFrameTime // 1000) |> modBy 5) == 0 then
+                        ( w.components, Random.initialSeed time.now )
+                            |> many 1 predator
+                            |> Tuple.first
+                            |> Components.set w
+
+                    else
+                        w
+
+                spawnGuardian w =
+                    if ((time.now // 1000) |> modBy 15) == 1 && ((lastFrameTime // 1000) |> modBy 15) == 0 then
+                        ( w.components, Random.initialSeed time.now )
+                            |> many 1 guardian
+                            |> Tuple.first
+                            |> Components.set w
+
+                    else
+                        w
+
+                spawnFruit w =
+                    if ((time.now // 1000) |> modBy 5) == 1 && ((lastFrameTime // 1000) |> modBy 5) == 0 then
+                        ( w.components, Random.initialSeed time.now )
+                            |> many 1 fruit
+                            |> Tuple.first
+                            |> Components.set w
+
+                    else
+                        w
             in
             if userControlledEntities > 0 then
                 { newWorld | state = Playing { playingState | score = newScore } }
+                    |> spawnPredator
+                    |> spawnGuardian
+                    |> spawnFruit
 
             else
                 { newWorld | state = Playing { playingState | status = Dead } }
@@ -806,7 +876,7 @@ boundedBy screen components =
 
 
 invulnerabilityTime =
-    1000
+    2000
 
 
 takeDamage : Time -> System Components

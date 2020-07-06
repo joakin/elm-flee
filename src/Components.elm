@@ -200,6 +200,7 @@ type Kind
     = Prey
     | Predator
     | Guardian
+    | Fruit
 
 
 kindToString : Kind -> String
@@ -213,6 +214,9 @@ kindToString kind =
 
         Guardian ->
             "Guardian"
+
+        Fruit ->
+            "Fruit"
 
 
 kinds : Spec Kind Components
