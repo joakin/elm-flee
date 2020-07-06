@@ -73,13 +73,13 @@ predator pos ( world, seed ) =
         |> Entity.with ( facings, Right )
         |> Entity.with ( animationOffsets, randomAnimationOffset )
         |> Tuple.second
-    , seed_
+    , seed2
     )
 
 
 guardian pos ( world, seed ) =
     let
-        ( randomAnimationOffset, seed_ ) =
+        ( randomAnimationOffset, seed2 ) =
             Random.step (Random.int 0 100) seed
     in
     ( world
@@ -95,13 +95,13 @@ guardian pos ( world, seed ) =
         |> Entity.with ( facings, Right )
         |> Entity.with ( animationOffsets, randomAnimationOffset )
         |> Tuple.second
-    , seed_
+    , seed2
     )
 
 
 prey pos ( world, seed ) =
     let
-        ( randomAnimationOffset, seed_ ) =
+        ( randomAnimationOffset, seed2 ) =
             Random.step (Random.int 0 100) seed
     in
     ( world
@@ -117,7 +117,7 @@ prey pos ( world, seed ) =
         |> Entity.with ( facings, Right )
         |> Entity.with ( animationOffsets, randomAnimationOffset )
         |> Tuple.second
-    , seed_
+    , seed2
     )
 
 
