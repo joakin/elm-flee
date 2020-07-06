@@ -51,13 +51,13 @@ type alias World =
 
 
 type State
-    = Menu
+    = Menu Bool
     | Playing
 
 
 predator pos ( world, seed ) =
     let
-        ( randomAnimationOffset, seed_ ) =
+        ( randomAnimationOffset, seed2 ) =
             Random.step (Random.int 0 100) seed
     in
     ( world
@@ -156,8 +156,8 @@ spawnPlaying w =
         |> guardian { x = 0, y = 0 }
         |> prey { x = viewport.left + 20, y = 0 }
         -- |> many 40 prey
-        |> many 10 predator
-        |> many 3 guardian
+        -- |> many 10 predator
+        -- |> many 3 guardian
         |> Tuple.first
         |> Components.set w
 
@@ -166,7 +166,7 @@ main : Program () (Game.Model World) Game.Msg
 main =
     Game.program
         "Flee"
-        ({ state = Menu
+        ({ state = Menu False
          , components = Components.empty
          }
             |> spawnMenu
@@ -179,8 +179,8 @@ view : Computer -> World -> List Shape
 view computer world =
     adaptToViewport computer.screen <|
         case world.state of
-            Menu ->
-                viewMenu computer world
+            Menu interactedToEnableAudio ->
+                viewMenu interactedToEnableAudio computer world
 
             Playing ->
                 viewPlaying computer world
@@ -336,8 +336,8 @@ background =
         lookupImage
 
 
-viewMenu : Computer -> World -> List Shape
-viewMenu { time, screen, mouse } world =
+viewMenu : Bool -> Computer -> World -> List Shape
+viewMenu interactedToEnableAudio { time, screen, mouse } world =
     let
         moveTitle : Int -> Shape -> Shape
         moveTitle delay shape =
@@ -393,6 +393,15 @@ viewMenu { time, screen, mouse } world =
                 |> scale ((viewport.height / (defaultFontSize * fontScale)) / 32)
                 |> moveDown (viewport.height / 4)
                 |> moveDown (wave -my my 5 time)
+            , if interactedToEnableAudio then
+                group []
+
+              else
+                group
+                    [ rectangle (rgb 0 20 0) screen.width screen.height
+                    , words lightPurple "Click/Tap to\nstart with audio"
+                    ]
+                    |> fade 0.8
             ]
     ]
 
@@ -443,21 +452,27 @@ viewEntities time world =
 update : Computer -> World -> World
 update computer world =
     case world.state of
-        Menu ->
-            updateMenu computer world
+        Menu interactedToEnableAudio ->
+            updateMenu interactedToEnableAudio computer world
 
         Playing ->
             updatePlaying computer world
 
 
-updateMenu : Computer -> World -> World
-updateMenu { mouse, screen, time } world =
-    if mouse.click || mouse.down then
-        { world
-            | state = Playing
-            , components = Components.empty
-        }
-            |> spawnPlaying
+updateMenu : Bool -> Computer -> World -> World
+updateMenu interactedToEnableAudio { mouse, screen, time } world =
+    if mouse.click then
+        (if interactedToEnableAudio then
+            { world
+                | state = Playing
+                , components = Components.empty
+            }
+                |> spawnPlaying
+
+         else
+            { world | state = Menu True }
+        )
+            |> Debug.log "interacted with menu"
 
     else
         let
