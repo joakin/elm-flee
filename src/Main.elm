@@ -65,7 +65,7 @@ type PlayingStatus
     | CountingDown Int
 
 
-predator pos ( world, seed ) =
+predator pos t ( world, seed ) =
     let
         ( randomAnimationOffset, seed2 ) =
             Random.step (Random.int 0 100) seed
@@ -76,13 +76,13 @@ predator pos ( world, seed ) =
         |> Entity.with ( positions, pos )
         |> Entity.with ( sizes, defaultSize )
         |> Entity.with ( speeds, defaultSpeed * 0.9 )
-        |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 2 ), ( kindToString Predator, 0.5 ) ] )
+        |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 1 ), ( kindToString Predator, 0.5 ) ] )
         |> Entity.with ( follows, Set.singleton (kindToString Prey) )
         |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator ] )
         |> Entity.with ( directions, pos )
         |> Entity.with ( facings, Right )
         |> Entity.with ( animationOffsets, randomAnimationOffset )
-        |> Entity.with ( healths, { lastUpdated = 0, amount = 1 } )
+        |> Entity.with ( healths, { lastUpdated = t, amount = 2 } )
         |> Entity.with ( eats, Set.fromList <| List.map kindToString [ Prey ] )
         |> Tuple.second
     , seed2
@@ -124,7 +124,7 @@ prey pos ( world, seed ) =
         |> Entity.with ( positions, pos )
         |> Entity.with ( sizes, defaultSize / 2 )
         |> Entity.with ( speeds, defaultSpeed * 1.4 )
-        |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 2 ), ( kindToString Prey, 0.5 ) ] )
+        |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 1 ), ( kindToString Prey, 0.5 ) ] )
         |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Prey ] )
         |> Entity.with ( directions, pos )
         |> Entity.with ( facings, Right )
@@ -171,7 +171,7 @@ many n fn ( world, seed ) =
 spawnMenu : World -> World
 spawnMenu w =
     ( w.components, Random.initialSeed 42 )
-        |> predator { x = viewport.right - 10, y = viewport.width / 10 }
+        |> predator { x = viewport.right - 10, y = viewport.width / 10 } 0
         |> guardian { x = 0, y = 0 }
         |> prey { x = viewport.left + 20, y = 0 }
         |> Tuple.first
@@ -181,8 +181,8 @@ spawnMenu w =
 spawnPlaying : World -> World
 spawnPlaying w =
     ( w.components, Random.initialSeed 42 )
-        |> predator { x = viewport.right - 10, y = -viewport.width / 10 }
-        |> predator { x = viewport.right - 10, y = viewport.width / 10 }
+        |> predator { x = viewport.right - 10, y = -viewport.width / 10 } 0
+        |> predator { x = viewport.right - 10, y = viewport.width / 10 } 0
         |> guardian { x = 0, y = 0 }
         |> prey { x = viewport.left + 20, y = 0 }
         -- |> many 40 prey
@@ -689,9 +689,9 @@ updatePlaying ({ status, score, lastFrameTime, startTime } as playingState) { mo
                         score
 
                 spawnPredator w =
-                    if ((time.now // 1000) |> modBy 5) == 1 && ((lastFrameTime // 1000) |> modBy 5) == 0 then
+                    if ((time.now // 1000) |> modBy 10) == 1 && ((lastFrameTime // 1000) |> modBy 10) == 0 then
                         ( w.components, Random.initialSeed time.now )
-                            |> many 1 predator
+                            |> many 1 (\pos -> predator pos 0)
                             |> Tuple.first
                             |> Components.set w
 
@@ -881,41 +881,76 @@ invulnerabilityTime =
 
 takeDamage : Time -> System Components
 takeDamage time components =
-    System.step4
-        (\( kind, _ ) ( health, setHealth ) ( position, _ ) ( size, _ ) xs ->
+    System.indexedFoldl4
+        (\id kind health position size newComponents ->
             let
-                newHealth =
+                ( newHealth, newestComponents ) =
                     if health.amount > 0 && time.now - health.lastUpdated > invulnerabilityTime then
-                        System.foldl4
-                            (\targetEats targetKind targetPosition targetSize correctedHealth ->
+                        System.indexedFoldl5
+                            (\targetId targetEats targetKind targetPosition targetSize targetHealth ( correctedHealth, newerComponents ) ->
                                 if
                                     (targetPosition /= position)
-                                        && (correctedHealth == health)
+                                        && (correctedHealth.amount > 0)
+                                        && (time.now - correctedHealth.lastUpdated > invulnerabilityTime)
                                         && Set.member (kindToString kind) targetEats
                                         && overlapsWith ( targetPosition, targetSize ) ( position, size )
+                                        && (targetHealth.amount > 0)
+                                        && (time.now - targetHealth.lastUpdated > invulnerabilityTime)
                                 then
-                                    { amount = correctedHealth.amount - 1
-                                    , lastUpdated = time.now
-                                    }
+                                    ( { amount = correctedHealth.amount - 1
+                                      , lastUpdated = time.now
+                                      }
+                                    , case targetKind of
+                                        Predator ->
+                                            let
+                                                newerewerComponents =
+                                                    predator (Vec2.add targetPosition (Vec2 1 1))
+                                                        time.now
+                                                        ( newerComponents
+                                                        , Random.initialSeed (time.now + round targetPosition.x + round targetPosition.y)
+                                                        )
+                                                        |> Tuple.first
+                                            in
+                                            newerewerComponents
+                                                |> healths.set
+                                                    (Component.set targetId
+                                                        { amount = targetHealth.amount - 1, lastUpdated = time.now }
+                                                        (healths.get newerewerComponents)
+                                                    )
+
+                                        Prey ->
+                                            ( newerComponents
+                                            , Random.initialSeed (time.now + round targetPosition.x + round targetPosition.y)
+                                            )
+                                                |> prey (Vec2.add targetPosition (Vec2 1 1))
+                                                |> prey (Vec2.add targetPosition (Vec2 -1 1))
+                                                |> Tuple.first
+
+                                        _ ->
+                                            newerComponents
+                                    )
 
                                 else
-                                    correctedHealth
+                                    ( correctedHealth, newerComponents )
                             )
-                            (eats.get components)
-                            (kinds.get components)
-                            (positions.get components)
-                            (sizes.get components)
-                            health
+                            (eats.get newComponents)
+                            (kinds.get newComponents)
+                            (positions.get newComponents)
+                            (sizes.get newComponents)
+                            (healths.get newComponents)
+                            ( health, newComponents )
 
                     else
-                        health
+                        ( health, newComponents )
             in
-            setHealth newHealth xs
+            healths.set
+                (Component.set id newHealth (healths.get newestComponents))
+                newestComponents
         )
-        kinds
-        healths
-        positions
-        sizes
+        (kinds.get components)
+        (healths.get components)
+        (positions.get components)
+        (sizes.get components)
         components
 
 

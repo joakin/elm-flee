@@ -1857,7 +1857,7 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dI,
+		impl.dJ,
 		impl.ep,
 		impl.d9,
 		function() { return function() {} }
@@ -3928,7 +3928,7 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dI,
+		impl.dJ,
 		impl.ep,
 		impl.d9,
 		function(sendToApp, initialModel) {
@@ -3964,7 +3964,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dI,
+		impl.dJ,
 		impl.ep,
 		impl.d9,
 		function(sendToApp, initialModel) {
@@ -3977,7 +3977,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.c9);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.da);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
@@ -4038,8 +4038,8 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.dS;
-	var onUrlRequest = impl.dT;
+	var onUrlChange = impl.dT;
+	var onUrlRequest = impl.dU;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
@@ -4069,9 +4069,9 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		dI: function(flags)
+		dJ: function(flags)
 		{
-			return A3(impl.dI, flags, _Browser_getUrl(), key);
+			return A3(impl.dJ, flags, _Browser_getUrl(), key);
 		},
 		eu: impl.eu,
 		ep: impl.ep,
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { dE: 'hidden', db: 'visibilitychange' }
+		? { dF: 'hidden', dc: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { dE: 'mozHidden', db: 'mozvisibilitychange' }
+		? { dF: 'mozHidden', dc: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { dE: 'msHidden', db: 'msvisibilitychange' }
+		? { dF: 'msHidden', dc: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { dE: 'webkitHidden', db: 'webkitvisibilitychange' }
-		: { dE: 'hidden', db: 'visibilitychange' };
+		? { dF: 'webkitHidden', dc: 'webkitvisibilitychange' }
+		: { dF: 'hidden', dc: 'visibilitychange' };
 }
 
 
@@ -4232,10 +4232,10 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		d2: _Browser_getScene(),
+		d3: _Browser_getScene(),
 		ev: {
-			c0: _Browser_window.pageXOffset,
-			c1: _Browser_window.pageYOffset,
+			c1: _Browser_window.pageXOffset,
+			c2: _Browser_window.pageYOffset,
 			bj: _Browser_doc.documentElement.clientWidth,
 			a7: _Browser_doc.documentElement.clientHeight
 		}
@@ -4271,13 +4271,13 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			d2: {
+			d3: {
 				bj: node.scrollWidth,
 				a7: node.scrollHeight
 			},
 			ev: {
-				c0: node.scrollLeft,
-				c1: node.scrollTop,
+				c1: node.scrollLeft,
+				c2: node.scrollTop,
 				bj: node.clientWidth,
 				a7: node.clientHeight
 			}
@@ -4309,16 +4309,16 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			d2: _Browser_getScene(),
+			d3: _Browser_getScene(),
 			ev: {
-				c0: x,
-				c1: y,
+				c1: x,
+				c2: y,
 				bj: _Browser_doc.documentElement.clientWidth,
 				a7: _Browser_doc.documentElement.clientHeight
 			},
-			du: {
-				c0: x + rect.left,
-				c1: y + rect.top,
+			dv: {
+				c1: x + rect.left,
+				c2: y + rect.top,
 				bj: rect.width,
 				a7: rect.height
 			}
@@ -4390,7 +4390,7 @@ var _Texture_load = F6(function (magnify, mininify, horizontalWrap, verticalWrap
       if (isSizeValid) {
         callback(_Scheduler_succeed({
           $: 0,
-          dl: createTexture,
+          dm: createTexture,
           a: width,
           b: height
         }));
@@ -4469,11 +4469,11 @@ var _MJS_v2setY = F2(function(y, a) {
 });
 
 var _MJS_v2toRecord = function(a) {
-    return { c0: a[0], c1: a[1] };
+    return { c1: a[0], c2: a[1] };
 };
 
 var _MJS_v2fromRecord = function(r) {
-    return new Float64Array([r.c0, r.c1]);
+    return new Float64Array([r.c1, r.c2]);
 };
 
 var _MJS_v2add = F2(function(a, b) {
@@ -4582,11 +4582,11 @@ var _MJS_v3setZ = F2(function(z, a) {
 });
 
 var _MJS_v3toRecord = function(a) {
-    return { c0: a[0], c1: a[1], y: a[2] };
+    return { c1: a[0], c2: a[1], y: a[2] };
 };
 
 var _MJS_v3fromRecord = function(r) {
-    return new Float64Array([r.c0, r.c1, r.y]);
+    return new Float64Array([r.c1, r.c2, r.y]);
 };
 
 var _MJS_v3add = F2(function(a, b) {
@@ -4742,11 +4742,11 @@ var _MJS_v4setW = F2(function(w, a) {
 });
 
 var _MJS_v4toRecord = function(a) {
-    return { c0: a[0], c1: a[1], y: a[2], c$: a[3] };
+    return { c1: a[0], c2: a[1], y: a[2], c0: a[3] };
 };
 
 var _MJS_v4fromRecord = function(r) {
-    return new Float64Array([r.c0, r.c1, r.y, r.c$]);
+    return new Float64Array([r.c1, r.c2, r.y, r.c0]);
 };
 
 var _MJS_v4add = F2(function(a, b) {
@@ -5916,7 +5916,7 @@ function _WebGL_createUniformSetters(gl, model, program, uniformsMap) {
           var tex = model.f.textures.get(texture);
           if (!tex) {
             _WebGL_log('Created texture');
-            tex = texture.dl(gl);
+            tex = texture.dm(gl);
             model.f.textures.set(texture, tex);
           }
           gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -7100,20 +7100,20 @@ var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
 var $elm$core$Set$empty = $elm$core$Dict$empty;
 var $author$project$Playground$Mouse = F4(
 	function (x, y, down, click) {
-		return {bo: click, dt: down, c0: x, c1: y};
+		return {bo: click, du: down, c1: x, c2: y};
 	});
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
 var $author$project$Playground$Internal$toScreen = F2(
 	function (width, height) {
-		return {bn: (-height) / 2, a7: height, a8: (-width) / 2, d1: width / 2, bN: height / 2, bj: width};
+		return {bn: (-height) / 2, a7: height, a8: (-width) / 2, d2: width / 2, bN: height / 2, bj: width};
 	});
 var $author$project$Game$initialComputer = {
-	aJ: {c7: false, dt: false, dv: false, bz: $elm$core$Set$empty, a8: false, d1: false, d5: false, d7: false, eo: false},
+	aJ: {c8: false, du: false, dw: false, bz: $elm$core$Set$empty, a8: false, d2: false, d5: false, d7: false, eo: false},
 	i: A4($author$project$Playground$Mouse, 0, 0, false, false),
 	w: A2($author$project$Playground$Internal$toScreen, 100, 100),
-	f: {I: 0, n: 0}
+	g: {I: 0, n: 0}
 };
 var $author$project$Game$initModel = function (memory) {
 	return {
@@ -7134,7 +7134,7 @@ var $author$project$Game$init = F2(
 				A2(
 					$elm$core$Task$perform,
 					function (_v1) {
-						var scene = _v1.d2;
+						var scene = _v1.d3;
 						return _Utils_update(
 							$author$project$Game$initialComputer,
 							{
@@ -7157,14 +7157,14 @@ var $author$project$Playground$Internal$mouseDown = F2(
 	function (bool, mouse) {
 		return _Utils_update(
 			mouse,
-			{dt: bool});
+			{du: bool});
 	});
 var $elm$browser$Browser$AnimationManager$Time = function (a) {
 	return {$: 0, a: a};
 };
 var $elm$browser$Browser$AnimationManager$State = F3(
 	function (subs, request, oldTime) {
-		return {bC: oldTime, cQ: request, cU: subs};
+		return {bC: oldTime, cQ: request, cV: subs};
 	});
 var $elm$browser$Browser$AnimationManager$init = $elm$core$Task$succeed(
 	A3($elm$browser$Browser$AnimationManager$State, _List_Nil, $elm$core$Maybe$Nothing, 0));
@@ -7224,7 +7224,7 @@ var $elm$time$Time$Posix = $elm$core$Basics$identity;
 var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
 var $elm$browser$Browser$AnimationManager$onSelfMsg = F3(
 	function (router, newTime, _v0) {
-		var subs = _v0.cU;
+		var subs = _v0.cV;
 		var oldTime = _v0.bC;
 		var send = function (sub) {
 			if (!sub.$) {
@@ -7298,7 +7298,7 @@ var $elm$browser$Browser$Events$MySub = F3(
 	});
 var $elm$browser$Browser$Events$State = F2(
 	function (subs, pids) {
-		return {cJ: pids, cU: subs};
+		return {cJ: pids, cV: subs};
 	});
 var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
 	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
@@ -7657,7 +7657,7 @@ var $elm$browser$Browser$Events$onSelfMsg = F3(
 			var decoder = _v3.c;
 			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
 		};
-		var messages = A2($elm$core$List$filterMap, toMessage, state.cU);
+		var messages = A2($elm$core$List$filterMap, toMessage, state.cV);
 		return A2(
 			$elm$core$Task$andThen,
 			function (_v1) {
@@ -8097,7 +8097,7 @@ var $author$project$Playground$Internal$updateKeyboard = F3(
 			case 'Enter':
 				return _Utils_update(
 					keyboard,
-					{dv: isDown, bz: keys});
+					{dw: isDown, bz: keys});
 			case 'ShiftLeft':
 				return _Utils_update(
 					keyboard,
@@ -8109,7 +8109,7 @@ var $author$project$Playground$Internal$updateKeyboard = F3(
 			case 'Backspace':
 				return _Utils_update(
 					keyboard,
-					{c7: isDown, bz: keys});
+					{c8: isDown, bz: keys});
 			case 'ArrowUp':
 				return _Utils_update(
 					keyboard,
@@ -8117,7 +8117,7 @@ var $author$project$Playground$Internal$updateKeyboard = F3(
 			case 'ArrowDown':
 				return _Utils_update(
 					keyboard,
-					{dt: isDown, bz: keys});
+					{du: isDown, bz: keys});
 			case 'ArrowLeft':
 				return _Utils_update(
 					keyboard,
@@ -8125,7 +8125,7 @@ var $author$project$Playground$Internal$updateKeyboard = F3(
 			case 'ArrowRight':
 				return _Utils_update(
 					keyboard,
-					{bz: keys, d1: isDown});
+					{bz: keys, d2: isDown});
 			default:
 				return _Utils_update(
 					keyboard,
@@ -8143,7 +8143,7 @@ var $author$project$Game$subscriptions_ = {
 							computer,
 							{
 								i: A2($author$project$Playground$Internal$mouseClick, true, computer.i),
-								f: {I: 0, n: computer.f.n}
+								g: {I: 0, n: computer.g.n}
 							}))),
 					$elm$browser$Browser$Events$onMouseDown(
 					$elm$json$Json$Decode$succeed(
@@ -8151,7 +8151,7 @@ var $author$project$Game$subscriptions_ = {
 							computer,
 							{
 								i: A2($author$project$Playground$Internal$mouseDown, true, computer.i),
-								f: {I: 0, n: computer.f.n}
+								g: {I: 0, n: computer.g.n}
 							}))),
 					$elm$browser$Browser$Events$onMouseUp(
 					$elm$json$Json$Decode$succeed(
@@ -8159,7 +8159,7 @@ var $author$project$Game$subscriptions_ = {
 							computer,
 							{
 								i: A2($author$project$Playground$Internal$mouseDown, false, computer.i),
-								f: {I: 0, n: computer.f.n}
+								g: {I: 0, n: computer.g.n}
 							})))
 				]));
 	},
@@ -8175,7 +8175,7 @@ var $author$project$Game$subscriptions_ = {
 								computer,
 								{
 									aJ: A3($author$project$Playground$Internal$updateKeyboard, false, k, computer.aJ),
-									f: {I: 0, n: computer.f.n}
+									g: {I: 0, n: computer.g.n}
 								});
 						},
 						A2($elm$json$Json$Decode$field, 'code', $elm$json$Json$Decode$string))),
@@ -8187,7 +8187,7 @@ var $author$project$Game$subscriptions_ = {
 								computer,
 								{
 									aJ: A3($author$project$Playground$Internal$updateKeyboard, true, k, computer.aJ),
-									f: {I: 0, n: computer.f.n}
+									g: {I: 0, n: computer.g.n}
 								});
 						},
 						A2($elm$json$Json$Decode$field, 'code', $elm$json$Json$Decode$string)))
@@ -8207,8 +8207,8 @@ var $author$project$Game$subscriptions_ = {
 							{
 								i: _Utils_update(
 									mouse,
-									{c0: x, c1: y}),
-								f: {I: 0, n: computer.f.n}
+									{c1: x, c2: y}),
+								g: {I: 0, n: computer.g.n}
 							});
 					}),
 				A2($elm$json$Json$Decode$field, 'pageX', $elm$json$Json$Decode$float),
@@ -8222,19 +8222,19 @@ var $author$project$Game$subscriptions_ = {
 						computer,
 						{
 							w: A2($author$project$Playground$Internal$toScreen, w, h),
-							f: {I: 0, n: computer.f.n}
+							g: {I: 0, n: computer.g.n}
 						});
 				}));
 	},
-	f: function (computer) {
+	g: function (computer) {
 		return $elm$browser$Browser$Events$onAnimationFrame(
 			function (time) {
 				var now = $elm$time$Time$posixToMillis(time);
-				var d = now - computer.f.n;
+				var d = now - computer.g.n;
 				return _Utils_update(
 					computer,
 					{
-						f: {I: d, n: now}
+						g: {I: d, n: now}
 					});
 			});
 	}
@@ -8247,7 +8247,7 @@ var $author$project$Game$subscriptions = function (model) {
 			_List_fromArray(
 				[
 					$author$project$Game$subscriptions_.cR(model.b),
-					$author$project$Game$subscriptions_.f(model.b),
+					$author$project$Game$subscriptions_.g(model.b),
 					$author$project$Game$subscriptions_.i(model.b),
 					$author$project$Game$subscriptions_.bo(model.b),
 					$author$project$Game$subscriptions_.bz(model.b)
@@ -8315,11 +8315,11 @@ var $elm_explorations$webgl$WebGL$Texture$SizeError = F2(
 	});
 var $elm_explorations$webgl$WebGL$Texture$loadWith = F2(
 	function (_v0, url) {
-		var magnify = _v0.dL;
-		var minify = _v0.dM;
-		var horizontalWrap = _v0.dF;
+		var magnify = _v0.dM;
+		var minify = _v0.dN;
+		var horizontalWrap = _v0.dG;
 		var verticalWrap = _v0.et;
-		var flipY = _v0.dA;
+		var flipY = _v0.dB;
 		var expand = F4(
 			function (_v1, _v2, _v3, _v4) {
 				var mag = _v1;
@@ -8334,7 +8334,7 @@ var $elm_explorations$webgl$WebGL$Texture$Wrap = $elm$core$Basics$identity;
 var $elm_explorations$webgl$WebGL$Texture$clampToEdge = 33071;
 var $elm_explorations$webgl$WebGL$Texture$Resize = $elm$core$Basics$identity;
 var $elm_explorations$webgl$WebGL$Texture$linear = 9729;
-var $author$project$Game$textureOption = {dA: true, dF: $elm_explorations$webgl$WebGL$Texture$clampToEdge, dL: $elm_explorations$webgl$WebGL$Texture$linear, dM: $elm_explorations$webgl$WebGL$Texture$linear, et: $elm_explorations$webgl$WebGL$Texture$clampToEdge};
+var $author$project$Game$textureOption = {dB: true, dG: $elm_explorations$webgl$WebGL$Texture$clampToEdge, dM: $elm_explorations$webgl$WebGL$Texture$linear, dN: $elm_explorations$webgl$WebGL$Texture$linear, et: $elm_explorations$webgl$WebGL$Texture$clampToEdge};
 var $author$project$Game$getTexture = function (url) {
 	return A2(
 		$elm$core$Task$attempt,
@@ -8353,7 +8353,7 @@ var $author$project$Game$mouseMove = F3(
 	function (x, y, mouse) {
 		return _Utils_update(
 			mouse,
-			{c0: x, c1: y});
+			{c1: x, c2: y});
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -8450,20 +8450,20 @@ var $justgook$webgl_shape$WebGL$Shape2d$Transformation$toGL = function (_v0) {
 	var a23 = _v0.L;
 	return _Utils_Tuple2(
 		$elm_explorations$linear_algebra$Math$Vector4$fromRecord(
-			{c$: a22, c0: a11, c1: a12, y: a21}),
+			{c0: a22, c1: a11, c2: a12, y: a21}),
 		$elm_explorations$linear_algebra$Math$Vector2$fromRecord(
-			{c0: a13, c1: a23}));
+			{c1: a13, c2: a23}));
 };
 var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F5(
 	function (screen, textures, parent, _v0, acc) {
 		renderShape:
 		while (true) {
-			var x = _v0.c0;
-			var y = _v0.c1;
+			var x = _v0.c1;
+			var y = _v0.c2;
 			var z = _v0.y;
 			var a = _v0.h;
-			var sx = _v0.d;
-			var sy = _v0.e;
+			var sx = _v0.e;
+			var sy = _v0.f;
 			var o = _v0.j;
 			var form = _v0.k;
 			var entities = acc.a;
@@ -8560,7 +8560,7 @@ var $author$project$Game$update = F4(
 			case 0:
 				var c = msg.a;
 				var computer = A2($author$project$Game$unClick, model.b, c);
-				var newMemory = ((!(!computer.f.I)) && (!_Utils_eq(computer.f.I, computer.f.n))) ? A2(updateMemory, model.b, model.aM) : model.aM;
+				var newMemory = ((!(!computer.g.I)) && (!_Utils_eq(computer.g.I, computer.g.n))) ? A2(updateMemory, model.b, model.aM) : model.aM;
 				var _v1 = A3(
 					$justgook$webgl_shape$WebGL$Shape2d$toEntities,
 					textures.a2,
@@ -8725,11 +8725,11 @@ var $elm$html$Html$Events$custom = F2(
 	});
 var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$Event = F4(
 	function (keys, changedTouches, targetTouches, touches) {
-		return {dc: changedTouches, bz: keys, ea: targetTouches, ef: touches};
+		return {dd: changedTouches, bz: keys, ea: targetTouches, ef: touches};
 	});
 var $mpizenberg$elm_pointer_events$Internal$Decode$Keys = F3(
 	function (alt, ctrl, shift) {
-		return {c4: alt, dm: ctrl, d5: shift};
+		return {c5: alt, dn: ctrl, d5: shift};
 	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$map3 = _Json_map3;
@@ -8742,7 +8742,7 @@ var $mpizenberg$elm_pointer_events$Internal$Decode$keys = A4(
 var $elm$json$Json$Decode$map4 = _Json_map4;
 var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$Touch = F4(
 	function (identifier, clientPos, pagePos, screenPos) {
-		return {df: clientPos, dG: identifier, dV: pagePos, d3: screenPos};
+		return {dg: clientPos, dH: identifier, dW: pagePos, d4: screenPos};
 	});
 var $mpizenberg$elm_pointer_events$Internal$Decode$clientPos = A3(
 	$elm$json$Json$Decode$map2,
@@ -8926,9 +8926,9 @@ var $author$project$Game$touchCoordinates = function (touchEvent) {
 	return A2(
 		$elm$core$Maybe$map,
 		function ($) {
-			return $.df;
+			return $.dg;
 		},
-		$elm$core$List$head(touchEvent.dc));
+		$elm$core$List$head(touchEvent.dd));
 };
 var $elm$html$Html$Attributes$width = function (n) {
 	return A2(
@@ -8975,12 +8975,12 @@ var $author$project$Game$program = F4(
 	function (title, initialMemory, updateMemory, viewMemory) {
 		return $elm$browser$Browser$document(
 			{
-				dI: $author$project$Game$init(initialMemory),
+				dJ: $author$project$Game$init(initialMemory),
 				d9: $author$project$Game$subscriptions,
 				ep: A2($author$project$Game$update, updateMemory, viewMemory),
 				eu: function (model) {
 					return {
-						c9: _List_fromArray(
+						da: _List_fromArray(
 							[
 								$author$project$Game$view(model)
 							]),
@@ -9029,7 +9029,7 @@ var $author$project$Components$addEntity = function (components) {
 };
 var $justgook$elm_game_logic$Logic$Component$Spec = F2(
 	function (get, set) {
-		return {g: get, d4: set};
+		return {c: get, cT: set};
 	});
 var $author$project$Components$animationOffsets = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
@@ -9064,12 +9064,12 @@ var $author$project$Components$collisions = A2(
 				components,
 				{an: comps});
 		}));
-var $author$project$Main$sprites10 = {bu: 'sprites10.png', b0: 1, b1: 2, b2: 3, b3: 4, b4: 5, b5: 6, b6: 7, H: 10, bO: 8, cW: 12, cX: 9, cY: 10, cZ: 11};
+var $author$project$Main$sprites10 = {bu: 'sprites10.png', b0: 1, b1: 2, b2: 3, b3: 4, b4: 5, b5: 6, b6: 7, H: 10, bO: 8, cX: 12, cY: 9, cZ: 10, c_: 11};
 var $author$project$Main$defaultSize = $author$project$Main$sprites10.H;
 var $author$project$Main$viewport = function (_v0) {
 	var width = _v0.bj;
 	var height = _v0.a7;
-	return {bn: (-height) / 2, a7: height, a8: (-width) / 2, d1: width / 2, bN: height / 2, bj: width};
+	return {bn: (-height) / 2, a7: height, a8: (-width) / 2, d2: width / 2, bN: height / 2, bj: width};
 }(
 	{a7: 200, bj: 320});
 var $author$project$Main$defaultSpeed = $author$project$Main$viewport.bj / 210;
@@ -9513,8 +9513,8 @@ var $justgook$elm_game_logic$Logic$Entity$with = F2(
 			$justgook$elm_game_logic$Logic$Component$spawn,
 			entityID,
 			component,
-			spec.g(world));
-		var updatedWorld = A2(spec.d4, updatedComponents, world);
+			spec.c(world));
+		var updatedWorld = A2(spec.cT, updatedComponents, world);
 		return _Utils_Tuple2(entityID, updatedWorld);
 	});
 var $author$project$Main$guardian = F2(
@@ -9532,7 +9532,7 @@ var $author$project$Main$guardian = F2(
 				$justgook$elm_game_logic$Logic$Entity$with,
 				_Utils_Tuple2(
 					$author$project$Components$healths,
-					{c5: 1, dK: 0}),
+					{c6: 1, dL: 0}),
 				A2(
 					$justgook$elm_game_logic$Logic$Entity$with,
 					_Utils_Tuple2($author$project$Components$animationOffsets, randomAnimationOffset),
@@ -9604,8 +9604,8 @@ var $author$project$Components$eats = A2(
 				components,
 				{aq: comps});
 		}));
-var $author$project$Main$predator = F2(
-	function (pos, _v0) {
+var $author$project$Main$predator = F3(
+	function (pos, t, _v0) {
 		var world = _v0.a;
 		var seed = _v0.b;
 		var _v1 = A2(
@@ -9629,7 +9629,7 @@ var $author$project$Main$predator = F2(
 					$justgook$elm_game_logic$Logic$Entity$with,
 					_Utils_Tuple2(
 						$author$project$Components$healths,
-						{c5: 1, dK: 0}),
+						{c6: 2, dL: t}),
 					A2(
 						$justgook$elm_game_logic$Logic$Entity$with,
 						_Utils_Tuple2($author$project$Components$animationOffsets, randomAnimationOffset),
@@ -9664,7 +9664,7 @@ var $author$project$Main$predator = F2(
 														[
 															_Utils_Tuple2(
 															$author$project$Components$kindToString(2),
-															2),
+															1),
 															_Utils_Tuple2(
 															$author$project$Components$kindToString(1),
 															0.5)
@@ -9722,7 +9722,7 @@ var $author$project$Main$prey = F2(
 					$justgook$elm_game_logic$Logic$Entity$with,
 					_Utils_Tuple2(
 						$author$project$Components$healths,
-						{c5: 3, dK: 0}),
+						{c6: 3, dL: 0}),
 					A2(
 						$justgook$elm_game_logic$Logic$Entity$with,
 						_Utils_Tuple2($author$project$Components$animationOffsets, randomAnimationOffset),
@@ -9751,7 +9751,7 @@ var $author$project$Main$prey = F2(
 													[
 														_Utils_Tuple2(
 														$author$project$Components$kindToString(2),
-														2),
+														1),
 														_Utils_Tuple2(
 														$author$project$Components$kindToString(0),
 														0.5)
@@ -9778,7 +9778,7 @@ var $author$project$Components$set = F2(
 	function (w, c) {
 		return _Utils_update(
 			w,
-			{dh: c});
+			{di: c});
 	});
 var $author$project$Main$spawnMenu = function (w) {
 	return A2(
@@ -9786,15 +9786,16 @@ var $author$project$Main$spawnMenu = function (w) {
 		w,
 		A2(
 			$author$project$Main$prey,
-			{c0: $author$project$Main$viewport.a8 + 20, c1: 0},
+			{c1: $author$project$Main$viewport.a8 + 20, c2: 0},
 			A2(
 				$author$project$Main$guardian,
-				{c0: 0, c1: 0},
-				A2(
+				{c1: 0, c2: 0},
+				A3(
 					$author$project$Main$predator,
-					{c0: $author$project$Main$viewport.d1 - 10, c1: $author$project$Main$viewport.bj / 10},
+					{c1: $author$project$Main$viewport.d2 - 10, c2: $author$project$Main$viewport.bj / 10},
+					0,
 					_Utils_Tuple2(
-						w.dh,
+						w.di,
 						$elm$random$Random$initialSeed(42))))).a);
 };
 var $author$project$Main$CountingDown = function (a) {
@@ -9810,24 +9811,24 @@ var $justgook$elm_game_logic$Logic$System$applyIf = F3(
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$add = F2(
 	function (a, b) {
-		return {c0: a.c0 + b.c0, c1: a.c1 + b.c1};
+		return {c1: a.c1 + b.c1, c2: a.c2 + b.c2};
 	});
 var $elm$core$Basics$sqrt = _Basics_sqrt;
 var $justgook$alt_linear_algebra$AltMath$Vector2$direction = F2(
 	function (a, b) {
-		var c = {c0: a.c0 - b.c0, c1: a.c1 - b.c1};
-		var len = $elm$core$Basics$sqrt((c.c0 * c.c0) + (c.c1 * c.c1));
-		return {c0: c.c0 / len, c1: c.c1 / len};
+		var c = {c1: a.c1 - b.c1, c2: a.c2 - b.c2};
+		var len = $elm$core$Basics$sqrt((c.c1 * c.c1) + (c.c2 * c.c2));
+		return {c1: c.c1 / len, c2: c.c2 / len};
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$distanceSquared = F2(
 	function (a, b) {
-		var c = {c0: a.c0 - b.c0, c1: a.c1 - b.c1};
-		return (c.c0 * c.c0) + (c.c1 * c.c1);
+		var c = {c1: a.c1 - b.c1, c2: a.c2 - b.c2};
+		return (c.c1 * c.c1) + (c.c2 * c.c2);
 	});
 var $elm$core$Basics$pow = _Basics_pow;
 var $justgook$alt_linear_algebra$AltMath$Vector2$scale = F2(
 	function (s, v2) {
-		return {c0: s * v2.c0, c1: s * v2.c1};
+		return {c1: s * v2.c1, c2: s * v2.c2};
 	});
 var $author$project$Main$followPoint = F2(
 	function (point, _v0) {
@@ -9959,11 +9960,11 @@ var $justgook$elm_game_logic$Logic$System$step3 = F5(
 				return _Utils_update(
 					acc,
 					{
-						c: A3(
+						d: A3(
 							$elm$core$Array$set,
 							i,
 							$elm$core$Maybe$Just(c),
-							acc.c)
+							acc.d)
 					});
 			});
 		var set2 = F3(
@@ -9991,9 +9992,9 @@ var $justgook$elm_game_logic$Logic$System$step3 = F5(
 					});
 			});
 		var combined = {
-			h: spec1.g(world),
-			a_: spec2.g(world),
-			c: spec3.g(world)
+			h: spec1.c(world),
+			a_: spec2.c(world),
+			d: spec3.c(world)
 		};
 		var result = A3(
 			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
@@ -10021,27 +10022,27 @@ var $justgook$elm_game_logic$Logic$System$step3 = F5(
 								}),
 							value,
 							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.a_),
-							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.c)));
+							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.d)));
 				}),
 			combined,
 			combined.h);
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
-			!_Utils_eq(result.c, combined.c),
-			spec3.d4(result.c),
+			!_Utils_eq(result.d, combined.d),
+			spec3.cT(result.d),
 			A3(
 				$justgook$elm_game_logic$Logic$System$applyIf,
 				!_Utils_eq(result.a_, combined.a_),
-				spec2.d4(result.a_),
+				spec2.cT(result.a_),
 				A3(
 					$justgook$elm_game_logic$Logic$System$applyIf,
 					!_Utils_eq(result.h, combined.h),
-					spec1.d4(result.h),
+					spec1.cT(result.h),
 					world)));
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$sub = F2(
 	function (a, b) {
-		return {c0: a.c0 - b.c0, c1: a.c1 - b.c1};
+		return {c1: a.c1 - b.c1, c2: a.c2 - b.c2};
 	});
 var $author$project$Main$applyDirection = function (components) {
 	return A5(
@@ -10072,7 +10073,7 @@ var $author$project$Main$applyDirection = function (components) {
 					var position = _v0.a;
 					var direction = _v1.a;
 					var setFacing = _v2.b;
-					var facing = (A2($justgook$alt_linear_algebra$AltMath$Vector2$sub, direction, position).c0 < 1) ? 0 : 1;
+					var facing = (A2($justgook$alt_linear_algebra$AltMath$Vector2$sub, direction, position).c1 < 1) ? 0 : 1;
 					return A3(
 						$justgook$elm_game_logic$Logic$System$applyIf,
 						!_Utils_eq(direction, position),
@@ -10154,9 +10155,9 @@ var $author$project$Main$avoid = function (components) {
 											_Utils_Tuple2(avoidPosition, avoidSize),
 											_Utils_Tuple2(positionAcc2, speed)) : positionAcc2;
 									}),
-								$author$project$Components$kinds.g(components),
-								$author$project$Components$positions.g(components),
-								$author$project$Components$sizes.g(components),
+								$author$project$Components$kinds.c(components),
+								$author$project$Components$positions.c(components),
+								$author$project$Components$sizes.c(components),
 								positionAcc1);
 						}),
 					position,
@@ -10218,8 +10219,8 @@ var $justgook$elm_game_logic$Logic$System$step2 = F4(
 					});
 			});
 		var combined = {
-			h: spec1.g(world),
-			a_: spec2.g(world)
+			h: spec1.c(world),
+			a_: spec2.c(world)
 		};
 		var result = A3(
 			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
@@ -10250,11 +10251,11 @@ var $justgook$elm_game_logic$Logic$System$step2 = F4(
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
 			!_Utils_eq(result.a_, combined.a_),
-			spec2.d4(result.a_),
+			spec2.cT(result.a_),
 			A3(
 				$justgook$elm_game_logic$Logic$System$applyIf,
 				!_Utils_eq(result.h, combined.h),
-				spec1.d4(result.h),
+				spec1.cT(result.h),
 				world));
 	});
 var $author$project$Main$boundedBy = F2(
@@ -10269,8 +10270,8 @@ var $author$project$Main$boundedBy = F2(
 					return A2(
 						setPosition,
 						{
-							c0: A3($elm$core$Basics$clamp, screen.a8 + (size / 2), screen.d1 - (size / 2), position.c0),
-							c1: A3($elm$core$Basics$clamp, screen.bn + (size / 2), screen.bN - (size / 2), position.c1)
+							c1: A3($elm$core$Basics$clamp, screen.a8 + (size / 2), screen.d2 - (size / 2), position.c1),
+							c2: A3($elm$core$Basics$clamp, screen.bn + (size / 2), screen.bN - (size / 2), position.c2)
 						},
 						xs);
 				}),
@@ -10316,8 +10317,8 @@ var $author$project$Main$closest = F3(
 						return acc;
 					}
 				}),
-			$author$project$Components$kinds.g(components),
-			$author$project$Components$positions.g(components),
+			$author$project$Components$kinds.c(components),
+			$author$project$Components$positions.c(components),
 			_Utils_Tuple2(1 / 0, origin)).b;
 	});
 var $author$project$Main$follow = function (components) {
@@ -10346,8 +10347,8 @@ var $author$project$Main$scalingFactor = function (screen) {
 var $author$project$Main$toViewport = F2(
 	function (screen, coords) {
 		return {
-			c0: coords.c0 / $author$project$Main$scalingFactor(screen),
-			c1: coords.c1 / $author$project$Main$scalingFactor(screen)
+			c1: coords.c1 / $author$project$Main$scalingFactor(screen),
+			c2: coords.c2 / $author$project$Main$scalingFactor(screen)
 		};
 	});
 var $author$project$Main$mouseInput = F3(
@@ -10357,7 +10358,7 @@ var $author$project$Main$mouseInput = F3(
 			F3(
 				function (_v0, _v1, cs) {
 					var setDirection = _v1.b;
-					return mouse.dt ? A2(
+					return mouse.du ? A2(
 						setDirection,
 						A2($author$project$Main$toViewport, screen, mouse),
 						cs) : cs;
@@ -10424,11 +10425,11 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 				return _Utils_update(
 					acc,
 					{
-						c: A3(
+						d: A3(
 							$elm$core$Array$set,
 							i,
 							$elm$core$Maybe$Just(c),
-							acc.c)
+							acc.d)
 					});
 			});
 		var set2 = F3(
@@ -10456,10 +10457,10 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 					});
 			});
 		var combined = {
-			h: spec1.g(world),
-			a_: spec2.g(world),
-			c: spec3.g(world),
-			r: spec4.g(world)
+			h: spec1.c(world),
+			a_: spec2.c(world),
+			d: spec3.c(world),
+			r: spec4.c(world)
 		};
 		var result = A3(
 			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
@@ -10490,7 +10491,7 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 								}),
 							value,
 							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.a_),
-							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.c),
+							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.d),
 							A2($justgook$elm_game_logic$Logic$Component$get, n, acc.r)));
 				}),
 			combined,
@@ -10498,19 +10499,19 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
 			!_Utils_eq(result.r, combined.r),
-			spec4.d4(result.r),
+			spec4.cT(result.r),
 			A3(
 				$justgook$elm_game_logic$Logic$System$applyIf,
-				!_Utils_eq(result.c, combined.c),
-				spec3.d4(result.c),
+				!_Utils_eq(result.d, combined.d),
+				spec3.cT(result.d),
 				A3(
 					$justgook$elm_game_logic$Logic$System$applyIf,
 					!_Utils_eq(result.a_, combined.a_),
-					spec2.d4(result.a_),
+					spec2.cT(result.a_),
 					A3(
 						$justgook$elm_game_logic$Logic$System$applyIf,
 						!_Utils_eq(result.h, combined.h),
-						spec1.d4(result.h),
+						spec1.cT(result.h),
 						world))));
 	});
 var $author$project$Main$resolveCollisions = function (components) {
@@ -10541,9 +10542,9 @@ var $author$project$Main$resolveCollisions = function (components) {
 									speed,
 									A2($justgook$alt_linear_algebra$AltMath$Vector2$direction, targetPosition, correctedPosition))) : correctedPosition;
 						}),
-					$author$project$Components$kinds.g(components),
-					$author$project$Components$positions.g(components),
-					$author$project$Components$sizes.g(components),
+					$author$project$Components$kinds.c(components),
+					$author$project$Components$positions.c(components),
+					$author$project$Components$sizes.c(components),
 					position);
 				return (!_Utils_eq(newPosition, position)) ? A2(setPosition, newPosition, xs) : xs;
 			}),
@@ -10559,18 +10560,20 @@ var $author$project$Main$spawnPlaying = function (w) {
 		w,
 		A2(
 			$author$project$Main$prey,
-			{c0: $author$project$Main$viewport.a8 + 20, c1: 0},
+			{c1: $author$project$Main$viewport.a8 + 20, c2: 0},
 			A2(
 				$author$project$Main$guardian,
-				{c0: 0, c1: 0},
-				A2(
+				{c1: 0, c2: 0},
+				A3(
 					$author$project$Main$predator,
-					{c0: $author$project$Main$viewport.d1 - 10, c1: $author$project$Main$viewport.bj / 10},
-					A2(
+					{c1: $author$project$Main$viewport.d2 - 10, c2: $author$project$Main$viewport.bj / 10},
+					0,
+					A3(
 						$author$project$Main$predator,
-						{c0: $author$project$Main$viewport.d1 - 10, c1: (-$author$project$Main$viewport.bj) / 10},
+						{c1: $author$project$Main$viewport.d2 - 10, c2: (-$author$project$Main$viewport.bj) / 10},
+						0,
 						_Utils_Tuple2(
-							w.dh,
+							w.di,
 							$elm$random$Random$initialSeed(42)))))).a);
 };
 var $elm$core$Basics$modBy = _Basics_modBy;
@@ -10598,13 +10601,13 @@ var $author$project$Main$updateMenu = F3(
 	function (interactedToEnableAudio, _v0, world) {
 		var mouse = _v0.i;
 		var screen = _v0.w;
-		var time = _v0.f;
+		var time = _v0.g;
 		if (mouse.bo) {
 			return interactedToEnableAudio ? $author$project$Main$spawnPlaying(
 				_Utils_update(
 					world,
 					{
-						dh: $author$project$Components$empty,
+						di: $author$project$Components$empty,
 						x: $author$project$Main$Playing(
 							{
 								aK: time.n,
@@ -10634,9 +10637,9 @@ var $author$project$Main$updateMenu = F3(
 										screen,
 										{
 											bo: true,
-											dt: true,
-											c0: A4($author$project$Playground$wave, -$author$project$Main$viewport.bj, $author$project$Main$viewport.bj, t, time),
-											c1: A4(
+											du: true,
+											c1: A4($author$project$Playground$wave, -$author$project$Main$viewport.bj, $author$project$Main$viewport.bj, t, time),
+											c2: A4(
 												$author$project$Playground$wave,
 												-$author$project$Main$viewport.a7,
 												$author$project$Main$viewport.a7,
@@ -10647,7 +10650,7 @@ var $author$project$Main$updateMenu = F3(
 														n: time.n - $elm$core$Basics$round((t / 4) * 1000)
 													}))
 										},
-										world.dh)))))));
+										world.di)))))));
 		}
 	});
 var $author$project$Main$Alive = {$: 0};
@@ -10661,7 +10664,7 @@ var $author$project$Main$fruit = F2(
 				$justgook$elm_game_logic$Logic$Entity$with,
 				_Utils_Tuple2(
 					$author$project$Components$healths,
-					{c5: 1, dK: 0}),
+					{c6: 1, dL: 0}),
 				A2(
 					$justgook$elm_game_logic$Logic$Entity$with,
 					_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize * 2),
@@ -10760,7 +10763,7 @@ var $author$project$Main$many = F3(
 				n,
 				A2(
 					$elm$random$Random$pair,
-					A2($elm$random$Random$float, $author$project$Main$viewport.a8, $author$project$Main$viewport.d1),
+					A2($elm$random$Random$float, $author$project$Main$viewport.a8, $author$project$Main$viewport.d2),
 					A2($elm$random$Random$float, $author$project$Main$viewport.bn, $author$project$Main$viewport.bN))),
 			seed);
 		var pos = _v1.a;
@@ -10773,7 +10776,7 @@ var $author$project$Main$many = F3(
 					var y = _v2.b;
 					return A2(
 						fn,
-						{c0: x, c1: y},
+						{c1: x, c2: y},
 						acc);
 				}),
 			_Utils_Tuple2(world, seed_),
@@ -10805,12 +10808,12 @@ var $justgook$elm_game_logic$Logic$Entity$remove = F2(
 		return _Utils_Tuple2(
 			entityID,
 			A2(
-				spec.d4,
+				spec.cT,
 				A3(
 					$elm$core$Array$set,
 					entityID,
 					$elm$core$Maybe$Nothing,
-					spec.g(world)),
+					spec.c(world)),
 				world));
 	});
 var $author$project$Main$removeDeadAfter = 3000;
@@ -10852,7 +10855,7 @@ var $author$project$Main$removeDead = F2(
 			$justgook$elm_game_logic$Logic$System$indexedFoldl,
 			F3(
 				function (id, health, newComponents) {
-					return (health.c5 <= 0) ? ((_Utils_cmp(time.n - health.dK, $author$project$Main$removeDeadAfter) > 0) ? A2($author$project$Components$removeEntity, id, newComponents).b : A2(
+					return (health.c6 <= 0) ? ((_Utils_cmp(time.n - health.dL, $author$project$Main$removeDeadAfter) > 0) ? A2($author$project$Components$removeEntity, id, newComponents).b : A2(
 						$justgook$elm_game_logic$Logic$Entity$remove,
 						$author$project$Components$eats,
 						A2(
@@ -10872,10 +10875,14 @@ var $author$project$Main$removeDead = F2(
 											$author$project$Components$userInputs,
 											_Utils_Tuple2(id, newComponents))))))).b) : newComponents;
 				}),
-			$author$project$Components$healths.g(components),
+			$author$project$Components$healths.c(components),
 			components);
 	});
-var $justgook$elm_game_logic$Logic$System$foldl4 = F6(
+var $justgook$alt_linear_algebra$AltMath$Vector2$Vec2 = F2(
+	function (x, y) {
+		return {c1: x, c2: y};
+	});
+var $justgook$elm_game_logic$Logic$System$indexedFoldl4 = F6(
 	function (f, comp1, comp2, comp3, comp4, acc_) {
 		return A3(
 			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
@@ -10888,7 +10895,7 @@ var $justgook$elm_game_logic$Logic$System$foldl4 = F6(
 							$elm$core$Maybe$map4,
 							F4(
 								function (a, b, c, d) {
-									return A5(f, a, b, c, d, acc);
+									return A6(f, n, a, b, c, d, acc);
 								}),
 							value,
 							A2($justgook$elm_game_logic$Logic$Component$get, n, comp2),
@@ -10898,41 +10905,154 @@ var $justgook$elm_game_logic$Logic$System$foldl4 = F6(
 			acc_,
 			comp1);
 	});
+var $elm$core$Maybe$map5 = F6(
+	function (func, ma, mb, mc, md, me) {
+		if (ma.$ === 1) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var a = ma.a;
+			if (mb.$ === 1) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var b = mb.a;
+				if (mc.$ === 1) {
+					return $elm$core$Maybe$Nothing;
+				} else {
+					var c = mc.a;
+					if (md.$ === 1) {
+						return $elm$core$Maybe$Nothing;
+					} else {
+						var d = md.a;
+						if (me.$ === 1) {
+							return $elm$core$Maybe$Nothing;
+						} else {
+							var e = me.a;
+							return $elm$core$Maybe$Just(
+								A5(func, a, b, c, d, e));
+						}
+					}
+				}
+			}
+		}
+	});
+var $justgook$elm_game_logic$Logic$System$indexedFoldl5 = F7(
+	function (f, comp1, comp2, comp3, comp4, comp5, acc_) {
+		return A3(
+			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
+			F3(
+				function (n, value, acc) {
+					return A2(
+						$elm$core$Maybe$withDefault,
+						acc,
+						A6(
+							$elm$core$Maybe$map5,
+							F5(
+								function (a, b, c, d, e) {
+									return A7(f, n, a, b, c, d, e, acc);
+								}),
+							value,
+							A2($justgook$elm_game_logic$Logic$Component$get, n, comp2),
+							A2($justgook$elm_game_logic$Logic$Component$get, n, comp3),
+							A2($justgook$elm_game_logic$Logic$Component$get, n, comp4),
+							A2($justgook$elm_game_logic$Logic$Component$get, n, comp5)));
+				}),
+			acc_,
+			comp1);
+	});
 var $author$project$Main$invulnerabilityTime = 2000;
+var $justgook$elm_game_logic$Logic$Component$set = F3(
+	function (id, value, components) {
+		return A3(
+			$elm$core$Array$set,
+			id,
+			$elm$core$Maybe$Just(value),
+			components);
+	});
 var $author$project$Main$takeDamage = F2(
 	function (time, components) {
 		return A6(
-			$justgook$elm_game_logic$Logic$System$step4,
-			F5(
-				function (_v0, _v1, _v2, _v3, xs) {
-					var kind = _v0.a;
-					var health = _v1.a;
-					var setHealth = _v1.b;
-					var position = _v2.a;
-					var size = _v3.a;
-					var newHealth = ((health.c5 > 0) && (_Utils_cmp(time.n - health.dK, $author$project$Main$invulnerabilityTime) > 0)) ? A6(
-						$justgook$elm_game_logic$Logic$System$foldl4,
-						F5(
-							function (targetEats, targetKind, targetPosition, targetSize, correctedHealth) {
-								return ((!_Utils_eq(targetPosition, position)) && (_Utils_eq(correctedHealth, health) && (A2(
+			$justgook$elm_game_logic$Logic$System$indexedFoldl4,
+			F6(
+				function (id, kind, health, position, size, newComponents) {
+					var _v0 = ((health.c6 > 0) && (_Utils_cmp(time.n - health.dL, $author$project$Main$invulnerabilityTime) > 0)) ? A7(
+						$justgook$elm_game_logic$Logic$System$indexedFoldl5,
+						F7(
+							function (targetId, targetEats, targetKind, targetPosition, targetSize, targetHealth, _v1) {
+								var correctedHealth = _v1.a;
+								var newerComponents = _v1.b;
+								return ((!_Utils_eq(targetPosition, position)) && ((correctedHealth.c6 > 0) && ((_Utils_cmp(time.n - correctedHealth.dL, $author$project$Main$invulnerabilityTime) > 0) && (A2(
 									$elm$core$Set$member,
 									$author$project$Components$kindToString(kind),
-									targetEats) && A2(
+									targetEats) && (A2(
 									$author$project$Main$overlapsWith,
 									_Utils_Tuple2(targetPosition, targetSize),
-									_Utils_Tuple2(position, size))))) ? {c5: correctedHealth.c5 - 1, dK: time.n} : correctedHealth;
+									_Utils_Tuple2(position, size)) && ((targetHealth.c6 > 0) && (_Utils_cmp(time.n - targetHealth.dL, $author$project$Main$invulnerabilityTime) > 0))))))) ? _Utils_Tuple2(
+									{c6: correctedHealth.c6 - 1, dL: time.n},
+									function () {
+										switch (targetKind) {
+											case 1:
+												var newerewerComponents = A3(
+													$author$project$Main$predator,
+													A2(
+														$justgook$alt_linear_algebra$AltMath$Vector2$add,
+														targetPosition,
+														A2($justgook$alt_linear_algebra$AltMath$Vector2$Vec2, 1, 1)),
+													time.n,
+													_Utils_Tuple2(
+														newerComponents,
+														$elm$random$Random$initialSeed(
+															(time.n + $elm$core$Basics$round(targetPosition.c1)) + $elm$core$Basics$round(targetPosition.c2)))).a;
+												return A2(
+													$author$project$Components$healths.cT,
+													A3(
+														$justgook$elm_game_logic$Logic$Component$set,
+														targetId,
+														{c6: targetHealth.c6 - 1, dL: time.n},
+														$author$project$Components$healths.c(newerewerComponents)),
+													newerewerComponents);
+											case 0:
+												return A2(
+													$author$project$Main$prey,
+													A2(
+														$justgook$alt_linear_algebra$AltMath$Vector2$add,
+														targetPosition,
+														A2($justgook$alt_linear_algebra$AltMath$Vector2$Vec2, -1, 1)),
+													A2(
+														$author$project$Main$prey,
+														A2(
+															$justgook$alt_linear_algebra$AltMath$Vector2$add,
+															targetPosition,
+															A2($justgook$alt_linear_algebra$AltMath$Vector2$Vec2, 1, 1)),
+														_Utils_Tuple2(
+															newerComponents,
+															$elm$random$Random$initialSeed(
+																(time.n + $elm$core$Basics$round(targetPosition.c1)) + $elm$core$Basics$round(targetPosition.c2))))).a;
+											default:
+												return newerComponents;
+										}
+									}()) : _Utils_Tuple2(correctedHealth, newerComponents);
 							}),
-						$author$project$Components$eats.g(components),
-						$author$project$Components$kinds.g(components),
-						$author$project$Components$positions.g(components),
-						$author$project$Components$sizes.g(components),
-						health) : health;
-					return A2(setHealth, newHealth, xs);
+						$author$project$Components$eats.c(newComponents),
+						$author$project$Components$kinds.c(newComponents),
+						$author$project$Components$positions.c(newComponents),
+						$author$project$Components$sizes.c(newComponents),
+						$author$project$Components$healths.c(newComponents),
+						_Utils_Tuple2(health, newComponents)) : _Utils_Tuple2(health, newComponents);
+					var newHealth = _v0.a;
+					var newestComponents = _v0.b;
+					return A2(
+						$author$project$Components$healths.cT,
+						A3(
+							$justgook$elm_game_logic$Logic$Component$set,
+							id,
+							newHealth,
+							$author$project$Components$healths.c(newestComponents)),
+						newestComponents);
 				}),
-			$author$project$Components$kinds,
-			$author$project$Components$healths,
-			$author$project$Components$positions,
-			$author$project$Components$sizes,
+			$author$project$Components$kinds.c(components),
+			$author$project$Components$healths.c(components),
+			$author$project$Components$positions.c(components),
+			$author$project$Components$sizes.c(components),
 			components);
 	});
 var $author$project$Main$updateLastFrameTime = F2(
@@ -10961,7 +11081,7 @@ var $author$project$Main$updatePlaying = F3(
 		var mouse = _v0.i;
 		var keyboard = _v0.aJ;
 		var screen = _v0.w;
-		var time = _v0.f;
+		var time = _v0.g;
 		var alive = _Utils_eq(status, $author$project$Main$Alive);
 		var newWorld = A2(
 			$author$project$Components$set,
@@ -10990,7 +11110,7 @@ var $author$project$Main$updatePlaying = F3(
 											$justgook$elm_game_logic$Logic$System$applyIf,
 											alive,
 											A2($author$project$Main$mouseInput, screen, mouse),
-											world.dh)))))))));
+											world.di)))))))));
 		return A2(
 			$author$project$Main$updateLastFrameTime,
 			time,
@@ -11020,7 +11140,7 @@ var $author$project$Main$updatePlaying = F3(
 							_Utils_update(
 								newWorld,
 								{
-									dh: $author$project$Components$empty,
+									di: $author$project$Components$empty,
 									x: $author$project$Main$Playing(
 										{
 											aK: time.n,
@@ -11034,21 +11154,23 @@ var $author$project$Main$updatePlaying = F3(
 							$justgook$elm_game_logic$Logic$System$foldl2,
 							F3(
 								function (_v2, health, n) {
-									return (health.c5 > 0) ? (n + 1) : n;
+									return (health.c6 > 0) ? (n + 1) : n;
 								}),
-							$author$project$Components$userInputs.g(newWorld.dh),
-							$author$project$Components$healths.g(newWorld.dh),
+							$author$project$Components$userInputs.c(newWorld.di),
+							$author$project$Components$healths.c(newWorld.di),
 							0);
 						var spawnPredator = function (w) {
-							return ((A2($elm$core$Basics$modBy, 5, (time.n / 1000) | 0) === 1) && (!A2($elm$core$Basics$modBy, 5, (lastFrameTime / 1000) | 0))) ? A2(
+							return ((A2($elm$core$Basics$modBy, 10, (time.n / 1000) | 0) === 1) && (!A2($elm$core$Basics$modBy, 10, (lastFrameTime / 1000) | 0))) ? A2(
 								$author$project$Components$set,
 								w,
 								A3(
 									$author$project$Main$many,
 									1,
-									$author$project$Main$predator,
+									function (pos) {
+										return A2($author$project$Main$predator, pos, 0);
+									},
 									_Utils_Tuple2(
-										w.dh,
+										w.di,
 										$elm$random$Random$initialSeed(time.n))).a) : w;
 						};
 						var spawnGuardian = function (w) {
@@ -11060,7 +11182,7 @@ var $author$project$Main$updatePlaying = F3(
 									1,
 									$author$project$Main$guardian,
 									_Utils_Tuple2(
-										w.dh,
+										w.di,
 										$elm$random$Random$initialSeed(time.n))).a) : w;
 						};
 						var spawnFruit = function (w) {
@@ -11072,7 +11194,7 @@ var $author$project$Main$updatePlaying = F3(
 									1,
 									$author$project$Main$fruit,
 									_Utils_Tuple2(
-										w.dh,
+										w.di,
 										$elm$random$Random$initialSeed(time.n))).a) : w;
 						};
 						var newScore = (_Utils_cmp((time.n / 1000) | 0, (lastFrameTime / 1000) | 0) > 0) ? (score + 1) : score;
@@ -11116,26 +11238,26 @@ var $author$project$Playground$group = function (shapes) {
 		h: 0,
 		k: $justgook$webgl_shape$WebGL$Shape2d$Group(shapes),
 		j: 1,
-		d: 1,
 		e: 1,
-		c0: 0,
+		f: 1,
 		c1: 0,
+		c2: 0,
 		y: 0
 	};
 };
 var $author$project$Playground$scale = F2(
 	function (ns, _v0) {
 		var shape = _v0;
-		var x = shape.c0;
-		var y = shape.c1;
+		var x = shape.c1;
+		var y = shape.c2;
 		var a = shape.h;
-		var sx = shape.d;
-		var sy = shape.e;
+		var sx = shape.e;
+		var sy = shape.f;
 		var o = shape.j;
 		var form = shape.k;
 		return _Utils_update(
 			shape,
-			{d: sx * ns, e: sy * ns});
+			{e: sx * ns, f: sy * ns});
 	});
 var $author$project$Main$adaptToViewport = F2(
 	function (screen, shapes) {
@@ -11251,8 +11373,8 @@ var $elm_explorations$webgl$WebGL$Internal$DepthTest = F4(
 	});
 var $elm_explorations$webgl$WebGL$Settings$DepthTest$lessOrEqual = function (_v0) {
 	var write = _v0.ey;
-	var near = _v0.dQ;
-	var far = _v0.dx;
+	var near = _v0.dR;
+	var far = _v0.dy;
 	return A4($elm_explorations$webgl$WebGL$Internal$DepthTest, 515, write, near, far);
 };
 var $elm_explorations$webgl$WebGL$Settings$Blend$Factor = $elm$core$Basics$identity;
@@ -11263,7 +11385,7 @@ var $author$project$Playground$Render$defaultEntitySettings = _List_fromArray(
 		A2($elm_explorations$webgl$WebGL$Settings$Blend$add, $elm_explorations$webgl$WebGL$Settings$Blend$srcAlpha, $elm_explorations$webgl$WebGL$Settings$Blend$oneMinusSrcAlpha),
 		A4($elm_explorations$webgl$WebGL$Settings$colorMask, true, true, true, false),
 		$elm_explorations$webgl$WebGL$Settings$DepthTest$lessOrEqual(
-		{dx: 1, dQ: 0, ey: true})
+		{dy: 1, dR: 0, ey: true})
 	]);
 var $elm_explorations$webgl$WebGL$entityWith = _WebGL_entity;
 var $author$project$Playground$Extra$Tilemap$fragTilemap = {
@@ -11363,26 +11485,26 @@ var $author$project$Playground$Extra$Tilemap$tilemap = F4(
 													});
 											})),
 									j: 1,
-									d: 1,
 									e: 1,
-									c0: 0,
+									f: 1,
 									c1: 0,
+									c2: 0,
 									y: 0
 								};
 							}),
 						j: 1,
-						d: 1,
 						e: 1,
-						c0: 0,
+						f: 1,
 						c1: 0,
+						c2: 0,
 						y: 0
 					};
 				}),
 			j: 1,
-			d: 1,
 			e: 1,
-			c0: 0,
+			f: 1,
 			c1: 0,
+			c2: 0,
 			y: 0
 		};
 	});
@@ -15348,7 +15470,7 @@ var $justgook$elm_image$Image$Internal$Pixel$toBit32 = function (image) {
 					return image;
 			}
 		case 1:
-			var bitsPerPixel = _v0.a.c8;
+			var bitsPerPixel = _v0.a.c9;
 			switch (bitsPerPixel) {
 				case 0:
 					return A2($justgook$elm_image$Image$Internal$ImageData$map, $justgook$elm_image$Image$Internal$Pixel$px8to32, image);
@@ -15471,9 +15593,9 @@ var $author$project$Main$background = function () {
 				$elm$core$List$indexedMap,
 				F2(
 					function (i, x) {
-						return ((!i) || (_Utils_eq(i, horizontalTiles - 1) || (_Utils_eq(i, numTiles - horizontalTiles) || _Utils_eq(i, numTiles - 1)))) ? $author$project$Main$sprites10.bO : ((_Utils_cmp(i, horizontalTiles) < 0) ? $author$project$Main$sprites10.cZ : ((_Utils_cmp(i, numTiles - horizontalTiles) > -1) ? $author$project$Main$sprites10.cW : ((!A2($elm$core$Basics$modBy, horizontalTiles, i)) ? $author$project$Main$sprites10.cX : (_Utils_eq(
+						return ((!i) || (_Utils_eq(i, horizontalTiles - 1) || (_Utils_eq(i, numTiles - horizontalTiles) || _Utils_eq(i, numTiles - 1)))) ? $author$project$Main$sprites10.bO : ((_Utils_cmp(i, horizontalTiles) < 0) ? $author$project$Main$sprites10.c_ : ((_Utils_cmp(i, numTiles - horizontalTiles) > -1) ? $author$project$Main$sprites10.cX : ((!A2($elm$core$Basics$modBy, horizontalTiles, i)) ? $author$project$Main$sprites10.cY : (_Utils_eq(
 							A2($elm$core$Basics$modBy, horizontalTiles, i),
-							horizontalTiles - 1) ? $author$project$Main$sprites10.cY : x))));
+							horizontalTiles - 1) ? $author$project$Main$sprites10.cZ : x))));
 					}),
 				A2(
 					$elm$random$Random$step,
@@ -15655,44 +15777,44 @@ var $author$project$Main$fullScreenBackgroundTile = function () {
 var $author$project$Playground$move = F3(
 	function (dx, dy, _v0) {
 		var shape = _v0;
-		var x = shape.c0;
-		var y = shape.c1;
+		var x = shape.c1;
+		var y = shape.c2;
 		var a = shape.h;
-		var sx = shape.d;
-		var sy = shape.e;
+		var sx = shape.e;
+		var sy = shape.f;
 		var o = shape.j;
 		var form = shape.k;
 		return _Utils_update(
 			shape,
-			{c0: x + dx, c1: y + dy});
+			{c1: x + dx, c2: y + dy});
 	});
 var $author$project$Playground$moveDown = F2(
 	function (dy, _v0) {
 		var shape = _v0;
-		var x = shape.c0;
-		var y = shape.c1;
+		var x = shape.c1;
+		var y = shape.c2;
 		var a = shape.h;
-		var sx = shape.d;
-		var sy = shape.e;
+		var sx = shape.e;
+		var sy = shape.f;
 		var o = shape.j;
 		var form = shape.k;
 		return _Utils_update(
 			shape,
-			{c1: y - dy});
+			{c2: y - dy});
 	});
 var $author$project$Playground$moveLeft = F2(
 	function (dx, _v0) {
 		var shape = _v0;
-		var x = shape.c0;
-		var y = shape.c1;
+		var x = shape.c1;
+		var y = shape.c2;
 		var a = shape.h;
-		var sx = shape.d;
-		var sy = shape.e;
+		var sx = shape.e;
+		var sy = shape.f;
 		var o = shape.j;
 		var form = shape.k;
 		return _Utils_update(
 			shape,
-			{c0: x - dx});
+			{c1: x - dx});
 	});
 var $author$project$Main$fullScreenBackground = function (screen) {
 	var tilesInRow = (($elm$core$Basics$ceiling((screen.bj / 2) / ($author$project$Main$viewport.bj / 2)) - 1) * 2) + 1;
@@ -15725,31 +15847,31 @@ var $author$project$Playground$lightPurple = A2(
 var $author$project$Playground$moveX = F2(
 	function (dx, _v0) {
 		var shape = _v0;
-		var x = shape.c0;
-		var y = shape.c1;
+		var x = shape.c1;
+		var y = shape.c2;
 		var a = shape.h;
-		var sx = shape.d;
-		var sy = shape.e;
+		var sx = shape.e;
+		var sy = shape.f;
 		var o = shape.j;
 		var form = shape.k;
 		return _Utils_update(
 			shape,
-			{c0: x + dx});
+			{c1: x + dx});
 	});
 var $author$project$Playground$moveRight = $author$project$Playground$moveX;
 var $author$project$Playground$moveY = F2(
 	function (dy, _v0) {
 		var shape = _v0;
-		var x = shape.c0;
-		var y = shape.c1;
+		var x = shape.c1;
+		var y = shape.c2;
 		var a = shape.h;
-		var sx = shape.d;
-		var sy = shape.e;
+		var sx = shape.e;
+		var sy = shape.f;
 		var o = shape.j;
 		var form = shape.k;
 		return _Utils_update(
 			shape,
-			{c1: y + dy});
+			{c2: y + dy});
 	});
 var $author$project$Playground$moveUp = $author$project$Playground$moveY;
 var $author$project$Playground$moveZ = F2(
@@ -15774,7 +15896,7 @@ var $author$project$Playground$Render$setAlpha = A2(
 	$elm$core$Basics$composeR,
 	$elm_explorations$linear_algebra$Math$Vector3$toRecord,
 	function (a) {
-		return A3($elm_explorations$linear_algebra$Math$Vector4$vec4, a.c0, a.c1, a.y);
+		return A3($elm_explorations$linear_algebra$Math$Vector4$vec4, a.c1, a.c2, a.y);
 	});
 var $author$project$Playground$Shader$vertNone = {
 	src: '\n        precision mediump float;\n        attribute vec2 aP;\n        uniform vec4 uT;\n        uniform vec2 uP;\n        uniform float z;\n        void main () {\n            gl_Position = vec4(aP * mat2(uT) + uP, z * -1.19209304e-7, 1.0);\n        }\n    ',
@@ -15806,10 +15928,10 @@ var $author$project$Playground$rectangle = F3(
 				height,
 				$author$project$Playground$Render$rect(color)),
 			j: 1,
-			d: 1,
 			e: 1,
-			c0: 0,
+			f: 1,
 			c1: 0,
+			c2: 0,
 			y: 0
 		};
 	});
@@ -15819,11 +15941,11 @@ var $elm$core$Basics$degrees = function (angleInDegrees) {
 var $author$project$Playground$rotate = F2(
 	function (da, _v0) {
 		var shape = _v0;
-		var x = shape.c0;
-		var y = shape.c1;
+		var x = shape.c1;
+		var y = shape.c2;
 		var a = shape.h;
-		var sx = shape.d;
-		var sy = shape.e;
+		var sx = shape.e;
+		var sy = shape.f;
 		var o = shape.j;
 		var form = shape.k;
 		return _Utils_update(
@@ -15837,37 +15959,14 @@ var $author$project$Playground$scaleY = F2(
 		var shape = _v0;
 		return _Utils_update(
 			shape,
-			{e: shape.e * sy});
+			{f: shape.f * sy});
 	});
 var $author$project$Playground$flipX = function (_v0) {
 	var shape = _v0;
 	return _Utils_update(
 		shape,
-		{d: shape.d * (-1)});
+		{e: shape.e * (-1)});
 };
-var $justgook$elm_game_logic$Logic$System$indexedFoldl4 = F6(
-	function (f, comp1, comp2, comp3, comp4, acc_) {
-		return A3(
-			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
-			F3(
-				function (n, value, acc) {
-					return A2(
-						$elm$core$Maybe$withDefault,
-						acc,
-						A5(
-							$elm$core$Maybe$map4,
-							F4(
-								function (a, b, c, d) {
-									return A6(f, n, a, b, c, d, acc);
-								}),
-							value,
-							A2($justgook$elm_game_logic$Logic$Component$get, n, comp2),
-							A2($justgook$elm_game_logic$Logic$Component$get, n, comp3),
-							A2($justgook$elm_game_logic$Logic$Component$get, n, comp4)));
-				}),
-			acc_,
-			comp1);
-	});
 var $elm$core$Basics$not = _Basics_not;
 var $author$project$Playground$Extra$size = function (t) {
 	return function (_v0) {
@@ -15885,7 +15984,7 @@ var $author$project$Playground$Shader$fragImage = {
 var $author$project$Playground$Shader$vertTile = {
 	src: '\n            precision mediump float;\n            attribute vec2 aP;\n            uniform vec4 uT;\n            uniform vec2 uP;\n            uniform float z;\n            uniform float index;\n            uniform vec2 spriteSize;\n            uniform vec2 uImgSize;\n            varying vec2 uv;\n            vec2 edgeFix = vec2(0.0000001, -0.0000001);\n            void main () {\n                vec2 ratio = spriteSize / uImgSize;\n                float row = (uImgSize.y / spriteSize.y - 1.0) - floor((index + 0.5) * ratio.x);\n                float column = floor(mod((index + 0.5), uImgSize.x / spriteSize.x));\n                vec2 offset = vec2(column, row) * ratio;\n                uv = (aP * 0.5 + 0.5) * ratio + offset + edgeFix;\n                gl_Position = vec4(aP * mat2(uT) + uP, z  * -1.19209304e-7, 1.0);\n            }\n        ',
 	attributes: {aP: 'aZ'},
-	uniforms: {index: 'cb', spriteSize: 'cT', uImgSize: 'aV', uP: 'el', uT: 'em', z: 'y'}
+	uniforms: {index: 'cb', spriteSize: 'cU', uImgSize: 'aV', uP: 'el', uT: 'em', z: 'y'}
 };
 var $author$project$Playground$Render$tile = F8(
 	function (spriteSheet, spriteSize, imageSize, index, translate, scaleRotateSkew, z, opacity) {
@@ -15895,7 +15994,7 @@ var $author$project$Playground$Render$tile = F8(
 			$author$project$Playground$Shader$vertTile,
 			$author$project$Playground$Shader$fragImage,
 			$author$project$Playground$Shader$mesh,
-			{cb: index, cT: spriteSize, eg: opacity, aU: spriteSheet, aV: imageSize, el: translate, em: scaleRotateSkew, y: z});
+			{cb: index, cU: spriteSize, eg: opacity, aU: spriteSheet, aV: imageSize, el: translate, em: scaleRotateSkew, y: z});
 	});
 var $author$project$Playground$Extra$tile = F4(
 	function (tileW, tileH, tileset, index) {
@@ -15918,18 +16017,18 @@ var $author$project$Playground$Extra$tile = F4(
 								$author$project$Playground$Extra$size(t),
 								index)),
 						j: 1,
-						d: 1,
 						e: 1,
-						c0: 0,
+						f: 1,
 						c1: 0,
+						c2: 0,
 						y: 0
 					};
 				}),
 			j: 1,
-			d: 1,
 			e: 1,
-			c0: 0,
+			f: 1,
 			c1: 0,
+			c2: 0,
 			y: 0
 		};
 	});
@@ -15940,18 +16039,18 @@ var $author$project$Main$viewEntities = F2(
 				$justgook$elm_game_logic$Logic$System$indexedFoldl4,
 				F6(
 					function (id, kind, position, size, health, shapes) {
-						var timeSinceLastHealthUpdate = time.n - health.dK;
+						var timeSinceLastHealthUpdate = time.n - health.dL;
 						var tilesheet = A3($author$project$Playground$Extra$tile, 40, 40, 'sprites20.png');
 						var maybeFacing = A2(
 							$justgook$elm_game_logic$Logic$Component$get,
 							id,
-							$author$project$Components$facings.g(world.dh));
+							$author$project$Components$facings.c(world.di));
 						var maybeAnimationOffset = A2(
 							$justgook$elm_game_logic$Logic$Component$get,
 							id,
-							$author$project$Components$animationOffsets.g(world.dh));
-						var dead = health.c5 <= 0;
-						var tileAnimationTime = dead ? health.dK : time.n;
+							$author$project$Components$animationOffsets.c(world.di));
+						var dead = health.c6 <= 0;
+						var tileAnimationTime = dead ? health.dL : time.n;
 						var shape = function () {
 							var animationOffset = A2($elm$core$Maybe$withDefault, 0, maybeAnimationOffset);
 							switch (kind) {
@@ -15984,7 +16083,7 @@ var $author$project$Main$viewEntities = F2(
 							$elm$core$List$cons,
 							A2(
 								$author$project$Playground$moveZ,
-								$elm$core$Basics$round((-(position.c1 - (size / 2))) + ($author$project$Main$viewport.a7 / 2)),
+								$elm$core$Basics$round((-(position.c2 - (size / 2))) + ($author$project$Main$viewport.a7 / 2)),
 								A3(
 									$justgook$elm_game_logic$Logic$System$applyIf,
 									dead,
@@ -16011,13 +16110,13 @@ var $author$project$Main$viewEntities = F2(
 														},
 														maybeFacing)),
 												$author$project$Playground$flipX,
-												A3($author$project$Playground$move, position.c0, position.c1, shape)))))),
+												A3($author$project$Playground$move, position.c1, position.c2, shape)))))),
 							shapes);
 					}),
-				$author$project$Components$kinds.g(world.dh),
-				$author$project$Components$positions.g(world.dh),
-				$author$project$Components$sizes.g(world.dh),
-				$author$project$Components$healths.g(world.dh),
+				$author$project$Components$kinds.c(world.di),
+				$author$project$Components$positions.c(world.di),
+				$author$project$Components$sizes.c(world.di),
+				$author$project$Components$healths.c(world.di),
 				_List_Nil));
 	});
 var $author$project$Playground$white = A2(
@@ -16040,7 +16139,7 @@ var $author$project$Playground$Render$tileWithColor = F9(
 			{
 				ao: A2($author$project$Playground$Render$setAlpha, color, opacity),
 				cb: index,
-				cT: spriteSize,
+				cU: spriteSize,
 				eg: opacity,
 				aU: spriteSheet,
 				aV: imageSize,
@@ -16065,24 +16164,24 @@ var $author$project$Playground$Extra$Font$char = F8(
 					color,
 					index)),
 			j: 1,
-			d: 1,
 			e: 1,
-			c0: x,
-			c1: y,
+			f: 1,
+			c1: x,
+			c2: y,
 			y: 0
 		};
 	});
 var $author$project$Playground$Extra$Font$outputFold = F6(
 	function (toChar, getIndex, w, h, c, _v0) {
 		var chars = _v0.aG;
-		var x = _v0.c0;
-		var y = _v0.c1;
+		var x = _v0.c1;
+		var y = _v0.c2;
 		var width = _v0.bj;
 		return (c === '\n') ? {
 			aG: chars,
 			bj: A2($elm$core$Basics$max, width, x),
-			c0: w,
-			c1: y - h
+			c1: w,
+			c2: y - h
 		} : {
 			aG: A2(
 				$elm$core$List$cons,
@@ -16093,16 +16192,16 @@ var $author$project$Playground$Extra$Font$outputFold = F6(
 					getIndex(c)),
 				chars),
 			bj: width,
-			c0: x + w,
-			c1: y
+			c1: x + w,
+			c2: y
 		};
 	});
 var $author$project$Playground$Extra$Font$tileFont = F3(
 	function (_v0, color, string) {
-		var charW = _v0.de;
-		var charH = _v0.dd;
+		var charW = _v0.df;
+		var charH = _v0.de;
 		var src = _v0.d8;
-		var getIndex = _v0.dC;
+		var getIndex = _v0.dD;
 		return {
 			h: 0,
 			k: A2(
@@ -16121,24 +16220,24 @@ var $author$project$Playground$Extra$Font$tileFont = F3(
 					var output = A3(
 						$elm$core$List$foldl,
 						A4($author$project$Playground$Extra$Font$outputFold, toChar, getIndex, charW, charH),
-						{aG: _List_Nil, bj: 0, c0: charW, c1: charH},
+						{aG: _List_Nil, bj: 0, c1: charW, c2: charH},
 						$elm$core$String$toList(string));
 					return {
 						h: 0,
 						k: $justgook$webgl_shape$WebGL$Shape2d$Group(output.aG),
 						j: 1,
-						d: 1,
 						e: 1,
-						c0: A2($elm$core$Basics$max, output.c0, output.bj) * (-0.5),
-						c1: (output.c1 * (-0.5)) + (0.5 * (-charH)),
+						f: 1,
+						c1: A2($elm$core$Basics$max, output.c1, output.bj) * (-0.5),
+						c2: (output.c2 * (-0.5)) + (0.5 * (-charH)),
 						y: 0
 					};
 				}),
 			j: 1,
-			d: 1,
 			e: 1,
-			c0: 0,
+			f: 1,
 			c1: 0,
+			c2: 0,
 			y: 0
 		};
 	});
@@ -16192,11 +16291,11 @@ var $author$project$Playground$Font$SimpleMood$letters = function (c) {
 		0,
 		A2($elm$core$Dict$get, c, $author$project$Playground$Font$SimpleMood$letters_));
 };
-var $author$project$Playground$wordsConfig = {dd: 16, de: 16, dC: $author$project$Playground$Font$SimpleMood$letters, d8: $author$project$Playground$Font$SimpleMood$image};
+var $author$project$Playground$wordsConfig = {de: 16, df: 16, dD: $author$project$Playground$Font$SimpleMood$letters, d8: $author$project$Playground$Font$SimpleMood$image};
 var $author$project$Playground$words = $author$project$Playground$Extra$Font$tileFont($author$project$Playground$wordsConfig);
 var $author$project$Main$viewMenu = F3(
 	function (interactedToEnableAudio, _v0, world) {
-		var time = _v0.f;
+		var time = _v0.g;
 		var screen = _v0.w;
 		var mouse = _v0.i;
 		var titleScale = ($author$project$Main$viewport.a7 / $author$project$Main$defaultFontSize) / 6;
@@ -16354,10 +16453,10 @@ var $author$project$Playground$circle = F2(
 				radius * 2,
 				$author$project$Playground$Render$circle(color)),
 			j: 1,
-			d: 1,
 			e: 1,
-			c0: 0,
+			f: 1,
 			c1: 0,
+			c2: 0,
 			y: 0
 		};
 	});
@@ -16370,7 +16469,7 @@ var $author$project$Main$viewPlaying = F3(
 	function (_v0, _v1, world) {
 		var score = _v0.az;
 		var status = _v0.Y;
-		var time = _v1.f;
+		var time = _v1.g;
 		var screen = _v1.w;
 		var mouse = _v1.i;
 		return _List_fromArray(
@@ -16398,15 +16497,15 @@ var $author$project$Main$viewPlaying = F3(
 												$author$project$Playground$white,
 												$elm$core$String$fromInt(score) + ''))),
 										function () {
-										if (mouse.dt) {
+										if (mouse.du) {
 											var coords = A2($author$project$Main$toViewport, screen, mouse);
 											return A2(
 												$author$project$Playground$fade,
 												0.3,
 												A3(
 													$author$project$Playground$move,
-													coords.c0,
 													coords.c1,
+													coords.c2,
 													A2($author$project$Playground$circle, $author$project$Playground$black, 5)));
 										} else {
 											return $author$project$Playground$group(_List_Nil);
@@ -16529,7 +16628,7 @@ var $author$project$Main$main = A4(
 	'Flee',
 	$author$project$Main$spawnMenu(
 		{
-			dh: $author$project$Components$empty,
+			di: $author$project$Components$empty,
 			x: $author$project$Main$Menu(false)
 		}),
 	$author$project$Main$update,
