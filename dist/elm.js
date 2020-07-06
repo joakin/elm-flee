@@ -9175,8 +9175,10 @@ var $author$project$Components$kindToString = function (kind) {
 			return 'Prey';
 		case 1:
 			return 'Predator';
-		default:
+		case 2:
 			return 'Guardian';
+		default:
+			return 'Fruit';
 	}
 };
 var $author$project$Components$kinds = A2(
@@ -9682,6 +9684,7 @@ var $author$project$Main$predator = F2(
 															$author$project$Components$addEntity(world))))))))))))).b,
 			seed2);
 	});
+var $author$project$Components$Fruit = 3;
 var $author$project$Components$UserInput = 0;
 var $author$project$Components$userInputs = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
@@ -9708,57 +9711,67 @@ var $author$project$Main$prey = F2(
 			A2(
 				$justgook$elm_game_logic$Logic$Entity$with,
 				_Utils_Tuple2(
-					$author$project$Components$healths,
-					{c5: 3, dK: 0}),
+					$author$project$Components$eats,
+					$elm$core$Set$fromList(
+						A2(
+							$elm$core$List$map,
+							$author$project$Components$kindToString,
+							_List_fromArray(
+								[3])))),
 				A2(
 					$justgook$elm_game_logic$Logic$Entity$with,
-					_Utils_Tuple2($author$project$Components$animationOffsets, randomAnimationOffset),
+					_Utils_Tuple2(
+						$author$project$Components$healths,
+						{c5: 3, dK: 0}),
 					A2(
 						$justgook$elm_game_logic$Logic$Entity$with,
-						_Utils_Tuple2($author$project$Components$facings, 1),
+						_Utils_Tuple2($author$project$Components$animationOffsets, randomAnimationOffset),
 						A2(
 							$justgook$elm_game_logic$Logic$Entity$with,
-							_Utils_Tuple2($author$project$Components$directions, pos),
+							_Utils_Tuple2($author$project$Components$facings, 1),
 							A2(
 								$justgook$elm_game_logic$Logic$Entity$with,
-								_Utils_Tuple2(
-									$author$project$Components$collisions,
-									$elm$core$Set$fromList(
-										A2(
-											$elm$core$List$map,
-											$author$project$Components$kindToString,
-											_List_fromArray(
-												[2, 0])))),
+								_Utils_Tuple2($author$project$Components$directions, pos),
 								A2(
 									$justgook$elm_game_logic$Logic$Entity$with,
 									_Utils_Tuple2(
-										$author$project$Components$avoids,
-										$elm$core$Dict$fromList(
-											_List_fromArray(
-												[
-													_Utils_Tuple2(
-													$author$project$Components$kindToString(2),
-													2),
-													_Utils_Tuple2(
-													$author$project$Components$kindToString(0),
-													0.5)
-												]))),
+										$author$project$Components$collisions,
+										$elm$core$Set$fromList(
+											A2(
+												$elm$core$List$map,
+												$author$project$Components$kindToString,
+												_List_fromArray(
+													[2, 0])))),
 									A2(
 										$justgook$elm_game_logic$Logic$Entity$with,
-										_Utils_Tuple2($author$project$Components$speeds, $author$project$Main$defaultSpeed * 1.4),
+										_Utils_Tuple2(
+											$author$project$Components$avoids,
+											$elm$core$Dict$fromList(
+												_List_fromArray(
+													[
+														_Utils_Tuple2(
+														$author$project$Components$kindToString(2),
+														2),
+														_Utils_Tuple2(
+														$author$project$Components$kindToString(0),
+														0.5)
+													]))),
 										A2(
 											$justgook$elm_game_logic$Logic$Entity$with,
-											_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize / 2),
+											_Utils_Tuple2($author$project$Components$speeds, $author$project$Main$defaultSpeed * 1.4),
 											A2(
 												$justgook$elm_game_logic$Logic$Entity$with,
-												_Utils_Tuple2($author$project$Components$positions, pos),
+												_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize / 2),
 												A2(
 													$justgook$elm_game_logic$Logic$Entity$with,
-													_Utils_Tuple2($author$project$Components$userInputs, 0),
+													_Utils_Tuple2($author$project$Components$positions, pos),
 													A2(
 														$justgook$elm_game_logic$Logic$Entity$with,
-														_Utils_Tuple2($author$project$Components$kinds, 0),
-														$author$project$Components$addEntity(world)))))))))))).b,
+														_Utils_Tuple2($author$project$Components$userInputs, 0),
+														A2(
+															$justgook$elm_game_logic$Logic$Entity$with,
+															_Utils_Tuple2($author$project$Components$kinds, 0),
+															$author$project$Components$addEntity(world))))))))))))).b,
 			seed2);
 	});
 var $author$project$Components$set = F2(
@@ -10639,6 +10652,133 @@ var $author$project$Main$updateMenu = F3(
 	});
 var $author$project$Main$Alive = {$: 0};
 var $author$project$Main$Dead = {$: 1};
+var $author$project$Main$fruit = F2(
+	function (pos, _v0) {
+		var world = _v0.a;
+		var seed = _v0.b;
+		return _Utils_Tuple2(
+			A2(
+				$justgook$elm_game_logic$Logic$Entity$with,
+				_Utils_Tuple2(
+					$author$project$Components$healths,
+					{c5: 1, dK: 0}),
+				A2(
+					$justgook$elm_game_logic$Logic$Entity$with,
+					_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize * 2),
+					A2(
+						$justgook$elm_game_logic$Logic$Entity$with,
+						_Utils_Tuple2($author$project$Components$positions, pos),
+						A2(
+							$justgook$elm_game_logic$Logic$Entity$with,
+							_Utils_Tuple2($author$project$Components$kinds, 3),
+							$author$project$Components$addEntity(world))))).b,
+			seed);
+	});
+var $elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
+};
+var $elm$random$Random$float = F2(
+	function (a, b) {
+		return function (seed0) {
+			var seed1 = $elm$random$Random$next(seed0);
+			var range = $elm$core$Basics$abs(b - a);
+			var n1 = $elm$random$Random$peel(seed1);
+			var n0 = $elm$random$Random$peel(seed0);
+			var lo = (134217727 & n1) * 1.0;
+			var hi = (67108863 & n0) * 1.0;
+			var val = ((hi * 134217728.0) + lo) / 9007199254740992.0;
+			var scaled = (val * range) + a;
+			return _Utils_Tuple2(
+				scaled,
+				$elm$random$Random$next(seed1));
+		};
+	});
+var $elm$random$Random$listHelp = F4(
+	function (revList, n, gen, seed) {
+		listHelp:
+		while (true) {
+			if (n < 1) {
+				return _Utils_Tuple2(revList, seed);
+			} else {
+				var _v0 = gen(seed);
+				var value = _v0.a;
+				var newSeed = _v0.b;
+				var $temp$revList = A2($elm$core$List$cons, value, revList),
+					$temp$n = n - 1,
+					$temp$gen = gen,
+					$temp$seed = newSeed;
+				revList = $temp$revList;
+				n = $temp$n;
+				gen = $temp$gen;
+				seed = $temp$seed;
+				continue listHelp;
+			}
+		}
+	});
+var $elm$random$Random$list = F2(
+	function (n, _v0) {
+		var gen = _v0;
+		return function (seed) {
+			return A4($elm$random$Random$listHelp, _List_Nil, n, gen, seed);
+		};
+	});
+var $elm$random$Random$map2 = F3(
+	function (func, _v0, _v1) {
+		var genA = _v0;
+		var genB = _v1;
+		return function (seed0) {
+			var _v2 = genA(seed0);
+			var a = _v2.a;
+			var seed1 = _v2.b;
+			var _v3 = genB(seed1);
+			var b = _v3.a;
+			var seed2 = _v3.b;
+			return _Utils_Tuple2(
+				A2(func, a, b),
+				seed2);
+		};
+	});
+var $elm$random$Random$pair = F2(
+	function (genA, genB) {
+		return A3(
+			$elm$random$Random$map2,
+			F2(
+				function (a, b) {
+					return _Utils_Tuple2(a, b);
+				}),
+			genA,
+			genB);
+	});
+var $author$project$Main$many = F3(
+	function (n, fn, _v0) {
+		var world = _v0.a;
+		var seed = _v0.b;
+		var _v1 = A2(
+			$elm$random$Random$step,
+			A2(
+				$elm$random$Random$list,
+				n,
+				A2(
+					$elm$random$Random$pair,
+					A2($elm$random$Random$float, $author$project$Main$viewport.a8, $author$project$Main$viewport.d1),
+					A2($elm$random$Random$float, $author$project$Main$viewport.bn, $author$project$Main$viewport.bN))),
+			seed);
+		var pos = _v1.a;
+		var seed_ = _v1.b;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v2, acc) {
+					var x = _v2.a;
+					var y = _v2.b;
+					return A2(
+						fn,
+						{c0: x, c1: y},
+						acc);
+				}),
+			_Utils_Tuple2(world, seed_),
+			pos);
+	});
 var $justgook$elm_game_logic$Logic$System$indexedFoldl = F3(
 	function (f, comp1, acc_) {
 		return A3(
@@ -10758,7 +10898,7 @@ var $justgook$elm_game_logic$Logic$System$foldl4 = F6(
 			acc_,
 			comp1);
 	});
-var $author$project$Main$invulnerabilityTime = 1000;
+var $author$project$Main$invulnerabilityTime = 2000;
 var $author$project$Main$takeDamage = F2(
 	function (time, components) {
 		return A6(
@@ -10899,15 +11039,54 @@ var $author$project$Main$updatePlaying = F3(
 							$author$project$Components$userInputs.g(newWorld.dh),
 							$author$project$Components$healths.g(newWorld.dh),
 							0);
+						var spawnPredator = function (w) {
+							return ((A2($elm$core$Basics$modBy, 5, (time.n / 1000) | 0) === 1) && (!A2($elm$core$Basics$modBy, 5, (lastFrameTime / 1000) | 0))) ? A2(
+								$author$project$Components$set,
+								w,
+								A3(
+									$author$project$Main$many,
+									1,
+									$author$project$Main$predator,
+									_Utils_Tuple2(
+										w.dh,
+										$elm$random$Random$initialSeed(time.n))).a) : w;
+						};
+						var spawnGuardian = function (w) {
+							return ((A2($elm$core$Basics$modBy, 15, (time.n / 1000) | 0) === 1) && (!A2($elm$core$Basics$modBy, 15, (lastFrameTime / 1000) | 0))) ? A2(
+								$author$project$Components$set,
+								w,
+								A3(
+									$author$project$Main$many,
+									1,
+									$author$project$Main$guardian,
+									_Utils_Tuple2(
+										w.dh,
+										$elm$random$Random$initialSeed(time.n))).a) : w;
+						};
+						var spawnFruit = function (w) {
+							return ((A2($elm$core$Basics$modBy, 5, (time.n / 1000) | 0) === 1) && (!A2($elm$core$Basics$modBy, 5, (lastFrameTime / 1000) | 0))) ? A2(
+								$author$project$Components$set,
+								w,
+								A3(
+									$author$project$Main$many,
+									1,
+									$author$project$Main$fruit,
+									_Utils_Tuple2(
+										w.dh,
+										$elm$random$Random$initialSeed(time.n))).a) : w;
+						};
 						var newScore = (_Utils_cmp((time.n / 1000) | 0, (lastFrameTime / 1000) | 0) > 0) ? (score + 1) : score;
-						return (userControlledEntities > 0) ? _Utils_update(
-							newWorld,
-							{
-								x: $author$project$Main$Playing(
+						return (userControlledEntities > 0) ? spawnFruit(
+							spawnGuardian(
+								spawnPredator(
 									_Utils_update(
-										playingState,
-										{az: newScore}))
-							}) : _Utils_update(
+										newWorld,
+										{
+											x: $author$project$Main$Playing(
+												_Utils_update(
+													playingState,
+													{az: newScore}))
+										})))) : _Utils_update(
 							newWorld,
 							{
 								x: $author$project$Main$Playing(
@@ -10990,35 +11169,6 @@ var $justgook$elm_image$Image$fromList = F2(
 					bj: w
 				}),
 			l);
-	});
-var $elm$random$Random$listHelp = F4(
-	function (revList, n, gen, seed) {
-		listHelp:
-		while (true) {
-			if (n < 1) {
-				return _Utils_Tuple2(revList, seed);
-			} else {
-				var _v0 = gen(seed);
-				var value = _v0.a;
-				var newSeed = _v0.b;
-				var $temp$revList = A2($elm$core$List$cons, value, revList),
-					$temp$n = n - 1,
-					$temp$gen = gen,
-					$temp$seed = newSeed;
-				revList = $temp$revList;
-				n = $temp$n;
-				gen = $temp$gen;
-				seed = $temp$seed;
-				continue listHelp;
-			}
-		}
-	});
-var $elm$random$Random$list = F2(
-	function (n, _v0) {
-		var gen = _v0;
-		return function (seed) {
-			return A4($elm$random$Random$listHelp, _List_Nil, n, gen, seed);
-		};
 	});
 var $justgook$webgl_shape$WebGL$Shape2d$Form = F3(
 	function (a, b, c) {
@@ -15236,25 +15386,6 @@ var $justgook$elm_image$Image$toPngUrl = A2(
 			$elm$core$Basics$composeR,
 			$elm$core$Maybe$withDefault(''),
 			$elm$core$Basics$append('data:image/png;base64,'))));
-var $elm$core$Basics$abs = function (n) {
-	return (n < 0) ? (-n) : n;
-};
-var $elm$random$Random$float = F2(
-	function (a, b) {
-		return function (seed0) {
-			var seed1 = $elm$random$Random$next(seed0);
-			var range = $elm$core$Basics$abs(b - a);
-			var n1 = $elm$random$Random$peel(seed1);
-			var n0 = $elm$random$Random$peel(seed0);
-			var lo = (134217727 & n1) * 1.0;
-			var hi = (67108863 & n0) * 1.0;
-			var val = ((hi * 134217728.0) + lo) / 9007199254740992.0;
-			var scaled = (val * range) + a;
-			return _Utils_Tuple2(
-				scaled,
-				$elm$random$Random$next(seed1));
-		};
-	});
 var $elm$random$Random$getByWeight = F3(
 	function (_v0, others, countdown) {
 		getByWeight:
@@ -15714,59 +15845,28 @@ var $author$project$Playground$flipX = function (_v0) {
 		shape,
 		{d: shape.d * (-1)});
 };
-var $elm$core$Maybe$map5 = F6(
-	function (func, ma, mb, mc, md, me) {
-		if (ma.$ === 1) {
-			return $elm$core$Maybe$Nothing;
-		} else {
-			var a = ma.a;
-			if (mb.$ === 1) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var b = mb.a;
-				if (mc.$ === 1) {
-					return $elm$core$Maybe$Nothing;
-				} else {
-					var c = mc.a;
-					if (md.$ === 1) {
-						return $elm$core$Maybe$Nothing;
-					} else {
-						var d = md.a;
-						if (me.$ === 1) {
-							return $elm$core$Maybe$Nothing;
-						} else {
-							var e = me.a;
-							return $elm$core$Maybe$Just(
-								A5(func, a, b, c, d, e));
-						}
-					}
-				}
-			}
-		}
-	});
-var $author$project$Logic$System$Extra$foldl6 = F8(
-	function (fn, c1s, c2s, c3s, c4s, c5s, c6s, acc) {
+var $justgook$elm_game_logic$Logic$System$indexedFoldl4 = F6(
+	function (f, comp1, comp2, comp3, comp4, acc_) {
 		return A3(
-			$justgook$elm_game_logic$Logic$System$indexedFoldl,
+			$justgook$elm_game_logic$Logic$Internal$indexedFoldlArray,
 			F3(
-				function (id, c1, acc_) {
+				function (n, value, acc) {
 					return A2(
 						$elm$core$Maybe$withDefault,
-						acc_,
-						A6(
-							$elm$core$Maybe$map5,
-							F5(
-								function (c2, c3, c4, c5, c6) {
-									return A7(fn, c1, c2, c3, c4, c5, c6, acc_);
+						acc,
+						A5(
+							$elm$core$Maybe$map4,
+							F4(
+								function (a, b, c, d) {
+									return A6(f, n, a, b, c, d, acc);
 								}),
-							A2($justgook$elm_game_logic$Logic$Component$get, id, c2s),
-							A2($justgook$elm_game_logic$Logic$Component$get, id, c3s),
-							A2($justgook$elm_game_logic$Logic$Component$get, id, c4s),
-							A2($justgook$elm_game_logic$Logic$Component$get, id, c5s),
-							A2($justgook$elm_game_logic$Logic$Component$get, id, c6s)));
+							value,
+							A2($justgook$elm_game_logic$Logic$Component$get, n, comp2),
+							A2($justgook$elm_game_logic$Logic$Component$get, n, comp3),
+							A2($justgook$elm_game_logic$Logic$Component$get, n, comp4)));
 				}),
-			c1s,
-			acc);
+			acc_,
+			comp1);
 	});
 var $elm$core$Basics$not = _Basics_not;
 var $author$project$Playground$Extra$size = function (t) {
@@ -15836,15 +15936,24 @@ var $author$project$Playground$Extra$tile = F4(
 var $author$project$Main$viewEntities = F2(
 	function (time, world) {
 		return $author$project$Playground$group(
-			A8(
-				$author$project$Logic$System$Extra$foldl6,
-				F7(
-					function (kind, position, size, facing, animationOffset, health, shapes) {
+			A6(
+				$justgook$elm_game_logic$Logic$System$indexedFoldl4,
+				F6(
+					function (id, kind, position, size, health, shapes) {
 						var timeSinceLastHealthUpdate = time.n - health.dK;
 						var tilesheet = A3($author$project$Playground$Extra$tile, 40, 40, 'sprites20.png');
+						var maybeFacing = A2(
+							$justgook$elm_game_logic$Logic$Component$get,
+							id,
+							$author$project$Components$facings.g(world.dh));
+						var maybeAnimationOffset = A2(
+							$justgook$elm_game_logic$Logic$Component$get,
+							id,
+							$author$project$Components$animationOffsets.g(world.dh));
 						var dead = health.c5 <= 0;
 						var tileAnimationTime = dead ? health.dK : time.n;
 						var shape = function () {
+							var animationOffset = A2($elm$core$Maybe$withDefault, 0, maybeAnimationOffset);
 							switch (kind) {
 								case 2:
 									return A2(
@@ -15858,12 +15967,17 @@ var $author$project$Main$viewEntities = F2(
 										3,
 										tilesheet(
 											A2($elm$core$Basics$modBy, 6, ((tileAnimationTime / 80) | 0) - animationOffset) + 5));
-								default:
+								case 0:
 									return A2(
 										$author$project$Playground$moveUp,
 										2,
 										tilesheet(
 											A2($elm$core$Basics$modBy, 3, ((tileAnimationTime / 100) | 0) - animationOffset) + 1));
+								default:
+									return A2(
+										$author$project$Playground$moveUp,
+										A4($author$project$Playground$wave, -2, 2, 1, time),
+										tilesheet(24));
 							}
 						}();
 						return A2(
@@ -15878,7 +15992,8 @@ var $author$project$Main$viewEntities = F2(
 									A3(
 										$justgook$elm_game_logic$Logic$System$applyIf,
 										dead,
-										$author$project$Playground$scaleY(0.5),
+										$author$project$Playground$scaleY(
+											A4($author$project$Playground$wave, 0.2, 0.8, 1, time)),
 										A3(
 											$justgook$elm_game_logic$Logic$System$applyIf,
 											(!dead) && (_Utils_cmp(timeSinceLastHealthUpdate, $author$project$Main$invulnerabilityTime) < 1),
@@ -15886,7 +16001,15 @@ var $author$project$Main$viewEntities = F2(
 												A4($author$project$Playground$wave, 0.5, 1, 0.3, time)),
 											A3(
 												$justgook$elm_game_logic$Logic$System$applyIf,
-												!facing,
+												A2(
+													$elm$core$Maybe$withDefault,
+													false,
+													A2(
+														$elm$core$Maybe$map,
+														function (facing) {
+															return !facing;
+														},
+														maybeFacing)),
 												$author$project$Playground$flipX,
 												A3($author$project$Playground$move, position.c0, position.c1, shape)))))),
 							shapes);
@@ -15894,8 +16017,6 @@ var $author$project$Main$viewEntities = F2(
 				$author$project$Components$kinds.g(world.dh),
 				$author$project$Components$positions.g(world.dh),
 				$author$project$Components$sizes.g(world.dh),
-				$author$project$Components$facings.g(world.dh),
-				$author$project$Components$animationOffsets.g(world.dh),
 				$author$project$Components$healths.g(world.dh),
 				_List_Nil));
 	});
@@ -16304,19 +16425,31 @@ var $author$project$Main$viewPlaying = F3(
 											screen.bj,
 											screen.a7)),
 										A2(
-										$author$project$Playground$moveUp,
-										20,
+										$author$project$Playground$rotate,
+										A4($author$project$Playground$wave, -5, 5, 3, time),
 										A2(
-											$author$project$Playground$words,
-											$author$project$Playground$white,
-											$elm$core$String$fromInt(score) + ' points!')),
+											$author$project$Playground$moveDown,
+											A4($author$project$Playground$wave, -5, 5, 5, time),
+											A2(
+												$author$project$Playground$scale,
+												A4($author$project$Playground$wave, 1, 1.3, 2, time),
+												A2(
+													$author$project$Playground$moveUp,
+													20,
+													A2(
+														$author$project$Playground$words,
+														$author$project$Playground$white,
+														$elm$core$String$fromInt(score) + ' points!'))))),
 										A2(
 										$author$project$Playground$moveDown,
-										20,
+										A4($author$project$Playground$wave, -5, 5, 8, time),
 										A2(
-											$author$project$Playground$scale,
-											0.5,
-											A2($author$project$Playground$words, $author$project$Main$brightPurple, 'Click/Tap to try again!')))
+											$author$project$Playground$moveDown,
+											20,
+											A2(
+												$author$project$Playground$scale,
+												0.5,
+												A2($author$project$Playground$words, $author$project$Main$brightPurple, 'Click/Tap to try again!'))))
 									]);
 							default:
 								var n = status.a;

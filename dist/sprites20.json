@@ -190,6 +190,14 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
     "sourceSize": { "w": 40, "h": 40 },
     "duration": 100
+   },
+   "sprites20 (carrot) 24.aseprite": {
+    "frame": { "x": 160, "y": 160, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
    }
  },
  "meta": {
@@ -207,7 +215,8 @@
   "layers": [
    { "name": "prey", "opacity": 255, "blendMode": "normal" },
    { "name": "predator", "opacity": 255, "blendMode": "normal" },
-   { "name": "guardian shadow", "opacity": 255, "blendMode": "normal" }
+   { "name": "guardian shadow", "opacity": 255, "blendMode": "normal" },
+   { "name": "carrot", "opacity": 255, "blendMode": "normal" }
   ]
  }
 }
