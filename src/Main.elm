@@ -426,17 +426,24 @@ viewEntities time world =
                     case kind of
                         Guardian ->
                             tilesheet (((time.now // 80 - animationOffset) |> modBy 13) + 11)
+                                |> moveUp 4
 
                         Predator ->
                             tilesheet (((time.now // 80 - animationOffset) |> modBy 6) + 5)
+                                |> moveUp 3
 
                         Prey ->
                             tilesheet (((time.now // 100 - animationOffset) |> modBy 3) + 1)
+                                |> moveUp 2
             in
+            -- (group
+            -- [ circle (rgb 200 80 40) (size / 2)
+            --     |> move position.x position.y
+            -- ]
             (shape
                 |> move position.x position.y
                 |> applyIf (facing == Left) flipX
-                |> moveZ (round (-(position.y - size) + viewport.height / 2))
+                |> moveZ (round (-(position.y - size / 2) + viewport.height / 2))
             )
                 :: shapes
         )
