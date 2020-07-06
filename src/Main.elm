@@ -65,7 +65,7 @@ predator pos ( world, seed ) =
         |> Entity.with ( kinds, Predator )
         |> Entity.with ( positions, pos )
         |> Entity.with ( sizes, defaultSize )
-        |> Entity.with ( speeds, defaultSpeed * 1 )
+        |> Entity.with ( speeds, defaultSpeed * 0.9 )
         |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 2 ), ( kindToString Predator, 0.5 ) ] )
         |> Entity.with ( follows, Set.singleton (kindToString Prey) )
         |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Predator ] )
