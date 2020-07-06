@@ -14,6 +14,7 @@ import Browser.Events as E
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes exposing (height, width)
+import Html.Events exposing (onClick)
 import Html.Events.Extra.Touch as Touch exposing (Touch)
 import Json.Decode as D
 import Playground exposing (..)
@@ -38,7 +39,9 @@ type Msg
     = Computer Computer
     | Texture String Texture
     | TextureFail Texture.Error
-    | Touched (Maybe ( Float, Float ))
+    | TouchStart (Maybe ( Float, Float ))
+    | TouchEnd (Maybe ( Float, Float ))
+    | TouchMove (Maybe ( Float, Float ))
 
 
 view : Model memory -> Html Msg
@@ -51,9 +54,9 @@ view { computer, entities } =
             ]
             [ width (round computer.screen.width)
             , height (round computer.screen.height)
-            , Touch.onStart (\event -> Touched (touchCoordinates event))
-            , Touch.onMove (\event -> Touched (touchCoordinates event))
-            , Touch.onEnd (\event -> Touched (touchCoordinates event))
+            , Touch.onStart (\event -> TouchStart (touchCoordinates event))
+            , Touch.onMove (\event -> TouchMove (touchCoordinates event))
+            , Touch.onEnd (\event -> TouchEnd (touchCoordinates event))
             ]
 
 
@@ -124,12 +127,49 @@ update updateMemory viewMemory msg ({ textures } as model) =
             , Cmd.none
             )
 
-        Touched maybeTouch ->
+        TouchStart maybeTouch ->
+            case maybeTouch of
+                Nothing ->
+                    ( model, Cmd.none )
+
+                Just ( x, y ) ->
+                    ( { model
+                        | computer =
+                            updateMouse
+                                (model.computer.mouse
+                                    |> mouseMove (model.computer.screen.left + x) (model.computer.screen.top - y)
+                                    |> mouseDown True
+                                    |> mouseClick True
+                                )
+                                model.computer
+                      }
+                    , Cmd.none
+                    )
+
+        TouchEnd maybeTouch ->
+            ( { model
+                | computer =
+                    updateMouse
+                        (model.computer.mouse
+                            |> mouseDown False
+                            |> mouseClick False
+                        )
+                        model.computer
+              }
+            , Cmd.none
+            )
+
+        TouchMove maybeTouch ->
             case maybeTouch of
                 Nothing ->
                     ( { model
                         | computer =
-                            updateMouse (model.computer.mouse |> mouseDown False) model.computer
+                            updateMouse
+                                (model.computer.mouse
+                                    |> mouseDown False
+                                    |> mouseClick False
+                                )
+                                model.computer
                       }
                     , Cmd.none
                     )
