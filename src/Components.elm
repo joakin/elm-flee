@@ -12,6 +12,8 @@ module Components exposing
     , Direction, directions
     , Facing(..), facings
     , AnimationOffset, animationOffsets
+    , Health, healths
+    , Eat, eats
     )
 
 {-|
@@ -57,6 +59,10 @@ module Components exposing
 
 @docs AnimationOffset, animationOffsets
 
+@docs Health, healths
+
+@docs Eat, eats
+
 -}
 
 import AltMath.Vector2 as Vec2 exposing (Vec2)
@@ -83,6 +89,8 @@ type alias Components =
     , directions : Component.Set Direction
     , facings : Component.Set Facing
     , animationOffsets : Component.Set AnimationOffset
+    , healths : Component.Set Health
+    , eats : Component.Set Eat
     }
 
 
@@ -100,6 +108,8 @@ empty =
     , directions = Component.empty
     , facings = Component.empty
     , animationOffsets = Component.empty
+    , healths = Component.empty
+    , eats = Component.empty
     }
 
 
@@ -149,6 +159,8 @@ removeEntity entityID components =
       , directions = Component.remove entityID components.directions
       , facings = Component.remove entityID components.facings
       , animationOffsets = Component.remove entityID components.animationOffsets
+      , healths = Component.remove entityID components.healths
+      , eats = Component.remove entityID components.eats
       }
     )
 
@@ -270,3 +282,21 @@ type alias AnimationOffset =
 animationOffsets : Spec AnimationOffset Components
 animationOffsets =
     Spec .animationOffsets (\comps components -> { components | animationOffsets = comps })
+
+
+type alias Health =
+    { amount : Int, lastUpdated : Int }
+
+
+healths : Spec Health Components
+healths =
+    Spec .healths (\comps components -> { components | healths = comps })
+
+
+type alias Eat =
+    Set String
+
+
+eats : Spec Eat Components
+eats =
+    Spec .eats (\comps components -> { components | eats = comps })

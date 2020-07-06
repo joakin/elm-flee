@@ -52,7 +52,17 @@ type alias World =
 
 type State
     = Menu Bool
-    | Playing
+    | Playing PlayingState
+
+
+type alias PlayingState =
+    { status : PlayingStatus, score : Int, startTime : Int, lastFrameTime : Int }
+
+
+type PlayingStatus
+    = Alive
+    | Dead
+    | CountingDown Int
 
 
 predator pos ( world, seed ) =
@@ -72,6 +82,8 @@ predator pos ( world, seed ) =
         |> Entity.with ( directions, pos )
         |> Entity.with ( facings, Right )
         |> Entity.with ( animationOffsets, randomAnimationOffset )
+        |> Entity.with ( healths, { lastUpdated = 0, amount = 1 } )
+        |> Entity.with ( eats, Set.fromList <| List.map kindToString [ Prey ] )
         |> Tuple.second
     , seed2
     )
@@ -94,6 +106,7 @@ guardian pos ( world, seed ) =
         |> Entity.with ( directions, pos )
         |> Entity.with ( facings, Right )
         |> Entity.with ( animationOffsets, randomAnimationOffset )
+        |> Entity.with ( healths, { lastUpdated = 0, amount = 1 } )
         |> Tuple.second
     , seed2
     )
@@ -111,11 +124,12 @@ prey pos ( world, seed ) =
         |> Entity.with ( positions, pos )
         |> Entity.with ( sizes, defaultSize / 2 )
         |> Entity.with ( speeds, defaultSpeed * 1.4 )
-        |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 1.1 ), ( kindToString Prey, 0.5 ) ] )
+        |> Entity.with ( avoids, Dict.fromList [ ( kindToString Guardian, 2 ), ( kindToString Prey, 0.5 ) ] )
         |> Entity.with ( collisions, Set.fromList <| List.map kindToString [ Guardian, Prey ] )
         |> Entity.with ( directions, pos )
         |> Entity.with ( facings, Right )
         |> Entity.with ( animationOffsets, randomAnimationOffset )
+        |> Entity.with ( healths, { lastUpdated = 0, amount = 3 } )
         |> Tuple.second
     , seed2
     )
@@ -182,8 +196,8 @@ view computer world =
             Menu interactedToEnableAudio ->
                 viewMenu interactedToEnableAudio computer world
 
-            Playing ->
-                viewPlaying computer world
+            Playing playingState ->
+                viewPlaying playingState computer world
 
 
 scalingFactor : Screen -> Float
@@ -399,41 +413,109 @@ viewMenu interactedToEnableAudio { time, screen, mouse } world =
               else
                 group
                     [ rectangle (rgb 0 20 0) screen.width screen.height
-                    , words lightPurple "Click/Tap to\nstart with audio"
+                    , words brightPurple "Click/Tap to\nstart with audio"
+                        |> moveDown (wave -10 10 5 { time | now = time.now - 1000 })
                     ]
                     |> fade 0.8
             ]
     ]
 
 
-viewPlaying : Computer -> World -> List Shape
-viewPlaying { time, screen } world =
+brightPurple =
+    rgb 223 186 255
+
+
+viewPlaying : PlayingState -> Computer -> World -> List Shape
+viewPlaying { score, status } { time, screen, mouse } world =
     [ fullScreenBackground screen
     , background
     , viewEntities time world
+    , (case status of
+        Alive ->
+            [ words white (String.fromInt score ++ "")
+                |> scale (zigzag 1 1.3 1 time)
+                |> moveY viewport.top
+            , if mouse.down then
+                let
+                    coords =
+                        toViewport screen mouse
+                in
+                circle black 5
+                    |> move coords.x coords.y
+                    |> fade 0.3
+
+              else
+                group []
+            ]
+
+        Dead ->
+            [ rectangle (rgb 0 20 0) screen.width screen.height
+                |> fade 0.5
+            , words white (String.fromInt score ++ " points!")
+                |> moveUp 20
+            , words brightPurple "Click/Tap to try again!"
+                |> scale 0.5
+                |> moveDown 20
+            ]
+
+        CountingDown n ->
+            [ rectangle (rgb 0 20 0) screen.width screen.height
+                |> fade 0.3
+            , words white "Starting in"
+                |> scale 0.3
+                |> moveUp 50
+            , words white (String.fromInt n)
+                |> scale 1.5
+                |> scale (zigzag 1 1.3 1 time)
+                |> moveUp 30
+            , words brightPurple "Click/Tap to move mice!"
+                |> scale 0.5
+                |> scaleY 1.5
+                |> moveDown 10
+            , words brightPurple "Hold for mice to follow!"
+                |> scale 0.5
+                |> scaleY 1.5
+                |> moveDown 30
+            ]
+      )
+        |> group
+        |> moveZ (round viewport.height)
     ]
 
 
 viewEntities : Time -> World -> Shape
 viewEntities time world =
-    System.foldl5_
-        (\kind position size facing animationOffset shapes ->
+    System.foldl6
+        (\kind position size facing animationOffset health shapes ->
             let
+                dead =
+                    health.amount <= 0
+
+                timeSinceLastHealthUpdate =
+                    time.now - health.lastUpdated
+
+                tileAnimationTime =
+                    if dead then
+                        health.lastUpdated
+
+                    else
+                        time.now
+
                 tilesheet =
                     tile 40 40 "sprites20.png"
 
                 shape =
                     case kind of
                         Guardian ->
-                            tilesheet (((time.now // 80 - animationOffset) |> modBy 13) + 11)
+                            tilesheet (((tileAnimationTime // 80 - animationOffset) |> modBy 13) + 11)
                                 |> moveUp 4
 
                         Predator ->
-                            tilesheet (((time.now // 80 - animationOffset) |> modBy 6) + 5)
+                            tilesheet (((tileAnimationTime // 80 - animationOffset) |> modBy 6) + 5)
                                 |> moveUp 3
 
                         Prey ->
-                            tilesheet (((time.now // 100 - animationOffset) |> modBy 3) + 1)
+                            tilesheet (((tileAnimationTime // 100 - animationOffset) |> modBy 3) + 1)
                                 |> moveUp 2
             in
             -- (group
@@ -443,6 +525,9 @@ viewEntities time world =
             (shape
                 |> move position.x position.y
                 |> applyIf (facing == Left) flipX
+                |> applyIf (not dead && timeSinceLastHealthUpdate <= invulnerabilityTime) (fade (wave 0.5 1 0.3 time))
+                |> applyIf dead (scaleY 0.5)
+                |> applyIf dead (fade (1 - (toFloat timeSinceLastHealthUpdate / removeDeadAfter)))
                 |> moveZ (round (-(position.y - size / 2) + viewport.height / 2))
             )
                 :: shapes
@@ -452,6 +537,7 @@ viewEntities time world =
         (sizes.get world.components)
         (facings.get world.components)
         (animationOffsets.get world.components)
+        (healths.get world.components)
         []
         |> group
 
@@ -462,8 +548,8 @@ update computer world =
         Menu interactedToEnableAudio ->
             updateMenu interactedToEnableAudio computer world
 
-        Playing ->
-            updatePlaying computer world
+        Playing playingState ->
+            updatePlaying playingState computer world
 
 
 updateMenu : Bool -> Computer -> World -> World
@@ -471,7 +557,7 @@ updateMenu interactedToEnableAudio { mouse, screen, time } world =
     if mouse.click then
         if interactedToEnableAudio then
             { world
-                | state = Playing
+                | state = Playing { score = 0, startTime = time.now, lastFrameTime = time.now, status = CountingDown 5 }
                 , components = Components.empty
             }
                 |> spawnPlaying
@@ -499,16 +585,88 @@ updateMenu interactedToEnableAudio { mouse, screen, time } world =
             |> Components.set world
 
 
-updatePlaying : Computer -> World -> World
-updatePlaying { mouse, keyboard, screen } world =
-    world.components
-        |> mouseInput screen mouse
-        |> follow
-        |> applyDirection
-        |> avoid
-        |> resolveCollisions
-        |> boundedBy viewport
-        |> Components.set world
+updatePlaying : PlayingState -> Computer -> World -> World
+updatePlaying ({ status, score, lastFrameTime, startTime } as playingState) { mouse, keyboard, screen, time } world =
+    let
+        alive =
+            status == Alive
+
+        newWorld =
+            world.components
+                |> applyIf alive (mouseInput screen mouse)
+                |> applyIf alive follow
+                |> applyIf alive applyDirection
+                |> avoid
+                |> applyIf alive (takeDamage time)
+                |> resolveCollisions
+                |> boundedBy viewport
+                |> removeDead time
+                |> Components.set world
+    in
+    (case status of
+        CountingDown n ->
+            if n == 0 then
+                { newWorld
+                    | state = Playing { playingState | status = Alive }
+                }
+
+            else if (time.now // 1000) > (lastFrameTime // 1000) then
+                { newWorld
+                    | state = Playing { playingState | status = CountingDown (n - 1) }
+                }
+
+            else
+                newWorld
+
+        Dead ->
+            if mouse.click then
+                { newWorld
+                    | state = Playing { status = CountingDown 3, score = 0, startTime = time.now, lastFrameTime = time.now }
+                    , components = Components.empty
+                }
+                    |> spawnPlaying
+
+            else
+                world
+
+        Alive ->
+            let
+                userControlledEntities =
+                    System.foldl2
+                        (\_ health n ->
+                            if health.amount > 0 then
+                                n + 1
+
+                            else
+                                n
+                        )
+                        (userInputs.get newWorld.components)
+                        (healths.get newWorld.components)
+                        0
+
+                newScore =
+                    if (time.now // 1000) > (lastFrameTime // 1000) then
+                        score + 1
+
+                    else
+                        score
+            in
+            if userControlledEntities > 0 then
+                { newWorld | state = Playing { playingState | score = newScore } }
+
+            else
+                { newWorld | state = Playing { playingState | status = Dead } }
+    )
+        |> updateLastFrameTime time
+
+
+updateLastFrameTime time w =
+    case w.state of
+        Playing ps ->
+            { w | state = Playing { ps | lastFrameTime = time.now } }
+
+        _ ->
+            w
 
 
 mouseInput : Screen -> Mouse -> System Components
@@ -647,6 +805,82 @@ boundedBy screen components =
         components
 
 
+invulnerabilityTime =
+    1000
+
+
+takeDamage : Time -> System Components
+takeDamage time components =
+    System.step4
+        (\( kind, _ ) ( health, setHealth ) ( position, _ ) ( size, _ ) xs ->
+            let
+                newHealth =
+                    if health.amount > 0 && time.now - health.lastUpdated > invulnerabilityTime then
+                        System.foldl4
+                            (\targetEats targetKind targetPosition targetSize correctedHealth ->
+                                if
+                                    (targetPosition /= position)
+                                        && (correctedHealth == health)
+                                        && Set.member (kindToString kind) targetEats
+                                        && overlapsWith ( targetPosition, targetSize ) ( position, size )
+                                then
+                                    { amount = correctedHealth.amount - 1
+                                    , lastUpdated = time.now
+                                    }
+
+                                else
+                                    correctedHealth
+                            )
+                            (eats.get components)
+                            (kinds.get components)
+                            (positions.get components)
+                            (sizes.get components)
+                            health
+
+                    else
+                        health
+            in
+            setHealth newHealth xs
+        )
+        kinds
+        healths
+        positions
+        sizes
+        components
+
+
+removeDeadAfter =
+    3000
+
+
+removeDead : Time -> System Components
+removeDead time components =
+    System.indexedFoldl
+        (\id health newComponents ->
+            -- Remove them after some frames so that they stay in scene for
+            -- a bit
+            if health.amount <= 0 then
+                if time.now - health.lastUpdated > removeDeadAfter then
+                    Components.removeEntity id newComponents
+                        |> Tuple.second
+
+                else
+                    ( id, newComponents )
+                        |> Entity.remove userInputs
+                        |> Entity.remove directions
+                        |> Entity.remove avoids
+                        |> Entity.remove follows
+                        |> Entity.remove collisions
+                        |> Entity.remove eats
+                        |> Tuple.second
+
+            else
+                newComponents
+        )
+        (healths.get components)
+        components
+
+
 resolveCollisions : System Components
 resolveCollisions components =
     System.step4
@@ -655,8 +889,16 @@ resolveCollisions components =
                 newPosition =
                     System.foldl3
                         (\targetKind targetPosition targetSize correctedPosition ->
-                            if Set.member (kindToString targetKind) validKinds then
-                                collidesWith ( targetPosition, targetSize ) ( correctedPosition, size, speed )
+                            if
+                                Set.member (kindToString targetKind) validKinds
+                                    && (targetPosition /= position)
+                                    && overlapsWith ( targetPosition, targetSize ) ( correctedPosition, size )
+                            then
+                                -- Correct position
+                                Vec2.sub correctedPosition
+                                    (Vec2.direction targetPosition correctedPosition
+                                        |> Vec2.scale speed
+                                    )
 
                             else
                                 correctedPosition
@@ -710,8 +952,8 @@ fleeFrom fear ( targetPosition, targetSize ) ( mePosition, meSpeed ) =
         mePosition
 
 
-collidesWith : ( Position, Size ) -> ( Position, Size, Speed ) -> Position
-collidesWith ( targetPosition, targetSize ) ( myPosition, mySize, mySpeed ) =
+overlapsWith : ( Position, Size ) -> ( Position, Size ) -> Bool
+overlapsWith ( targetPosition, targetSize ) ( myPosition, mySize ) =
     if targetPosition /= myPosition then
         let
             dSq =
@@ -721,13 +963,10 @@ collidesWith ( targetPosition, targetSize ) ( myPosition, mySize, mySpeed ) =
                 (targetSize / 2) ^ 2 + (mySize / 2) ^ 2
         in
         if dSq < radiuses then
-            Vec2.sub myPosition
-                (Vec2.direction targetPosition myPosition
-                    |> Vec2.scale mySpeed
-                )
+            True
 
         else
-            myPosition
+            False
 
     else
-        myPosition
+        False
