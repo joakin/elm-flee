@@ -469,17 +469,15 @@ update computer world =
 updateMenu : Bool -> Computer -> World -> World
 updateMenu interactedToEnableAudio { mouse, screen, time } world =
     if mouse.click then
-        (if interactedToEnableAudio then
+        if interactedToEnableAudio then
             { world
                 | state = Playing
                 , components = Components.empty
             }
                 |> spawnPlaying
 
-         else
+        else
             { world | state = Menu True }
-        )
-            |> Debug.log "interacted with menu"
 
     else
         let
