@@ -1,17 +1,8 @@
-# Untitled elm-gamejam-4 game (Flee)
+# Flee
 
-## TODO
+A small game made for the Elm Game Jam 4. You can play it here: https://joakin.itch.io/flee
 
-- [ ] Offset animations by some number to avoid all animals running at the same time
-- [ ] Add timer countdown before start with some instructions instead of text in level
-- [ ] Flesh out game mechanics
-- [ ] Make touch input work. Hard with playground. Unsure on how to proceed now.
-
-Later:
-
-- [ ] FX for menu
-- [ ] FX for timer
-- [ ] FX for gameplay
+The code is gamejam quality, please don't judge me.
 
 ## Inspiration
 
