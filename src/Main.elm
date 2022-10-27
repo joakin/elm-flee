@@ -1,12 +1,11 @@
 module Main exposing (main)
 
 import AltMath.Vector2 as Vec2 exposing (Vec2)
-import Array
 import Components exposing (..)
-import Dict exposing (Dict)
+import Dict
 import Game
 import Image
-import Logic.Component as Component exposing (Spec)
+import Logic.Component as Component
 import Logic.Entity as Entity
 import Logic.System as System exposing (System, applyIf)
 import Logic.System.Extra as System
@@ -30,6 +29,7 @@ viewport =
            )
 
 
+defaultFontSize : number
 defaultFontSize =
     12
 
@@ -65,6 +65,7 @@ type PlayingStatus
     | CountingDown Int
 
 
+predator : Position -> Int -> ( Components, Random.Seed ) -> ( Components, Random.Seed )
 predator pos t ( world, seed ) =
     let
         ( randomAnimationOffset, seed2 ) =
@@ -89,6 +90,7 @@ predator pos t ( world, seed ) =
     )
 
 
+guardian : Position -> ( Components, Random.Seed ) -> ( Components, Random.Seed )
 guardian pos ( world, seed ) =
     let
         ( randomAnimationOffset, seed2 ) =
@@ -112,6 +114,7 @@ guardian pos ( world, seed ) =
     )
 
 
+prey : Position -> ( Components, Random.Seed ) -> ( Components, Random.Seed )
 prey pos ( world, seed ) =
     let
         ( randomAnimationOffset, seed2 ) =
@@ -136,6 +139,7 @@ prey pos ( world, seed ) =
     )
 
 
+fruit : Position -> ( Components, b ) -> ( Components, b )
 fruit pos ( world, seed ) =
     ( world
         |> Components.addEntity
@@ -148,6 +152,7 @@ fruit pos ( world, seed ) =
     )
 
 
+many : Int -> ({ x : Float, y : Float } -> ( a, Random.Seed ) -> ( a, Random.Seed )) -> ( a, Random.Seed ) -> ( a, Random.Seed )
 many n fn ( world, seed ) =
     let
         ( pos, seed_ ) =
@@ -240,6 +245,7 @@ adaptToViewport screen shapes =
     ]
 
 
+sprites10 : { file : String, size : number, grass1 : number, grass2 : number, grass3 : number, grass4 : number, grass5 : number, grass6 : number, grass7 : number, trees : number, treesLeft : number, treesRight : number, treesTop : number, treesBottom : number }
 sprites10 =
     { file = "sprites10.png"
     , size = 10
@@ -256,10 +262,6 @@ sprites10 =
     , treesTop = 11
     , treesBottom = 12
     }
-
-
-backgroundColor =
-    rgb 55 148 110
 
 
 fullScreenBackgroundTile : Shape
@@ -367,7 +369,7 @@ background =
 
 
 viewMenu : Bool -> Computer -> World -> List Shape
-viewMenu interactedToEnableAudio { time, screen, mouse } world =
+viewMenu interactedToEnableAudio { time, screen } world =
     let
         moveTitle : Int -> Shape -> Shape
         moveTitle delay shape =
@@ -437,6 +439,7 @@ viewMenu interactedToEnableAudio { time, screen, mouse } world =
     ]
 
 
+brightPurple : Color
 brightPurple =
     rgb 223 186 255
 
@@ -623,7 +626,7 @@ updateMenu interactedToEnableAudio { mouse, screen, time } world =
 
 
 updatePlaying : PlayingState -> Computer -> World -> World
-updatePlaying ({ status, score, lastFrameTime, startTime } as playingState) { mouse, keyboard, screen, time } world =
+updatePlaying ({ status, score, lastFrameTime } as playingState) { mouse, screen, time } world =
     let
         alive =
             status == Alive
@@ -730,6 +733,7 @@ updatePlaying ({ status, score, lastFrameTime, startTime } as playingState) { mo
         |> updateLastFrameTime time
 
 
+updateLastFrameTime : Time -> World -> World
 updateLastFrameTime time w =
     case w.state of
         Playing ps ->
@@ -875,6 +879,7 @@ boundedBy screen components =
         components
 
 
+invulnerabilityTime : number
 invulnerabilityTime =
     2000
 
@@ -954,6 +959,7 @@ takeDamage time components =
         components
 
 
+removeDeadAfter : number
 removeDeadAfter =
     3000
 

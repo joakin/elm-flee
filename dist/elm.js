@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.bK.aL === region.bX.aL)
+	if (region.bK.aL === region.bZ.aL)
 	{
 		return 'on line ' + region.bK.aL;
 	}
-	return 'on lines ' + region.bK.aL + ' through ' + region.bX.aL;
+	return 'on lines ' + region.bK.aL + ' through ' + region.bZ.aL;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dJ,
-		impl.ep,
-		impl.d9,
+		impl.dL,
+		impl.er,
+		impl.eb,
 		function() { return function() {} }
 	);
 });
@@ -2618,16 +2618,33 @@ var _VirtualDom_attributeNS = F3(function(namespace, key, value)
 
 
 // XSS ATTACK VECTOR CHECKS
+//
+// For some reason, tabs can appear in href protocols and it still works.
+// So '\tjava\tSCRIPT:alert("!!!")' and 'javascript:alert("!!!")' are the same
+// in practice. That is why _VirtualDom_RE_js and _VirtualDom_RE_js_html look
+// so freaky.
+//
+// Pulling the regular expressions out to the top level gives a slight speed
+// boost in small benchmarks (4-10%) but hoisting values to reduce allocation
+// can be unpredictable in large programs where JIT may have a harder time with
+// functions are not fully self-contained. The benefit is more that the js and
+// js_html ones are so weird that I prefer to see them near each other.
+
+
+var _VirtualDom_RE_script = /^script$/i;
+var _VirtualDom_RE_on_formAction = /^(on|formAction$)/i;
+var _VirtualDom_RE_js = /^\s*j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:/i;
+var _VirtualDom_RE_js_html = /^\s*(j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:|d\s*a\s*t\s*a\s*:\s*t\s*e\s*x\s*t\s*\/\s*h\s*t\s*m\s*l\s*(,|;))/i;
 
 
 function _VirtualDom_noScript(tag)
 {
-	return tag == 'script' ? 'p' : tag;
+	return _VirtualDom_RE_script.test(tag) ? 'p' : tag;
 }
 
 function _VirtualDom_noOnOrFormAction(key)
 {
-	return /^(on|formAction$)/i.test(key) ? 'data-' + key : key;
+	return _VirtualDom_RE_on_formAction.test(key) ? 'data-' + key : key;
 }
 
 function _VirtualDom_noInnerHtmlOrFormAction(key)
@@ -2637,26 +2654,24 @@ function _VirtualDom_noInnerHtmlOrFormAction(key)
 
 function _VirtualDom_noJavaScriptUri(value)
 {
-	return /^javascript:/i.test(value.replace(/\s/g,'')) ? '' : value;
-}
-
-function _VirtualDom_noJavaScriptUri_UNUSED(value)
-{
-	return /^javascript:/i.test(value.replace(/\s/g,''))
-		? 'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'
+	return _VirtualDom_RE_js.test(value)
+		? /**/''//*//**_UNUSED/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
 		: value;
 }
 
 function _VirtualDom_noJavaScriptOrHtmlUri(value)
 {
-	return /^\s*(javascript:|data:text\/html)/i.test(value) ? '' : value;
+	return _VirtualDom_RE_js_html.test(value)
+		? /**/''//*//**_UNUSED/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+		: value;
 }
 
-function _VirtualDom_noJavaScriptOrHtmlUri_UNUSED(value)
+function _VirtualDom_noJavaScriptOrHtmlJson(value)
 {
-	return /^\s*(javascript:|data:text\/html)/i.test(value)
-		? 'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'
-		: value;
+	return (typeof _Json_unwrap(value) === 'string' && _VirtualDom_RE_js_html.test(_Json_unwrap(value)))
+		? _Json_wrap(
+			/**/''//*//**_UNUSED/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+		) : value;
 }
 
 
@@ -2705,7 +2720,7 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		W: func(record.W),
-		bL: record.bL,
+		bM: record.bM,
 		bE: record.bE
 	}
 });
@@ -2975,7 +2990,7 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.W;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.bL;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.bM;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
 			(tag == 2 ? value.b : tag == 3 && value.bE) && event.preventDefault(),
@@ -3928,11 +3943,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dJ,
-		impl.ep,
-		impl.d9,
+		impl.dL,
+		impl.er,
+		impl.eb,
 		function(sendToApp, initialModel) {
-			var view = impl.eu;
+			var view = impl.ew;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3979,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dJ,
-		impl.ep,
-		impl.d9,
+		impl.dL,
+		impl.er,
+		impl.eb,
 		function(sendToApp, initialModel) {
 			var divertHrefToApp = impl.bJ && impl.bJ(sendToApp)
-			var view = impl.eu;
+			var view = impl.ew;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3977,12 +3992,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.da);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.dc);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.ee) && (_VirtualDom_doc.title = title = doc.ee);
+				(title !== doc.eg) && (_VirtualDom_doc.title = title = doc.eg);
 			});
 		}
 	);
@@ -4038,8 +4053,8 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.dT;
-	var onUrlRequest = impl.dU;
+	var onUrlChange = impl.dV;
+	var onUrlRequest = impl.dW;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
@@ -4059,9 +4074,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.cN === next.cN
-							&& curr.b7 === next.b7
-							&& curr.cK.a === next.cK.a
+							&& curr.cP === next.cP
+							&& curr.b9 === next.b9
+							&& curr.cM.a === next.cM.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4069,13 +4084,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		dJ: function(flags)
+		dL: function(flags)
 		{
-			return A3(impl.dJ, flags, _Browser_getUrl(), key);
+			return A3(impl.dL, flags, _Browser_getUrl(), key);
 		},
-		eu: impl.eu,
-		ep: impl.ep,
-		d9: impl.d9
+		ew: impl.ew,
+		er: impl.er,
+		eb: impl.eb
 	});
 }
 
@@ -4141,17 +4156,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { dF: 'hidden', dc: 'visibilitychange' }
+		? { dH: 'hidden', de: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { dF: 'mozHidden', dc: 'mozvisibilitychange' }
+		? { dH: 'mozHidden', de: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { dF: 'msHidden', dc: 'msvisibilitychange' }
+		? { dH: 'msHidden', de: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { dF: 'webkitHidden', dc: 'webkitvisibilitychange' }
-		: { dF: 'hidden', dc: 'visibilitychange' };
+		? { dH: 'webkitHidden', de: 'webkitvisibilitychange' }
+		: { dH: 'hidden', de: 'visibilitychange' };
 }
 
 
@@ -4232,11 +4247,11 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		d3: _Browser_getScene(),
-		ev: {
-			c1: _Browser_window.pageXOffset,
-			c2: _Browser_window.pageYOffset,
-			bj: _Browser_doc.documentElement.clientWidth,
+		d5: _Browser_getScene(),
+		ex: {
+			c3: _Browser_window.pageXOffset,
+			c4: _Browser_window.pageYOffset,
+			bi: _Browser_doc.documentElement.clientWidth,
 			a7: _Browser_doc.documentElement.clientHeight
 		}
 	};
@@ -4247,7 +4262,7 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		bj: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		bi: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
 		a7: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
@@ -4271,14 +4286,14 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			d3: {
-				bj: node.scrollWidth,
+			d5: {
+				bi: node.scrollWidth,
 				a7: node.scrollHeight
 			},
-			ev: {
-				c1: node.scrollLeft,
-				c2: node.scrollTop,
-				bj: node.clientWidth,
+			ex: {
+				c3: node.scrollLeft,
+				c4: node.scrollTop,
+				bi: node.clientWidth,
 				a7: node.clientHeight
 			}
 		};
@@ -4309,17 +4324,17 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			d3: _Browser_getScene(),
-			ev: {
-				c1: x,
-				c2: y,
-				bj: _Browser_doc.documentElement.clientWidth,
+			d5: _Browser_getScene(),
+			ex: {
+				c3: x,
+				c4: y,
+				bi: _Browser_doc.documentElement.clientWidth,
 				a7: _Browser_doc.documentElement.clientHeight
 			},
-			dv: {
-				c1: x + rect.left,
-				c2: y + rect.top,
-				bj: rect.width,
+			dx: {
+				c3: x + rect.left,
+				c4: y + rect.top,
+				bi: rect.width,
 				a7: rect.height
 			}
 		};
@@ -4390,7 +4405,7 @@ var _Texture_load = F6(function (magnify, mininify, horizontalWrap, verticalWrap
       if (isSizeValid) {
         callback(_Scheduler_succeed({
           $: 0,
-          dm: createTexture,
+          $7: createTexture,
           a: width,
           b: height
         }));
@@ -4469,11 +4484,11 @@ var _MJS_v2setY = F2(function(y, a) {
 });
 
 var _MJS_v2toRecord = function(a) {
-    return { c1: a[0], c2: a[1] };
+    return { c3: a[0], c4: a[1] };
 };
 
 var _MJS_v2fromRecord = function(r) {
-    return new Float64Array([r.c1, r.c2]);
+    return new Float64Array([r.c3, r.c4]);
 };
 
 var _MJS_v2add = F2(function(a, b) {
@@ -4582,11 +4597,11 @@ var _MJS_v3setZ = F2(function(z, a) {
 });
 
 var _MJS_v3toRecord = function(a) {
-    return { c1: a[0], c2: a[1], y: a[2] };
+    return { c3: a[0], c4: a[1], y: a[2] };
 };
 
 var _MJS_v3fromRecord = function(r) {
-    return new Float64Array([r.c1, r.c2, r.y]);
+    return new Float64Array([r.c3, r.c4, r.y]);
 };
 
 var _MJS_v3add = F2(function(a, b) {
@@ -4742,11 +4757,11 @@ var _MJS_v4setW = F2(function(w, a) {
 });
 
 var _MJS_v4toRecord = function(a) {
-    return { c1: a[0], c2: a[1], y: a[2], c0: a[3] };
+    return { c3: a[0], c4: a[1], y: a[2], c2: a[3] };
 };
 
 var _MJS_v4fromRecord = function(r) {
-    return new Float64Array([r.c1, r.c2, r.y, r.c0]);
+    return new Float64Array([r.c3, r.c4, r.y, r.c2]);
 };
 
 var _MJS_v4add = F2(function(a, b) {
@@ -4852,31 +4867,31 @@ var _MJS_m4x4identity = new Float64Array([
 
 var _MJS_m4x4fromRecord = function(r) {
     var m = new Float64Array(16);
-    m[0] = r.cg;
-    m[1] = r.ck;
-    m[2] = r.co;
-    m[3] = r.cs;
-    m[4] = r.ch;
-    m[5] = r.cl;
-    m[6] = r.cp;
-    m[7] = r.ct;
-    m[8] = r.ci;
-    m[9] = r.cm;
-    m[10] = r.cq;
-    m[11] = r.cu;
-    m[12] = r.cj;
-    m[13] = r.cn;
-    m[14] = r.cr;
-    m[15] = r.cv;
+    m[0] = r.ci;
+    m[1] = r.cm;
+    m[2] = r.cq;
+    m[3] = r.cu;
+    m[4] = r.cj;
+    m[5] = r.cn;
+    m[6] = r.cr;
+    m[7] = r.cv;
+    m[8] = r.ck;
+    m[9] = r.co;
+    m[10] = r.cs;
+    m[11] = r.cw;
+    m[12] = r.cl;
+    m[13] = r.cp;
+    m[14] = r.ct;
+    m[15] = r.cx;
     return m;
 };
 
 var _MJS_m4x4toRecord = function(m) {
     return {
-        cg: m[0], ck: m[1], co: m[2], cs: m[3],
-        ch: m[4], cl: m[5], cp: m[6], ct: m[7],
-        ci: m[8], cm: m[9], cq: m[10], cu: m[11],
-        cj: m[12], cn: m[13], cr: m[14], cv: m[15]
+        ci: m[0], cm: m[1], cq: m[2], cu: m[3],
+        cj: m[4], cn: m[5], cr: m[6], cv: m[7],
+        ck: m[8], co: m[9], cs: m[10], cw: m[11],
+        cl: m[12], cp: m[13], ct: m[14], cx: m[15]
     };
 };
 
@@ -5432,10 +5447,6 @@ var _MJS_m4x4makeBasis = F3(function(vx, vy, vz) {
 });
 
 
-function _WebGL_log(/* msg */) {
-  // console.log(msg);
-}
-
 var _WebGL_guid = 0;
 
 function _WebGL_listEach(fn, list) {
@@ -5469,148 +5480,280 @@ var _WebGL_entity = F5(function (settings, vert, frag, mesh, uniforms) {
 });
 
 // eslint-disable-next-line no-unused-vars
-var _WebGL_enableBlend = F2(function (gl, setting) {
-  gl.enable(gl.BLEND);
+var _WebGL_enableBlend = F2(function (cache, setting) {
+  var blend = cache.blend;
+  blend.toggle = cache.toggle;
+
+  if (!blend.enabled) {
+    cache.gl.enable(cache.gl.BLEND);
+    blend.enabled = true;
+  }
+
   // a   b   c   d   e   f   g h i j
   // eq1 f11 f12 eq2 f21 f22 r g b a
-  gl.blendEquationSeparate(setting.a, setting.d);
-  gl.blendFuncSeparate(setting.b, setting.c, setting.e, setting.f);
-  gl.blendColor(setting.g, setting.h, setting.i, setting.j);
+  if (blend.a !== setting.a || blend.d !== setting.d) {
+    cache.gl.blendEquationSeparate(setting.a, setting.d);
+    blend.a = setting.a;
+    blend.d = setting.d;
+  }
+  if (blend.b !== setting.b || blend.c !== setting.c || blend.e !== setting.e || blend.f !== setting.f) {
+    cache.gl.blendFuncSeparate(setting.b, setting.c, setting.e, setting.f);
+    blend.b = setting.b;
+    blend.c = setting.c;
+    blend.e = setting.e;
+    blend.f = setting.f;
+  }
+  if (blend.g !== setting.g || blend.h !== setting.h || blend.i !== setting.i || blend.j !== setting.j) {
+    cache.gl.blendColor(setting.g, setting.h, setting.i, setting.j);
+    blend.g = setting.g;
+    blend.h = setting.h;
+    blend.i = setting.i;
+    blend.j = setting.j;
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
-var _WebGL_enableDepthTest = F2(function (gl, setting) {
-  gl.enable(gl.DEPTH_TEST);
+var _WebGL_enableDepthTest = F2(function (cache, setting) {
+  var depthTest = cache.depthTest;
+  depthTest.toggle = cache.toggle;
+
+  if (!depthTest.enabled) {
+    cache.gl.enable(cache.gl.DEPTH_TEST);
+    depthTest.enabled = true;
+  }
+
   // a    b    c    d
   // func mask near far
-  gl.depthFunc(setting.a);
-  gl.depthMask(setting.b);
-  gl.depthRange(setting.c, setting.d);
+  if (depthTest.a !== setting.a) {
+    cache.gl.depthFunc(setting.a);
+    depthTest.a = setting.a;
+  }
+  if (depthTest.b !== setting.b) {
+    cache.gl.depthMask(setting.b);
+    depthTest.b = setting.b;
+  }
+  if (depthTest.c !== setting.c || depthTest.d !== setting.d) {
+    cache.gl.depthRange(setting.c, setting.d);
+    depthTest.c = setting.c;
+    depthTest.d = setting.d;
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
-var _WebGL_enableStencilTest = F2(function (gl, setting) {
-  gl.enable(gl.STENCIL_TEST);
+var _WebGL_enableStencilTest = F2(function (cache, setting) {
+  var stencilTest = cache.stencilTest;
+  stencilTest.toggle = cache.toggle;
+
+  if (!stencilTest.enabled) {
+    cache.gl.enable(cache.gl.STENCIL_TEST);
+    stencilTest.enabled = true;
+  }
+
   // a   b    c         d     e     f      g      h     i     j      k
   // ref mask writeMask test1 fail1 zfail1 zpass1 test2 fail2 zfail2 zpass2
-  gl.stencilFuncSeparate(gl.FRONT, setting.d, setting.a, setting.b);
-  gl.stencilOpSeparate(gl.FRONT, setting.e, setting.f, setting.g);
-  gl.stencilMaskSeparate(gl.FRONT, setting.c);
-  gl.stencilFuncSeparate(gl.BACK, setting.h, setting.a, setting.b);
-  gl.stencilOpSeparate(gl.BACK, setting.i, setting.j, setting.k);
-  gl.stencilMaskSeparate(gl.BACK, setting.c);
+  if (stencilTest.d !== setting.d || stencilTest.a !== setting.a || stencilTest.b !== setting.b) {
+    cache.gl.stencilFuncSeparate(cache.gl.FRONT, setting.d, setting.a, setting.b);
+    stencilTest.d = setting.d;
+    // a and b are set in the cache.gl.BACK diffing because they should be the same
+  }
+  if (stencilTest.e !== setting.e || stencilTest.f !== setting.f || stencilTest.g !== setting.g) {
+    cache.gl.stencilOpSeparate(cache.gl.FRONT, setting.e, setting.f, setting.g);
+    stencilTest.e = setting.e;
+    stencilTest.f = setting.f;
+    stencilTest.g = setting.g;
+  }
+  if (stencilTest.c !== setting.c) {
+    cache.gl.stencilMask(setting.c);
+    stencilTest.c = setting.c;
+  }
+  if (stencilTest.h !== setting.h || stencilTest.a !== setting.a || stencilTest.b !== setting.b) {
+    cache.gl.stencilFuncSeparate(cache.gl.BACK, setting.h, setting.a, setting.b);
+    stencilTest.h = setting.h;
+    stencilTest.a = setting.a;
+    stencilTest.b = setting.b;
+  }
+  if (stencilTest.i !== setting.i || stencilTest.j !== setting.j || stencilTest.k !== setting.k) {
+    cache.gl.stencilOpSeparate(cache.gl.BACK, setting.i, setting.j, setting.k);
+    stencilTest.i = setting.i;
+    stencilTest.j = setting.j;
+    stencilTest.k = setting.k;
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
-var _WebGL_enableScissor = F2(function (gl, setting) {
-  gl.enable(gl.SCISSOR_TEST);
-  gl.scissor(setting.a, setting.b, setting.c, setting.d);
+var _WebGL_enableScissor = F2(function (cache, setting) {
+  var scissor = cache.scissor;
+  scissor.toggle = cache.toggle;
+
+  if (!scissor.enabled) {
+    cache.gl.enable(cache.gl.SCISSOR_TEST);
+    scissor.enabled = true;
+  }
+
+  if (scissor.a !== setting.a || scissor.b !== setting.b || scissor.c !== setting.c || scissor.d !== setting.d) {
+    cache.gl.scissor(setting.a, setting.b, setting.c, setting.d);
+    scissor.a = setting.a;
+    scissor.b = setting.b;
+    scissor.c = setting.c;
+    scissor.d = setting.d;
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
-var _WebGL_enableColorMask = F2(function (gl, setting) {
-  gl.colorMask(setting.a, setting.b, setting.c, setting.d);
+var _WebGL_enableColorMask = F2(function (cache, setting) {
+  var colorMask = cache.colorMask;
+  colorMask.toggle = cache.toggle;
+  colorMask.enabled = true;
+
+  if (colorMask.a !== setting.a || colorMask.b !== setting.b || colorMask.c !== setting.c || colorMask.d !== setting.d) {
+    cache.gl.colorMask(setting.a, setting.b, setting.c, setting.d);
+    colorMask.a = setting.a;
+    colorMask.b = setting.b;
+    colorMask.c = setting.c;
+    colorMask.d = setting.d;
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
-var _WebGL_enableCullFace = F2(function (gl, setting) {
-  gl.enable(gl.CULL_FACE);
-  gl.cullFace(setting.a);
+var _WebGL_enableCullFace = F2(function (cache, setting) {
+  var cullFace = cache.cullFace;
+  cullFace.toggle = cache.toggle;
+
+  if (!cullFace.enabled) {
+    cache.gl.enable(cache.gl.CULL_FACE);
+    cullFace.enabled = true;
+  }
+
+  if (cullFace.a !== setting.a) {
+    cache.gl.cullFace(setting.a);
+    cullFace.a = setting.a;
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
-var _WebGL_enablePolygonOffset = F2(function (gl, setting) {
-  gl.enable(gl.POLYGON_OFFSET_FILL);
-  gl.polygonOffset(setting.a, setting.b);
+var _WebGL_enablePolygonOffset = F2(function (cache, setting) {
+  var polygonOffset = cache.polygonOffset;
+  polygonOffset.toggle = cache.toggle;
+
+  if (!polygonOffset.enabled) {
+    cache.gl.enable(cache.gl.POLYGON_OFFSET_FILL);
+    polygonOffset.enabled = true;
+  }
+
+  if (polygonOffset.a !== setting.a || polygonOffset.b !== setting.b) {
+    cache.gl.polygonOffset(setting.a, setting.b);
+    polygonOffset.a = setting.a;
+    polygonOffset.b = setting.b;
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
-var _WebGL_enableSampleCoverage = F2(function (gl, setting) {
-  gl.enable(gl.SAMPLE_COVERAGE);
-  gl.sampleCoverage(setting.a, setting.b);
+var _WebGL_enableSampleCoverage = F2(function (cache, setting) {
+  var sampleCoverage = cache.sampleCoverage;
+  sampleCoverage.toggle = cache.toggle;
+
+  if (!sampleCoverage.enabled) {
+    cache.gl.enable(cache.gl.SAMPLE_COVERAGE);
+    sampleCoverage.enabled = true;
+  }
+
+  if (sampleCoverage.a !== setting.a || sampleCoverage.b !== setting.b) {
+    cache.gl.sampleCoverage(setting.a, setting.b);
+    sampleCoverage.a = setting.a;
+    sampleCoverage.b = setting.b;
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
-var _WebGL_enableSampleAlphaToCoverage = F2(function (gl, setting) {
-  gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
-});
+var _WebGL_enableSampleAlphaToCoverage = function (cache) {
+  var sampleAlphaToCoverage = cache.sampleAlphaToCoverage;
+  sampleAlphaToCoverage.toggle = cache.toggle;
 
-// eslint-disable-next-line no-unused-vars
+  if (!sampleAlphaToCoverage.enabled) {
+    cache.gl.enable(cache.gl.SAMPLE_ALPHA_TO_COVERAGE);
+    sampleAlphaToCoverage.enabled = true;
+  }
+};
+
 var _WebGL_disableBlend = function (cache) {
-  cache.gl.disable(cache.gl.BLEND);
+  if (cache.blend.enabled) {
+    cache.gl.disable(cache.gl.BLEND);
+    cache.blend.enabled = false;
+  }
 };
 
-// eslint-disable-next-line no-unused-vars
 var _WebGL_disableDepthTest = function (cache) {
-  cache.gl.disable(cache.gl.DEPTH_TEST);
-  cache.gl.depthMask(true);
+  if (cache.depthTest.enabled) {
+    cache.gl.disable(cache.gl.DEPTH_TEST);
+    cache.depthTest.enabled = false;
+  }
 };
 
-// eslint-disable-next-line no-unused-vars
 var _WebGL_disableStencilTest = function (cache) {
-  cache.gl.disable(cache.gl.STENCIL_TEST);
-  cache.gl.stencilMask(cache.STENCIL_WRITEMASK);
+  if (cache.stencilTest.enabled) {
+    cache.gl.disable(cache.gl.STENCIL_TEST);
+    cache.stencilTest.enabled = false;
+  }
 };
 
-// eslint-disable-next-line no-unused-vars
 var _WebGL_disableScissor = function (cache) {
-  cache.gl.disable(cache.gl.SCISSOR_TEST);
+  if (cache.scissor.enabled) {
+    cache.gl.disable(cache.gl.SCISSOR_TEST);
+    cache.scissor.enabled = false;
+  }
 };
 
-// eslint-disable-next-line no-unused-vars
 var _WebGL_disableColorMask = function (cache) {
-  cache.gl.colorMask(true, true, true, true);
+  var colorMask = cache.colorMask;
+  if (!colorMask.a || !colorMask.b || !colorMask.c || !colorMask.d) {
+    cache.gl.colorMask(true, true, true, true);
+    colorMask.a = true;
+    colorMask.b = true;
+    colorMask.c = true;
+    colorMask.d = true;
+  }
 };
 
-// eslint-disable-next-line no-unused-vars
 var _WebGL_disableCullFace = function (cache) {
   cache.gl.disable(cache.gl.CULL_FACE);
 };
 
-// eslint-disable-next-line no-unused-vars
 var _WebGL_disablePolygonOffset = function (cache) {
   cache.gl.disable(cache.gl.POLYGON_OFFSET_FILL);
 };
 
-// eslint-disable-next-line no-unused-vars
 var _WebGL_disableSampleCoverage = function (cache) {
   cache.gl.disable(cache.gl.SAMPLE_COVERAGE);
 };
 
-// eslint-disable-next-line no-unused-vars
 var _WebGL_disableSampleAlphaToCoverage = function (cache) {
   cache.gl.disable(cache.gl.SAMPLE_ALPHA_TO_COVERAGE);
 };
 
+var _WebGL_settings = ['blend', 'depthTest', 'stencilTest', 'scissor', 'colorMask', 'cullFace', 'polygonOffset', 'sampleCoverage', 'sampleAlphaToCoverage'];
+var _WebGL_disableFunctions = [_WebGL_disableBlend, _WebGL_disableDepthTest, _WebGL_disableStencilTest, _WebGL_disableScissor, _WebGL_disableColorMask, _WebGL_disableCullFace, _WebGL_disablePolygonOffset, _WebGL_disableSampleCoverage, _WebGL_disableSampleAlphaToCoverage];
+
 function _WebGL_doCompile(gl, src, type) {
-
   var shader = gl.createShader(type);
-  _WebGL_log('Created shader');
-
-  gl.shaderSource(shader, src);
+  // Enable OES_standard_derivatives extension
+  gl.shaderSource(shader, '#extension GL_OES_standard_derivatives : enable\n' + src);
   gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    throw gl.getShaderInfoLog(shader);
-  }
-
   return shader;
-
 }
 
 function _WebGL_doLink(gl, vshader, fshader) {
-
   var program = gl.createProgram();
-  _WebGL_log('Created program');
 
   gl.attachShader(program, vshader);
   gl.attachShader(program, fshader);
   gl.linkProgram(program);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    throw gl.getProgramInfoLog(program);
+    throw ('Link failed: ' + gl.getProgramInfoLog(program) +
+      '\nvs info-log: ' + gl.getShaderInfoLog(vshader) +
+      '\nfs info-log: ' + gl.getShaderInfoLog(fshader));
   }
 
   return program;
-
 }
 
 function _WebGL_getAttributeInfo(gl, type) {
@@ -5645,7 +5788,7 @@ function _WebGL_doBindAttribute(gl, attribute, mesh, attributes) {
   // The length of the number of vertices that
   // complete one 'thing' based on the drawing mode.
   // ie, 2 for Lines, 3 for Triangles, etc.
-  var elemSize = mesh.a.bW;
+  var elemSize = mesh.a.bY;
 
   var idxKeys = [];
   for (var i = 0; i < elemSize; i++) {
@@ -5683,8 +5826,6 @@ function _WebGL_doBindAttribute(gl, attribute, mesh, attributes) {
   }, mesh.b);
 
   var buffer = gl.createBuffer();
-  _WebGL_log('Created attribute buffer ' + attribute.name);
-
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
   return buffer;
@@ -5708,10 +5849,9 @@ function _WebGL_doBindAttribute(gl, attribute, mesh, attributes) {
  *  @return {Object} buffer.buffers - will be used to buffer attributes
  */
 function _WebGL_doBindSetup(gl, mesh) {
-  if (mesh.a.cc > 0) {
-    _WebGL_log('Created index buffer');
+  if (mesh.a.ce > 0) {
     var indexBuffer = gl.createBuffer();
-    var indices = _WebGL_makeIndexedBuffer(mesh.c, mesh.a.cc);
+    var indices = _WebGL_makeIndexedBuffer(mesh.c, mesh.a.ce);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
     return {
@@ -5721,7 +5861,7 @@ function _WebGL_doBindSetup(gl, mesh) {
     };
   } else {
     return {
-      numIndices: mesh.a.bW * _WebGL_listLength(mesh.b),
+      numIndices: mesh.a.bY * _WebGL_listLength(mesh.b),
       indexBuffer: null,
       buffers: {}
     };
@@ -5734,10 +5874,10 @@ function _WebGL_doBindSetup(gl, mesh) {
  *
  *  @param {List} indicesList the list of indices
  *  @param {Number} indexSize the size of the index
- *  @return {Uint16Array} indices
+ *  @return {Uint32Array} indices
  */
 function _WebGL_makeIndexedBuffer(indicesList, indexSize) {
-  var indices = new Uint16Array(_WebGL_listLength(indicesList) * indexSize);
+  var indices = new Uint32Array(_WebGL_listLength(indicesList) * indexSize);
   var fillOffset = 0;
   var i;
   _WebGL_listEach(function (elem) {
@@ -5757,16 +5897,26 @@ function _WebGL_getProgID(vertID, fragID) {
 }
 
 var _WebGL_drawGL = F2(function (model, domNode) {
-
-  var gl = model.f.gl;
+  var cache = model.f;
+  var gl = cache.gl;
 
   if (!gl) {
     return domNode;
   }
 
   gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+  if (!cache.depthTest.b) {
+    gl.depthMask(true);
+    cache.depthTest.b = true;
+  }
+  if (cache.stencilTest.c !== cache.STENCIL_WRITEMASK) {
+    gl.stencilMask(cache.STENCIL_WRITEMASK);
+    cache.stencilTest.c = cache.STENCIL_WRITEMASK;
+  }
+  _WebGL_disableScissor(cache);
+  _WebGL_disableColorMask(cache);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-  _WebGL_log('Drawing');
 
   function drawEntity(entity) {
     if (!entity.d.b.b) {
@@ -5775,35 +5925,37 @@ var _WebGL_drawGL = F2(function (model, domNode) {
 
     var progid;
     var program;
+    var i;
+
     if (entity.b.id && entity.c.id) {
       progid = _WebGL_getProgID(entity.b.id, entity.c.id);
-      program = model.f.programs[progid];
+      program = cache.programs[progid];
     }
 
     if (!program) {
 
       var vshader;
       if (entity.b.id) {
-        vshader = model.f.shaders[entity.b.id];
+        vshader = cache.shaders[entity.b.id];
       } else {
         entity.b.id = _WebGL_guid++;
       }
 
       if (!vshader) {
         vshader = _WebGL_doCompile(gl, entity.b.src, gl.VERTEX_SHADER);
-        model.f.shaders[entity.b.id] = vshader;
+        cache.shaders[entity.b.id] = vshader;
       }
 
       var fshader;
       if (entity.c.id) {
-        fshader = model.f.shaders[entity.c.id];
+        fshader = cache.shaders[entity.c.id];
       } else {
         entity.c.id = _WebGL_guid++;
       }
 
       if (!fshader) {
         fshader = _WebGL_doCompile(gl, entity.c.src, gl.FRAGMENT_SHADER);
-        model.f.shaders[entity.c.id] = fshader;
+        cache.shaders[entity.c.id] = fshader;
       }
 
       var glProgram = _WebGL_doLink(gl, vshader, fshader);
@@ -5811,47 +5963,56 @@ var _WebGL_drawGL = F2(function (model, domNode) {
       program = {
         glProgram: glProgram,
         attributes: Object.assign({}, entity.b.attributes, entity.c.attributes),
-        uniformSetters: _WebGL_createUniformSetters(
-          gl,
-          model,
-          glProgram,
-          Object.assign({}, entity.b.uniforms, entity.c.uniforms)
-        )
+        currentUniforms: {},
+        activeAttributes: [],
+        activeAttributeLocations: []
       };
 
-      progid = _WebGL_getProgID(entity.b.id, entity.c.id);
-      model.f.programs[progid] = program;
+      program.uniformSetters = _WebGL_createUniformSetters(
+        gl,
+        model,
+        program,
+        Object.assign({}, entity.b.uniforms, entity.c.uniforms)
+      );
 
+      var numActiveAttributes = gl.getProgramParameter(glProgram, gl.ACTIVE_ATTRIBUTES);
+      for (i = 0; i < numActiveAttributes; i++) {
+        var attribute = gl.getActiveAttrib(glProgram, i);
+        var attribLocation = gl.getAttribLocation(glProgram, attribute.name);
+        program.activeAttributes.push(attribute);
+        program.activeAttributeLocations.push(attribLocation);
+      }
+
+      progid = _WebGL_getProgID(entity.b.id, entity.c.id);
+      cache.programs[progid] = program;
     }
 
-    gl.useProgram(program.glProgram);
+    if (cache.lastProgId !== progid) {
+      gl.useProgram(program.glProgram);
+      cache.lastProgId = progid;
+    }
 
     _WebGL_setUniforms(program.uniformSetters, entity.e);
 
-    var buffer = model.f.buffers.get(entity.d);
+    var buffer = cache.buffers.get(entity.d);
 
     if (!buffer) {
       buffer = _WebGL_doBindSetup(gl, entity.d);
-      model.f.buffers.set(entity.d, buffer);
+      cache.buffers.set(entity.d, buffer);
     }
 
-    var numAttributes = gl.getProgramParameter(program.glProgram, gl.ACTIVE_ATTRIBUTES);
-
-    for (var i = 0; i < numAttributes; i++) {
-      var attribute = gl.getActiveAttrib(program.glProgram, i);
-
-      var attribLocation = gl.getAttribLocation(program.glProgram, attribute.name);
-      gl.enableVertexAttribArray(attribLocation);
+    for (i = 0; i < program.activeAttributes.length; i++) {
+      attribute = program.activeAttributes[i];
+      attribLocation = program.activeAttributeLocations[i];
 
       if (buffer.buffers[attribute.name] === undefined) {
         buffer.buffers[attribute.name] = _WebGL_doBindAttribute(gl, attribute, entity.d, program.attributes);
       }
-      var attributeBuffer = buffer.buffers[attribute.name];
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffers[attribute.name]);
+
       var attributeInfo = _WebGL_getAttributeInfo(gl, attribute.type);
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, attributeBuffer);
-
       if (attributeInfo.arraySize === 1) {
+        gl.enableVertexAttribArray(attribLocation);
         gl.vertexAttribPointer(attribLocation, attributeInfo.size, attributeInfo.baseType, false, 0, 0);
       } else {
         // Point to four vec4 in case of mat4
@@ -5863,17 +6024,26 @@ var _WebGL_drawGL = F2(function (model, domNode) {
         }
       }
     }
-    _WebGL_listEach($elm_explorations$webgl$WebGL$Internal$enableSetting(gl), entity.a);
+
+    // Apply all the new settings
+    cache.toggle = !cache.toggle;
+    _WebGL_listEach($elm_explorations$webgl$WebGL$Internal$enableSetting(cache), entity.a);
+    // Disable the settings that were applied in the previous draw call
+    for (i = 0; i < _WebGL_settings.length; i++) {
+      var setting = cache[_WebGL_settings[i]];
+      if (setting.toggle !== cache.toggle && setting.enabled) {
+        _WebGL_disableFunctions[i](cache);
+        setting.enabled = false;
+        setting.toggle = cache.toggle;
+      }
+    }
 
     if (buffer.indexBuffer) {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBuffer);
-      gl.drawElements(entity.d.a.cy, buffer.numIndices, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(entity.d.a.cA, buffer.numIndices, gl.UNSIGNED_INT, 0);
     } else {
-      gl.drawArrays(entity.d.a.cy, 0, buffer.numIndices);
+      gl.drawArrays(entity.d.a.cA, 0, buffer.numIndices);
     }
-
-    _WebGL_listEach($elm_explorations$webgl$WebGL$Internal$disableSetting(model.f), entity.a);
-
   }
 
   _WebGL_listEach(drawEntity, model.g);
@@ -5881,62 +6051,88 @@ var _WebGL_drawGL = F2(function (model, domNode) {
 });
 
 function _WebGL_createUniformSetters(gl, model, program, uniformsMap) {
+  var glProgram = program.glProgram;
+  var currentUniforms = program.currentUniforms;
   var textureCounter = 0;
-  function createUniformSetter(program, uniform) {
-    var uniformLocation = gl.getUniformLocation(program, uniform.name);
+  var cache = model.f;
+  function createUniformSetter(glProgram, uniform) {
+    var uniformName = uniform.name;
+    var uniformLocation = gl.getUniformLocation(glProgram, uniformName);
     switch (uniform.type) {
       case gl.INT:
         return function (value) {
-          gl.uniform1i(uniformLocation, value);
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform1i(uniformLocation, value);
+            currentUniforms[uniformName] = value;
+          }
         };
       case gl.FLOAT:
         return function (value) {
-          gl.uniform1f(uniformLocation, value);
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform1f(uniformLocation, value);
+            currentUniforms[uniformName] = value;
+          }
         };
       case gl.FLOAT_VEC2:
         return function (value) {
-          gl.uniform2fv(uniformLocation, new Float32Array(value));
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform2f(uniformLocation, value[0], value[1]);
+            currentUniforms[uniformName] = value;
+          }
         };
       case gl.FLOAT_VEC3:
         return function (value) {
-          gl.uniform3fv(uniformLocation, new Float32Array(value));
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform3f(uniformLocation, value[0], value[1], value[2]);
+            currentUniforms[uniformName] = value;
+          }
         };
       case gl.FLOAT_VEC4:
         return function (value) {
-          gl.uniform4fv(uniformLocation, new Float32Array(value));
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform4f(uniformLocation, value[0], value[1], value[2], value[3]);
+            currentUniforms[uniformName] = value;
+          }
         };
       case gl.FLOAT_MAT4:
         return function (value) {
-          gl.uniformMatrix4fv(uniformLocation, false, new Float32Array(value));
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniformMatrix4fv(uniformLocation, false, new Float32Array(value));
+            currentUniforms[uniformName] = value;
+          }
         };
       case gl.SAMPLER_2D:
         var currentTexture = textureCounter++;
         return function (texture) {
           gl.activeTexture(gl.TEXTURE0 + currentTexture);
-          var tex = model.f.textures.get(texture);
+          var tex = cache.textures.get(texture);
           if (!tex) {
-            _WebGL_log('Created texture');
-            tex = texture.dm(gl);
-            model.f.textures.set(texture, tex);
+            tex = texture.$7(gl);
+            cache.textures.set(texture, tex);
           }
           gl.bindTexture(gl.TEXTURE_2D, tex);
-          gl.uniform1i(uniformLocation, currentTexture);
+          if (currentUniforms[uniformName] !== texture) {
+            gl.uniform1i(uniformLocation, currentTexture);
+            currentUniforms[uniformName] = texture;
+          }
         };
       case gl.BOOL:
         return function (value) {
-          gl.uniform1i(uniformLocation, value);
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform1i(uniformLocation, value);
+            currentUniforms[uniformName] = value;
+          }
         };
       default:
-        _WebGL_log('Unsupported uniform type: ' + uniform.type);
         return function () { };
     }
   }
 
   var uniformSetters = {};
-  var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  var numUniforms = gl.getProgramParameter(glProgram, gl.ACTIVE_UNIFORMS);
   for (var i = 0; i < numUniforms; i++) {
-    var uniform = gl.getActiveUniform(program, i);
-    uniformSetters[uniformsMap[uniform.name] || uniform.name] = createUniformSetter(program, uniform);
+    var uniform = gl.getActiveUniform(glProgram, i);
+    uniformSetters[uniformsMap[uniform.name] || uniform.name] = createUniformSetter(glProgram, uniform);
   }
 
   return uniformSetters;
@@ -6032,7 +6228,6 @@ function _WebGL_render(model) {
     return A2($elm_explorations$webgl$WebGL$Internal$enableOption, options, option);
   }, model.h);
 
-  _WebGL_log('Render canvas');
   var canvas = _VirtualDom_doc.createElement('canvas');
   var gl = canvas.getContext && (
     canvas.getContext('webgl', options.contextAttributes) ||
@@ -6044,9 +6239,28 @@ function _WebGL_render(model) {
       sceneSetting(gl);
     });
 
+    // Activate extensions
+    gl.getExtension('OES_standard_derivatives');
+    gl.getExtension('OES_element_index_uint');
+
     model.f.gl = gl;
+
+    // Cache the current settings in order to diff them to avoid redundant calls
+    // https://emscripten.org/docs/optimizing/Optimizing-WebGL.html#avoid-redundant-calls
+    model.f.toggle = false; // used to diff the settings from the previous and current draw calls
+    model.f.blend = { enabled: false, toggle: false };
+    model.f.depthTest = { enabled: false, toggle: false };
+    model.f.stencilTest = { enabled: false, toggle: false };
+    model.f.scissor = { enabled: false, toggle: false };
+    model.f.colorMask = { enabled: false, toggle: false };
+    model.f.cullFace = { enabled: false, toggle: false };
+    model.f.polygonOffset = { enabled: false, toggle: false };
+    model.f.sampleCoverage = { enabled: false, toggle: false };
+    model.f.sampleAlphaToCoverage = { enabled: false, toggle: false };
+
     model.f.shaders = [];
     model.f.programs = {};
+    model.f.lastProgId = null;
     model.f.buffers = new WeakMap();
     model.f.textures = new WeakMap();
     // Memorize the initial stencil write mask, because
@@ -6713,25 +6927,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.l) {
+		if (!builder.m) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.o),
+				$elm$core$Elm$JsArray$length(builder.p),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.o);
+				builder.p);
 		} else {
-			var treeLen = builder.l * $elm$core$Array$branchFactor;
+			var treeLen = builder.m * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.p) : builder.p;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.l);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.q) : builder.q;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.m);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.o) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.p) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.o);
+				builder.p);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -6744,7 +6958,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{p: nodeList, l: (len / $elm$core$Array$branchFactor) | 0, o: tail});
+					{q: nodeList, m: (len / $elm$core$Array$branchFactor) | 0, p: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -6811,7 +7025,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {b$: fragment, b7: host, cI: path, cK: port_, cN: protocol, cO: query};
+		return {b1: fragment, b9: host, cK: path, cM: port_, cP: protocol, cQ: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -7100,17 +7314,17 @@ var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
 var $elm$core$Set$empty = $elm$core$Dict$empty;
 var $author$project$Playground$Mouse = F4(
 	function (x, y, down, click) {
-		return {bo: click, du: down, c1: x, c2: y};
+		return {bn: click, dw: down, c3: x, c4: y};
 	});
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
 var $author$project$Playground$Internal$toScreen = F2(
 	function (width, height) {
-		return {bn: (-height) / 2, a7: height, a8: (-width) / 2, d2: width / 2, bN: height / 2, bj: width};
+		return {bm: (-height) / 2, a7: height, a8: (-width) / 2, d4: width / 2, bO: height / 2, bi: width};
 	});
 var $author$project$Game$initialComputer = {
-	aJ: {c8: false, du: false, dw: false, bz: $elm$core$Set$empty, a8: false, d2: false, d5: false, d7: false, eo: false},
+	aJ: {da: false, dw: false, dy: false, bz: $elm$core$Set$empty, a8: false, d4: false, d7: false, d9: false, eq: false},
 	i: A4($author$project$Playground$Mouse, 0, 0, false, false),
 	w: A2($author$project$Playground$Internal$toScreen, 100, 100),
 	g: {I: 0, n: 0}
@@ -7134,11 +7348,11 @@ var $author$project$Game$init = F2(
 				A2(
 					$elm$core$Task$perform,
 					function (_v1) {
-						var scene = _v1.d3;
+						var scene = _v1.d5;
 						return _Utils_update(
 							$author$project$Game$initialComputer,
 							{
-								w: A2($author$project$Playground$Internal$toScreen, scene.bj, scene.a7)
+								w: A2($author$project$Playground$Internal$toScreen, scene.bi, scene.a7)
 							});
 					},
 					$elm$browser$Browser$Dom$getViewport)));
@@ -7151,20 +7365,20 @@ var $author$project$Playground$Internal$mouseClick = F2(
 	function (bool, mouse) {
 		return _Utils_update(
 			mouse,
-			{bo: bool});
+			{bn: bool});
 	});
 var $author$project$Playground$Internal$mouseDown = F2(
 	function (bool, mouse) {
 		return _Utils_update(
 			mouse,
-			{du: bool});
+			{dw: bool});
 	});
 var $elm$browser$Browser$AnimationManager$Time = function (a) {
 	return {$: 0, a: a};
 };
 var $elm$browser$Browser$AnimationManager$State = F3(
 	function (subs, request, oldTime) {
-		return {bC: oldTime, cQ: request, cV: subs};
+		return {bC: oldTime, cS: request, cX: subs};
 	});
 var $elm$browser$Browser$AnimationManager$init = $elm$core$Task$succeed(
 	A3($elm$browser$Browser$AnimationManager$State, _List_Nil, $elm$core$Maybe$Nothing, 0));
@@ -7175,7 +7389,7 @@ var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$core$Process$spawn = _Scheduler_spawn;
 var $elm$browser$Browser$AnimationManager$onEffects = F3(
 	function (router, subs, _v0) {
-		var request = _v0.cQ;
+		var request = _v0.cS;
 		var oldTime = _v0.bC;
 		var _v1 = _Utils_Tuple2(request, subs);
 		if (_v1.a.$ === 1) {
@@ -7224,7 +7438,7 @@ var $elm$time$Time$Posix = $elm$core$Basics$identity;
 var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
 var $elm$browser$Browser$AnimationManager$onSelfMsg = F3(
 	function (router, newTime, _v0) {
-		var subs = _v0.cV;
+		var subs = _v0.cX;
 		var oldTime = _v0.bC;
 		var send = function (sub) {
 			if (!sub.$) {
@@ -7298,7 +7512,7 @@ var $elm$browser$Browser$Events$MySub = F3(
 	});
 var $elm$browser$Browser$Events$State = F2(
 	function (subs, pids) {
-		return {cJ: pids, cV: subs};
+		return {cL: pids, cX: subs};
 	});
 var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
 	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
@@ -7527,7 +7741,7 @@ var $elm$core$Dict$merge = F6(
 	});
 var $elm$browser$Browser$Events$Event = F2(
 	function (key, event) {
-		return {bY: event, cd: key};
+		return {b_: event, cf: key};
 	});
 var $elm$browser$Browser$Events$spawn = F3(
 	function (router, key, _v0) {
@@ -7601,7 +7815,7 @@ var $elm$browser$Browser$Events$onEffects = F3(
 			stepLeft,
 			stepBoth,
 			stepRight,
-			state.cJ,
+			state.cL,
 			$elm$core$Dict$fromList(newSubs),
 			_Utils_Tuple3(_List_Nil, $elm$core$Dict$empty, _List_Nil));
 		var deadPids = _v0.a;
@@ -7647,8 +7861,8 @@ var $elm$core$List$filterMap = F2(
 	});
 var $elm$browser$Browser$Events$onSelfMsg = F3(
 	function (router, _v0, state) {
-		var key = _v0.cd;
-		var event = _v0.bY;
+		var key = _v0.cf;
+		var event = _v0.b_;
 		var toMessage = function (_v2) {
 			var subKey = _v2.a;
 			var _v3 = _v2.b;
@@ -7657,7 +7871,7 @@ var $elm$browser$Browser$Events$onSelfMsg = F3(
 			var decoder = _v3.c;
 			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
 		};
-		var messages = A2($elm$core$List$filterMap, toMessage, state.cV);
+		var messages = A2($elm$core$List$filterMap, toMessage, state.cX);
 		return A2(
 			$elm$core$Task$andThen,
 			function (_v1) {
@@ -8093,31 +8307,31 @@ var $author$project$Playground$Internal$updateKeyboard = F3(
 			case 'Space':
 				return _Utils_update(
 					keyboard,
-					{bz: keys, d7: isDown});
+					{bz: keys, d9: isDown});
 			case 'Enter':
 				return _Utils_update(
 					keyboard,
-					{dw: isDown, bz: keys});
+					{dy: isDown, bz: keys});
 			case 'ShiftLeft':
 				return _Utils_update(
 					keyboard,
-					{bz: keys, d5: isDown});
+					{bz: keys, d7: isDown});
 			case 'ShiftRight':
 				return _Utils_update(
 					keyboard,
-					{bz: keys, d5: isDown});
+					{bz: keys, d7: isDown});
 			case 'Backspace':
 				return _Utils_update(
 					keyboard,
-					{c8: isDown, bz: keys});
+					{da: isDown, bz: keys});
 			case 'ArrowUp':
 				return _Utils_update(
 					keyboard,
-					{bz: keys, eo: isDown});
+					{bz: keys, eq: isDown});
 			case 'ArrowDown':
 				return _Utils_update(
 					keyboard,
-					{du: isDown, bz: keys});
+					{dw: isDown, bz: keys});
 			case 'ArrowLeft':
 				return _Utils_update(
 					keyboard,
@@ -8125,7 +8339,7 @@ var $author$project$Playground$Internal$updateKeyboard = F3(
 			case 'ArrowRight':
 				return _Utils_update(
 					keyboard,
-					{bz: keys, d2: isDown});
+					{bz: keys, d4: isDown});
 			default:
 				return _Utils_update(
 					keyboard,
@@ -8133,7 +8347,7 @@ var $author$project$Playground$Internal$updateKeyboard = F3(
 		}
 	});
 var $author$project$Game$subscriptions_ = {
-	bo: function (computer) {
+	bn: function (computer) {
 		return $elm$core$Platform$Sub$batch(
 			_List_fromArray(
 				[
@@ -8199,7 +8413,7 @@ var $author$project$Game$subscriptions_ = {
 				$elm$json$Json$Decode$map2,
 				F2(
 					function (pageX, pageY) {
-						var y = computer.w.bN - pageY;
+						var y = computer.w.bO - pageY;
 						var x = computer.w.a8 + pageX;
 						var mouse = computer.i;
 						return _Utils_update(
@@ -8207,14 +8421,14 @@ var $author$project$Game$subscriptions_ = {
 							{
 								i: _Utils_update(
 									mouse,
-									{c1: x, c2: y}),
+									{c3: x, c4: y}),
 								g: {I: 0, n: computer.g.n}
 							});
 					}),
 				A2($elm$json$Json$Decode$field, 'pageX', $elm$json$Json$Decode$float),
 				A2($elm$json$Json$Decode$field, 'pageY', $elm$json$Json$Decode$float)));
 	},
-	cR: function (computer) {
+	cT: function (computer) {
 		return $elm$browser$Browser$Events$onResize(
 			F2(
 				function (w, h) {
@@ -8246,10 +8460,10 @@ var $author$project$Game$subscriptions = function (model) {
 		$elm$core$Platform$Sub$batch(
 			_List_fromArray(
 				[
-					$author$project$Game$subscriptions_.cR(model.b),
+					$author$project$Game$subscriptions_.cT(model.b),
 					$author$project$Game$subscriptions_.g(model.b),
 					$author$project$Game$subscriptions_.i(model.b),
-					$author$project$Game$subscriptions_.bo(model.b),
+					$author$project$Game$subscriptions_.bn(model.b),
 					$author$project$Game$subscriptions_.bz(model.b)
 				])));
 };
@@ -8315,11 +8529,11 @@ var $elm_explorations$webgl$WebGL$Texture$SizeError = F2(
 	});
 var $elm_explorations$webgl$WebGL$Texture$loadWith = F2(
 	function (_v0, url) {
-		var magnify = _v0.dM;
-		var minify = _v0.dN;
-		var horizontalWrap = _v0.dG;
-		var verticalWrap = _v0.et;
-		var flipY = _v0.dB;
+		var magnify = _v0.dO;
+		var minify = _v0.dP;
+		var horizontalWrap = _v0.dI;
+		var verticalWrap = _v0.ev;
+		var flipY = _v0.dD;
 		var expand = F4(
 			function (_v1, _v2, _v3, _v4) {
 				var mag = _v1;
@@ -8334,7 +8548,7 @@ var $elm_explorations$webgl$WebGL$Texture$Wrap = $elm$core$Basics$identity;
 var $elm_explorations$webgl$WebGL$Texture$clampToEdge = 33071;
 var $elm_explorations$webgl$WebGL$Texture$Resize = $elm$core$Basics$identity;
 var $elm_explorations$webgl$WebGL$Texture$linear = 9729;
-var $author$project$Game$textureOption = {dB: true, dG: $elm_explorations$webgl$WebGL$Texture$clampToEdge, dM: $elm_explorations$webgl$WebGL$Texture$linear, dN: $elm_explorations$webgl$WebGL$Texture$linear, et: $elm_explorations$webgl$WebGL$Texture$clampToEdge};
+var $author$project$Game$textureOption = {dD: true, dI: $elm_explorations$webgl$WebGL$Texture$clampToEdge, dO: $elm_explorations$webgl$WebGL$Texture$linear, dP: $elm_explorations$webgl$WebGL$Texture$linear, ev: $elm_explorations$webgl$WebGL$Texture$clampToEdge};
 var $author$project$Game$getTexture = function (url) {
 	return A2(
 		$elm$core$Task$attempt,
@@ -8353,7 +8567,7 @@ var $author$project$Game$mouseMove = F3(
 	function (x, y, mouse) {
 		return _Utils_update(
 			mouse,
-			{c1: x, c2: y});
+			{c3: x, c4: y});
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -8450,22 +8664,22 @@ var $justgook$webgl_shape$WebGL$Shape2d$Transformation$toGL = function (_v0) {
 	var a23 = _v0.L;
 	return _Utils_Tuple2(
 		$elm_explorations$linear_algebra$Math$Vector4$fromRecord(
-			{c0: a22, c1: a11, c2: a12, y: a21}),
+			{c2: a22, c3: a11, c4: a12, y: a21}),
 		$elm_explorations$linear_algebra$Math$Vector2$fromRecord(
-			{c1: a13, c2: a23}));
+			{c3: a13, c4: a23}));
 };
 var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F5(
 	function (screen, textures, parent, _v0, acc) {
 		renderShape:
 		while (true) {
-			var x = _v0.c1;
-			var y = _v0.c2;
+			var x = _v0.c3;
+			var y = _v0.c4;
 			var z = _v0.y;
 			var a = _v0.h;
 			var sx = _v0.e;
 			var sy = _v0.f;
 			var o = _v0.j;
-			var form = _v0.k;
+			var form = _v0.l;
 			var entities = acc.a;
 			var missing = acc.b;
 			switch (form.$) {
@@ -8476,7 +8690,7 @@ var $justgook$webgl_shape$WebGL$Shape2d$renderShape = F5(
 					var _v2 = $justgook$webgl_shape$WebGL$Shape2d$Transformation$toGL(
 						A3(
 							$justgook$webgl_shape$WebGL$Shape2d$Transformation$scale,
-							1 / screen.bj,
+							1 / screen.bi,
 							1 / screen.a7,
 							A6($justgook$webgl_shape$WebGL$Shape2d$createTrans, x * 2, y * 2, width * sx, height * sy, a, parent)));
 					var t1 = _v2.a;
@@ -8534,7 +8748,7 @@ var $justgook$webgl_shape$WebGL$Shape2d$toEntities = F3(
 	});
 var $author$project$Game$unClick = F2(
 	function (was, computer) {
-		return was.i.bo ? _Utils_update(
+		return was.i.bn ? _Utils_update(
 			computer,
 			{
 				i: A2($author$project$Playground$Internal$mouseClick, false, computer.i)
@@ -8564,7 +8778,7 @@ var $author$project$Game$update = F4(
 				var _v1 = A3(
 					$justgook$webgl_shape$WebGL$Shape2d$toEntities,
 					textures.a2,
-					{a7: computer.w.a7, bj: computer.w.bj},
+					{a7: computer.w.a7, bi: computer.w.bi},
 					A2(viewMemory, model.b, newMemory));
 				var entities = _v1.a;
 				var missing = _v1.b;
@@ -8625,7 +8839,7 @@ var $author$project$Game$update = F4(
 										A2(
 											$author$project$Playground$Internal$mouseDown,
 											true,
-											A3($author$project$Game$mouseMove, model.b.w.a8 + x, model.b.w.bN - y, model.b.i))),
+											A3($author$project$Game$mouseMove, model.b.w.a8 + x, model.b.w.bO - y, model.b.i))),
 									model.b)
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -8674,7 +8888,7 @@ var $author$project$Game$update = F4(
 									A2(
 										$author$project$Playground$Internal$mouseDown,
 										true,
-										A3($author$project$Game$mouseMove, model.b.w.a8 + x, model.b.w.bN - y, model.b.i)),
+										A3($author$project$Game$mouseMove, model.b.w.a8 + x, model.b.w.bO - y, model.b.i)),
 									model.b)
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -8711,7 +8925,7 @@ var $elm$html$Html$Attributes$height = function (n) {
 		'height',
 		$elm$core$String$fromInt(n));
 };
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$defaultOptions = {bE: true, bL: false};
+var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$defaultOptions = {bE: true, bM: false};
 var $elm$virtual_dom$VirtualDom$Custom = function (a) {
 	return {$: 3, a: a};
 };
@@ -8725,11 +8939,11 @@ var $elm$html$Html$Events$custom = F2(
 	});
 var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$Event = F4(
 	function (keys, changedTouches, targetTouches, touches) {
-		return {dd: changedTouches, bz: keys, ea: targetTouches, ef: touches};
+		return {df: changedTouches, bz: keys, ec: targetTouches, eh: touches};
 	});
 var $mpizenberg$elm_pointer_events$Internal$Decode$Keys = F3(
 	function (alt, ctrl, shift) {
-		return {c5: alt, dn: ctrl, d5: shift};
+		return {c7: alt, dp: ctrl, d7: shift};
 	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$map3 = _Json_map3;
@@ -8742,7 +8956,7 @@ var $mpizenberg$elm_pointer_events$Internal$Decode$keys = A4(
 var $elm$json$Json$Decode$map4 = _Json_map4;
 var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$Touch = F4(
 	function (identifier, clientPos, pagePos, screenPos) {
-		return {dg: clientPos, dH: identifier, dW: pagePos, d4: screenPos};
+		return {di: clientPos, dJ: identifier, dY: pagePos, d6: screenPos};
 	});
 var $mpizenberg$elm_pointer_events$Internal$Decode$clientPos = A3(
 	$elm$json$Json$Decode$map2,
@@ -8827,7 +9041,7 @@ var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$onWithOptions = F3(
 					return {
 						W: tag(ev),
 						bE: options.bE,
-						bL: options.bL
+						bM: options.bM
 					};
 				},
 				$mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$eventDecoder));
@@ -8836,29 +9050,6 @@ var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$onEnd = A2($mpizenber
 var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$onMove = A2($mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$onWithOptions, 'touchmove', $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$defaultOptions);
 var $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$onStart = A2($mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$onWithOptions, 'touchstart', $mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$defaultOptions);
 var $elm$core$Basics$round = _Basics_round;
-var $elm_explorations$webgl$WebGL$Internal$disableSetting = F2(
-	function (cache, setting) {
-		switch (setting.$) {
-			case 0:
-				return _WebGL_disableBlend(cache);
-			case 1:
-				return _WebGL_disableDepthTest(cache);
-			case 2:
-				return _WebGL_disableStencilTest(cache);
-			case 3:
-				return _WebGL_disableScissor(cache);
-			case 4:
-				return _WebGL_disableColorMask(cache);
-			case 5:
-				return _WebGL_disableCullFace(cache);
-			case 6:
-				return _WebGL_disablePolygonOffset(cache);
-			case 7:
-				return _WebGL_disableSampleCoverage(cache);
-			default:
-				return _WebGL_disableSampleAlphaToCoverage(cache);
-		}
-	});
 var $elm_explorations$webgl$WebGL$Internal$enableOption = F2(
 	function (ctx, option) {
 		switch (option.$) {
@@ -8877,26 +9068,26 @@ var $elm_explorations$webgl$WebGL$Internal$enableOption = F2(
 		}
 	});
 var $elm_explorations$webgl$WebGL$Internal$enableSetting = F2(
-	function (gl, setting) {
+	function (cache, setting) {
 		switch (setting.$) {
 			case 0:
-				return A2(_WebGL_enableBlend, gl, setting);
+				return A2(_WebGL_enableBlend, cache, setting);
 			case 1:
-				return A2(_WebGL_enableDepthTest, gl, setting);
+				return A2(_WebGL_enableDepthTest, cache, setting);
 			case 2:
-				return A2(_WebGL_enableStencilTest, gl, setting);
+				return A2(_WebGL_enableStencilTest, cache, setting);
 			case 3:
-				return A2(_WebGL_enableScissor, gl, setting);
+				return A2(_WebGL_enableScissor, cache, setting);
 			case 4:
-				return A2(_WebGL_enableColorMask, gl, setting);
+				return A2(_WebGL_enableColorMask, cache, setting);
 			case 5:
-				return A2(_WebGL_enableCullFace, gl, setting);
+				return A2(_WebGL_enableCullFace, cache, setting);
 			case 6:
-				return A2(_WebGL_enablePolygonOffset, gl, setting);
+				return A2(_WebGL_enablePolygonOffset, cache, setting);
 			case 7:
-				return A2(_WebGL_enableSampleCoverage, gl, setting);
+				return A2(_WebGL_enableSampleCoverage, cache, setting);
 			default:
-				return A2(_WebGL_enableSampleAlphaToCoverage, gl, setting);
+				return _WebGL_enableSampleAlphaToCoverage(cache);
 		}
 	});
 var $elm_explorations$webgl$WebGL$toHtmlWith = F3(
@@ -8926,9 +9117,9 @@ var $author$project$Game$touchCoordinates = function (touchEvent) {
 	return A2(
 		$elm$core$Maybe$map,
 		function ($) {
-			return $.dg;
+			return $.di;
 		},
-		$elm$core$List$head(touchEvent.dd));
+		$elm$core$List$head(touchEvent.df));
 };
 var $elm$html$Html$Attributes$width = function (n) {
 	return A2(
@@ -8950,7 +9141,7 @@ var $author$project$Game$view = function (_v0) {
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$width(
-				$elm$core$Basics$round(computer.w.bj)),
+				$elm$core$Basics$round(computer.w.bi)),
 				$elm$html$Html$Attributes$height(
 				$elm$core$Basics$round(computer.w.a7)),
 				$mpizenberg$elm_pointer_events$Html$Events$Extra$Touch$onStart(
@@ -8975,16 +9166,16 @@ var $author$project$Game$program = F4(
 	function (title, initialMemory, updateMemory, viewMemory) {
 		return $elm$browser$Browser$document(
 			{
-				dJ: $author$project$Game$init(initialMemory),
-				d9: $author$project$Game$subscriptions,
-				ep: A2($author$project$Game$update, updateMemory, viewMemory),
-				eu: function (model) {
+				dL: $author$project$Game$init(initialMemory),
+				eb: $author$project$Game$subscriptions,
+				er: A2($author$project$Game$update, updateMemory, viewMemory),
+				ew: function (model) {
 					return {
-						da: _List_fromArray(
+						dc: _List_fromArray(
 							[
 								$author$project$Game$view(model)
 							]),
-						ee: title
+						eg: title
 					};
 				}
 			});
@@ -9029,7 +9220,7 @@ var $author$project$Components$addEntity = function (components) {
 };
 var $justgook$elm_game_logic$Logic$Component$Spec = F2(
 	function (get, set) {
-		return {c: get, cT: set};
+		return {c: get, cV: set};
 	});
 var $author$project$Components$animationOffsets = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
@@ -9064,15 +9255,15 @@ var $author$project$Components$collisions = A2(
 				components,
 				{an: comps});
 		}));
-var $author$project$Main$sprites10 = {bu: 'sprites10.png', b0: 1, b1: 2, b2: 3, b3: 4, b4: 5, b5: 6, b6: 7, H: 10, bO: 8, cX: 12, cY: 9, cZ: 10, c_: 11};
+var $author$project$Main$sprites10 = {bt: 'sprites10.png', b2: 1, b3: 2, b4: 3, b5: 4, b6: 5, b7: 6, b8: 7, H: 10, bP: 8, cZ: 12, c_: 9, c$: 10, c0: 11};
 var $author$project$Main$defaultSize = $author$project$Main$sprites10.H;
 var $author$project$Main$viewport = function (_v0) {
-	var width = _v0.bj;
+	var width = _v0.bi;
 	var height = _v0.a7;
-	return {bn: (-height) / 2, a7: height, a8: (-width) / 2, d2: width / 2, bN: height / 2, bj: width};
+	return {bm: (-height) / 2, a7: height, a8: (-width) / 2, d4: width / 2, bO: height / 2, bi: width};
 }(
-	{a7: 200, bj: 320});
-var $author$project$Main$defaultSpeed = $author$project$Main$viewport.bj / 210;
+	{a7: 200, bi: 320});
+var $author$project$Main$defaultSpeed = $author$project$Main$viewport.bi / 210;
 var $author$project$Components$directions = A2(
 	$justgook$elm_game_logic$Logic$Component$Spec,
 	function ($) {
@@ -9246,23 +9437,23 @@ var $elm$core$Elm$JsArray$slice = _JsArray_slice;
 var $elm$core$Array$appendHelpBuilder = F2(
 	function (tail, builder) {
 		var tailLen = $elm$core$Elm$JsArray$length(tail);
-		var notAppended = ($elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(builder.o)) - tailLen;
-		var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, builder.o, tail);
+		var notAppended = ($elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(builder.p)) - tailLen;
+		var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, builder.p, tail);
 		return (notAppended < 0) ? {
-			p: A2(
+			q: A2(
 				$elm$core$List$cons,
 				$elm$core$Array$Leaf(appended),
-				builder.p),
-			l: builder.l + 1,
-			o: A3($elm$core$Elm$JsArray$slice, notAppended, tailLen, tail)
+				builder.q),
+			m: builder.m + 1,
+			p: A3($elm$core$Elm$JsArray$slice, notAppended, tailLen, tail)
 		} : ((!notAppended) ? {
-			p: A2(
+			q: A2(
 				$elm$core$List$cons,
 				$elm$core$Array$Leaf(appended),
-				builder.p),
-			l: builder.l + 1,
-			o: $elm$core$Elm$JsArray$empty
-		} : {p: builder.p, l: builder.l, o: appended});
+				builder.q),
+			m: builder.m + 1,
+			p: $elm$core$Elm$JsArray$empty
+		} : {q: builder.q, m: builder.m, p: appended});
 	});
 var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
 var $elm$core$Basics$ge = _Utils_ge;
@@ -9370,9 +9561,9 @@ var $elm$core$Array$builderFromArray = function (_v0) {
 			}
 		});
 	return {
-		p: A3($elm$core$Elm$JsArray$foldl, helper, _List_Nil, tree),
-		l: (len / $elm$core$Array$branchFactor) | 0,
-		o: tail
+		q: A3($elm$core$Elm$JsArray$foldl, helper, _List_Nil, tree),
+		m: (len / $elm$core$Array$branchFactor) | 0,
+		p: tail
 	};
 };
 var $elm$core$Array$append = F2(
@@ -9514,7 +9705,7 @@ var $justgook$elm_game_logic$Logic$Entity$with = F2(
 			entityID,
 			component,
 			spec.c(world));
-		var updatedWorld = A2(spec.cT, updatedComponents, world);
+		var updatedWorld = A2(spec.cV, updatedComponents, world);
 		return _Utils_Tuple2(entityID, updatedWorld);
 	});
 var $author$project$Main$guardian = F2(
@@ -9532,7 +9723,7 @@ var $author$project$Main$guardian = F2(
 				$justgook$elm_game_logic$Logic$Entity$with,
 				_Utils_Tuple2(
 					$author$project$Components$healths,
-					{c6: 1, dL: 0}),
+					{c8: 1, dN: 0}),
 				A2(
 					$justgook$elm_game_logic$Logic$Entity$with,
 					_Utils_Tuple2($author$project$Components$animationOffsets, randomAnimationOffset),
@@ -9629,7 +9820,7 @@ var $author$project$Main$predator = F3(
 					$justgook$elm_game_logic$Logic$Entity$with,
 					_Utils_Tuple2(
 						$author$project$Components$healths,
-						{c6: 2, dL: t}),
+						{c8: 2, dN: t}),
 					A2(
 						$justgook$elm_game_logic$Logic$Entity$with,
 						_Utils_Tuple2($author$project$Components$animationOffsets, randomAnimationOffset),
@@ -9722,7 +9913,7 @@ var $author$project$Main$prey = F2(
 					$justgook$elm_game_logic$Logic$Entity$with,
 					_Utils_Tuple2(
 						$author$project$Components$healths,
-						{c6: 3, dL: 0}),
+						{c8: 3, dN: 0}),
 					A2(
 						$justgook$elm_game_logic$Logic$Entity$with,
 						_Utils_Tuple2($author$project$Components$animationOffsets, randomAnimationOffset),
@@ -9778,7 +9969,7 @@ var $author$project$Components$set = F2(
 	function (w, c) {
 		return _Utils_update(
 			w,
-			{di: c});
+			{dk: c});
 	});
 var $author$project$Main$spawnMenu = function (w) {
 	return A2(
@@ -9786,16 +9977,16 @@ var $author$project$Main$spawnMenu = function (w) {
 		w,
 		A2(
 			$author$project$Main$prey,
-			{c1: $author$project$Main$viewport.a8 + 20, c2: 0},
+			{c3: $author$project$Main$viewport.a8 + 20, c4: 0},
 			A2(
 				$author$project$Main$guardian,
-				{c1: 0, c2: 0},
+				{c3: 0, c4: 0},
 				A3(
 					$author$project$Main$predator,
-					{c1: $author$project$Main$viewport.d2 - 10, c2: $author$project$Main$viewport.bj / 10},
+					{c3: $author$project$Main$viewport.d4 - 10, c4: $author$project$Main$viewport.bi / 10},
 					0,
 					_Utils_Tuple2(
-						w.di,
+						w.dk,
 						$elm$random$Random$initialSeed(42))))).a);
 };
 var $author$project$Main$CountingDown = function (a) {
@@ -9811,24 +10002,24 @@ var $justgook$elm_game_logic$Logic$System$applyIf = F3(
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$add = F2(
 	function (a, b) {
-		return {c1: a.c1 + b.c1, c2: a.c2 + b.c2};
+		return {c3: a.c3 + b.c3, c4: a.c4 + b.c4};
 	});
 var $elm$core$Basics$sqrt = _Basics_sqrt;
 var $justgook$alt_linear_algebra$AltMath$Vector2$direction = F2(
 	function (a, b) {
-		var c = {c1: a.c1 - b.c1, c2: a.c2 - b.c2};
-		var len = $elm$core$Basics$sqrt((c.c1 * c.c1) + (c.c2 * c.c2));
-		return {c1: c.c1 / len, c2: c.c2 / len};
+		var c = {c3: a.c3 - b.c3, c4: a.c4 - b.c4};
+		var len = $elm$core$Basics$sqrt((c.c3 * c.c3) + (c.c4 * c.c4));
+		return {c3: c.c3 / len, c4: c.c4 / len};
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$distanceSquared = F2(
 	function (a, b) {
-		var c = {c1: a.c1 - b.c1, c2: a.c2 - b.c2};
-		return (c.c1 * c.c1) + (c.c2 * c.c2);
+		var c = {c3: a.c3 - b.c3, c4: a.c4 - b.c4};
+		return (c.c3 * c.c3) + (c.c4 * c.c4);
 	});
 var $elm$core$Basics$pow = _Basics_pow;
 var $justgook$alt_linear_algebra$AltMath$Vector2$scale = F2(
 	function (s, v2) {
-		return {c1: s * v2.c1, c2: s * v2.c2};
+		return {c3: s * v2.c3, c4: s * v2.c4};
 	});
 var $author$project$Main$followPoint = F2(
 	function (point, _v0) {
@@ -10029,20 +10220,20 @@ var $justgook$elm_game_logic$Logic$System$step3 = F5(
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
 			!_Utils_eq(result.d, combined.d),
-			spec3.cT(result.d),
+			spec3.cV(result.d),
 			A3(
 				$justgook$elm_game_logic$Logic$System$applyIf,
 				!_Utils_eq(result.a_, combined.a_),
-				spec2.cT(result.a_),
+				spec2.cV(result.a_),
 				A3(
 					$justgook$elm_game_logic$Logic$System$applyIf,
 					!_Utils_eq(result.h, combined.h),
-					spec1.cT(result.h),
+					spec1.cV(result.h),
 					world)));
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$sub = F2(
 	function (a, b) {
-		return {c1: a.c1 - b.c1, c2: a.c2 - b.c2};
+		return {c3: a.c3 - b.c3, c4: a.c4 - b.c4};
 	});
 var $author$project$Main$applyDirection = function (components) {
 	return A5(
@@ -10073,7 +10264,7 @@ var $author$project$Main$applyDirection = function (components) {
 					var position = _v0.a;
 					var direction = _v1.a;
 					var setFacing = _v2.b;
-					var facing = (A2($justgook$alt_linear_algebra$AltMath$Vector2$sub, direction, position).c1 < 1) ? 0 : 1;
+					var facing = (A2($justgook$alt_linear_algebra$AltMath$Vector2$sub, direction, position).c3 < 1) ? 0 : 1;
 					return A3(
 						$justgook$elm_game_logic$Logic$System$applyIf,
 						!_Utils_eq(direction, position),
@@ -10251,11 +10442,11 @@ var $justgook$elm_game_logic$Logic$System$step2 = F4(
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
 			!_Utils_eq(result.a_, combined.a_),
-			spec2.cT(result.a_),
+			spec2.cV(result.a_),
 			A3(
 				$justgook$elm_game_logic$Logic$System$applyIf,
 				!_Utils_eq(result.h, combined.h),
-				spec1.cT(result.h),
+				spec1.cV(result.h),
 				world));
 	});
 var $author$project$Main$boundedBy = F2(
@@ -10270,8 +10461,8 @@ var $author$project$Main$boundedBy = F2(
 					return A2(
 						setPosition,
 						{
-							c1: A3($elm$core$Basics$clamp, screen.a8 + (size / 2), screen.d2 - (size / 2), position.c1),
-							c2: A3($elm$core$Basics$clamp, screen.bn + (size / 2), screen.bN - (size / 2), position.c2)
+							c3: A3($elm$core$Basics$clamp, screen.a8 + (size / 2), screen.d4 - (size / 2), position.c3),
+							c4: A3($elm$core$Basics$clamp, screen.bm + (size / 2), screen.bO - (size / 2), position.c4)
 						},
 						xs);
 				}),
@@ -10342,13 +10533,13 @@ var $author$project$Main$follow = function (components) {
 		components);
 };
 var $author$project$Main$scalingFactor = function (screen) {
-	return (_Utils_cmp(screen.bj / screen.a7, $author$project$Main$viewport.bj / $author$project$Main$viewport.a7) > 0) ? (screen.a7 / ($author$project$Main$viewport.a7 + ($author$project$Main$sprites10.H * 3))) : (screen.bj / ($author$project$Main$viewport.bj + ($author$project$Main$sprites10.H * 3)));
+	return (_Utils_cmp(screen.bi / screen.a7, $author$project$Main$viewport.bi / $author$project$Main$viewport.a7) > 0) ? (screen.a7 / ($author$project$Main$viewport.a7 + ($author$project$Main$sprites10.H * 3))) : (screen.bi / ($author$project$Main$viewport.bi + ($author$project$Main$sprites10.H * 3)));
 };
 var $author$project$Main$toViewport = F2(
 	function (screen, coords) {
 		return {
-			c1: coords.c1 / $author$project$Main$scalingFactor(screen),
-			c2: coords.c2 / $author$project$Main$scalingFactor(screen)
+			c3: coords.c3 / $author$project$Main$scalingFactor(screen),
+			c4: coords.c4 / $author$project$Main$scalingFactor(screen)
 		};
 	});
 var $author$project$Main$mouseInput = F3(
@@ -10358,7 +10549,7 @@ var $author$project$Main$mouseInput = F3(
 			F3(
 				function (_v0, _v1, cs) {
 					var setDirection = _v1.b;
-					return mouse.du ? A2(
+					return mouse.dw ? A2(
 						setDirection,
 						A2($author$project$Main$toViewport, screen, mouse),
 						cs) : cs;
@@ -10499,19 +10690,19 @@ var $justgook$elm_game_logic$Logic$System$step4 = F6(
 		return A3(
 			$justgook$elm_game_logic$Logic$System$applyIf,
 			!_Utils_eq(result.r, combined.r),
-			spec4.cT(result.r),
+			spec4.cV(result.r),
 			A3(
 				$justgook$elm_game_logic$Logic$System$applyIf,
 				!_Utils_eq(result.d, combined.d),
-				spec3.cT(result.d),
+				spec3.cV(result.d),
 				A3(
 					$justgook$elm_game_logic$Logic$System$applyIf,
 					!_Utils_eq(result.a_, combined.a_),
-					spec2.cT(result.a_),
+					spec2.cV(result.a_),
 					A3(
 						$justgook$elm_game_logic$Logic$System$applyIf,
 						!_Utils_eq(result.h, combined.h),
-						spec1.cT(result.h),
+						spec1.cV(result.h),
 						world))));
 	});
 var $author$project$Main$resolveCollisions = function (components) {
@@ -10560,20 +10751,20 @@ var $author$project$Main$spawnPlaying = function (w) {
 		w,
 		A2(
 			$author$project$Main$prey,
-			{c1: $author$project$Main$viewport.a8 + 20, c2: 0},
+			{c3: $author$project$Main$viewport.a8 + 20, c4: 0},
 			A2(
 				$author$project$Main$guardian,
-				{c1: 0, c2: 0},
+				{c3: 0, c4: 0},
 				A3(
 					$author$project$Main$predator,
-					{c1: $author$project$Main$viewport.d2 - 10, c2: $author$project$Main$viewport.bj / 10},
+					{c3: $author$project$Main$viewport.d4 - 10, c4: $author$project$Main$viewport.bi / 10},
 					0,
 					A3(
 						$author$project$Main$predator,
-						{c1: $author$project$Main$viewport.d2 - 10, c2: (-$author$project$Main$viewport.bj) / 10},
+						{c3: $author$project$Main$viewport.d4 - 10, c4: (-$author$project$Main$viewport.bi) / 10},
 						0,
 						_Utils_Tuple2(
-							w.di,
+							w.dk,
 							$elm$random$Random$initialSeed(42)))))).a);
 };
 var $elm$core$Basics$modBy = _Basics_modBy;
@@ -10602,17 +10793,17 @@ var $author$project$Main$updateMenu = F3(
 		var mouse = _v0.i;
 		var screen = _v0.w;
 		var time = _v0.g;
-		if (mouse.bo) {
+		if (mouse.bn) {
 			return interactedToEnableAudio ? $author$project$Main$spawnPlaying(
 				_Utils_update(
 					world,
 					{
-						di: $author$project$Components$empty,
+						dk: $author$project$Components$empty,
 						x: $author$project$Main$Playing(
 							{
 								aK: time.n,
 								az: 0,
-								bg: time.n,
+								bL: time.n,
 								Y: $author$project$Main$CountingDown(5)
 							})
 					})) : _Utils_update(
@@ -10636,10 +10827,10 @@ var $author$project$Main$updateMenu = F3(
 										$author$project$Main$mouseInput,
 										screen,
 										{
-											bo: true,
-											du: true,
-											c1: A4($author$project$Playground$wave, -$author$project$Main$viewport.bj, $author$project$Main$viewport.bj, t, time),
-											c2: A4(
+											bn: true,
+											dw: true,
+											c3: A4($author$project$Playground$wave, -$author$project$Main$viewport.bi, $author$project$Main$viewport.bi, t, time),
+											c4: A4(
 												$author$project$Playground$wave,
 												-$author$project$Main$viewport.a7,
 												$author$project$Main$viewport.a7,
@@ -10650,7 +10841,7 @@ var $author$project$Main$updateMenu = F3(
 														n: time.n - $elm$core$Basics$round((t / 4) * 1000)
 													}))
 										},
-										world.di)))))));
+										world.dk)))))));
 		}
 	});
 var $author$project$Main$Alive = {$: 0};
@@ -10664,7 +10855,7 @@ var $author$project$Main$fruit = F2(
 				$justgook$elm_game_logic$Logic$Entity$with,
 				_Utils_Tuple2(
 					$author$project$Components$healths,
-					{c6: 1, dL: 0}),
+					{c8: 1, dN: 0}),
 				A2(
 					$justgook$elm_game_logic$Logic$Entity$with,
 					_Utils_Tuple2($author$project$Components$sizes, $author$project$Main$defaultSize * 2),
@@ -10763,8 +10954,8 @@ var $author$project$Main$many = F3(
 				n,
 				A2(
 					$elm$random$Random$pair,
-					A2($elm$random$Random$float, $author$project$Main$viewport.a8, $author$project$Main$viewport.d2),
-					A2($elm$random$Random$float, $author$project$Main$viewport.bn, $author$project$Main$viewport.bN))),
+					A2($elm$random$Random$float, $author$project$Main$viewport.a8, $author$project$Main$viewport.d4),
+					A2($elm$random$Random$float, $author$project$Main$viewport.bm, $author$project$Main$viewport.bO))),
 			seed);
 		var pos = _v1.a;
 		var seed_ = _v1.b;
@@ -10776,7 +10967,7 @@ var $author$project$Main$many = F3(
 					var y = _v2.b;
 					return A2(
 						fn,
-						{c1: x, c2: y},
+						{c3: x, c4: y},
 						acc);
 				}),
 			_Utils_Tuple2(world, seed_),
@@ -10808,7 +10999,7 @@ var $justgook$elm_game_logic$Logic$Entity$remove = F2(
 		return _Utils_Tuple2(
 			entityID,
 			A2(
-				spec.cT,
+				spec.cV,
 				A3(
 					$elm$core$Array$set,
 					entityID,
@@ -10855,7 +11046,7 @@ var $author$project$Main$removeDead = F2(
 			$justgook$elm_game_logic$Logic$System$indexedFoldl,
 			F3(
 				function (id, health, newComponents) {
-					return (health.c6 <= 0) ? ((_Utils_cmp(time.n - health.dL, $author$project$Main$removeDeadAfter) > 0) ? A2($author$project$Components$removeEntity, id, newComponents).b : A2(
+					return (health.c8 <= 0) ? ((_Utils_cmp(time.n - health.dN, $author$project$Main$removeDeadAfter) > 0) ? A2($author$project$Components$removeEntity, id, newComponents).b : A2(
 						$justgook$elm_game_logic$Logic$Entity$remove,
 						$author$project$Components$eats,
 						A2(
@@ -10880,7 +11071,7 @@ var $author$project$Main$removeDead = F2(
 	});
 var $justgook$alt_linear_algebra$AltMath$Vector2$Vec2 = F2(
 	function (x, y) {
-		return {c1: x, c2: y};
+		return {c3: x, c4: y};
 	});
 var $justgook$elm_game_logic$Logic$System$indexedFoldl4 = F6(
 	function (f, comp1, comp2, comp3, comp4, acc_) {
@@ -10974,20 +11165,20 @@ var $author$project$Main$takeDamage = F2(
 			$justgook$elm_game_logic$Logic$System$indexedFoldl4,
 			F6(
 				function (id, kind, health, position, size, newComponents) {
-					var _v0 = ((health.c6 > 0) && (_Utils_cmp(time.n - health.dL, $author$project$Main$invulnerabilityTime) > 0)) ? A7(
+					var _v0 = ((health.c8 > 0) && (_Utils_cmp(time.n - health.dN, $author$project$Main$invulnerabilityTime) > 0)) ? A7(
 						$justgook$elm_game_logic$Logic$System$indexedFoldl5,
 						F7(
 							function (targetId, targetEats, targetKind, targetPosition, targetSize, targetHealth, _v1) {
 								var correctedHealth = _v1.a;
 								var newerComponents = _v1.b;
-								return ((!_Utils_eq(targetPosition, position)) && ((correctedHealth.c6 > 0) && ((_Utils_cmp(time.n - correctedHealth.dL, $author$project$Main$invulnerabilityTime) > 0) && (A2(
+								return ((!_Utils_eq(targetPosition, position)) && ((correctedHealth.c8 > 0) && ((_Utils_cmp(time.n - correctedHealth.dN, $author$project$Main$invulnerabilityTime) > 0) && (A2(
 									$elm$core$Set$member,
 									$author$project$Components$kindToString(kind),
 									targetEats) && (A2(
 									$author$project$Main$overlapsWith,
 									_Utils_Tuple2(targetPosition, targetSize),
-									_Utils_Tuple2(position, size)) && ((targetHealth.c6 > 0) && (_Utils_cmp(time.n - targetHealth.dL, $author$project$Main$invulnerabilityTime) > 0))))))) ? _Utils_Tuple2(
-									{c6: correctedHealth.c6 - 1, dL: time.n},
+									_Utils_Tuple2(position, size)) && ((targetHealth.c8 > 0) && (_Utils_cmp(time.n - targetHealth.dN, $author$project$Main$invulnerabilityTime) > 0))))))) ? _Utils_Tuple2(
+									{c8: correctedHealth.c8 - 1, dN: time.n},
 									function () {
 										switch (targetKind) {
 											case 1:
@@ -11001,13 +11192,13 @@ var $author$project$Main$takeDamage = F2(
 													_Utils_Tuple2(
 														newerComponents,
 														$elm$random$Random$initialSeed(
-															(time.n + $elm$core$Basics$round(targetPosition.c1)) + $elm$core$Basics$round(targetPosition.c2)))).a;
+															(time.n + $elm$core$Basics$round(targetPosition.c3)) + $elm$core$Basics$round(targetPosition.c4)))).a;
 												return A2(
-													$author$project$Components$healths.cT,
+													$author$project$Components$healths.cV,
 													A3(
 														$justgook$elm_game_logic$Logic$Component$set,
 														targetId,
-														{c6: targetHealth.c6 - 1, dL: time.n},
+														{c8: targetHealth.c8 - 1, dN: time.n},
 														$author$project$Components$healths.c(newerewerComponents)),
 													newerewerComponents);
 											case 0:
@@ -11026,7 +11217,7 @@ var $author$project$Main$takeDamage = F2(
 														_Utils_Tuple2(
 															newerComponents,
 															$elm$random$Random$initialSeed(
-																(time.n + $elm$core$Basics$round(targetPosition.c1)) + $elm$core$Basics$round(targetPosition.c2))))).a;
+																(time.n + $elm$core$Basics$round(targetPosition.c3)) + $elm$core$Basics$round(targetPosition.c4))))).a;
 											default:
 												return newerComponents;
 										}
@@ -11041,7 +11232,7 @@ var $author$project$Main$takeDamage = F2(
 					var newHealth = _v0.a;
 					var newestComponents = _v0.b;
 					return A2(
-						$author$project$Components$healths.cT,
+						$author$project$Components$healths.cV,
 						A3(
 							$justgook$elm_game_logic$Logic$Component$set,
 							id,
@@ -11077,9 +11268,7 @@ var $author$project$Main$updatePlaying = F3(
 		var status = playingState.Y;
 		var score = playingState.az;
 		var lastFrameTime = playingState.aK;
-		var startTime = playingState.bg;
 		var mouse = _v0.i;
-		var keyboard = _v0.aJ;
 		var screen = _v0.w;
 		var time = _v0.g;
 		var alive = _Utils_eq(status, $author$project$Main$Alive);
@@ -11110,7 +11299,7 @@ var $author$project$Main$updatePlaying = F3(
 											$justgook$elm_game_logic$Logic$System$applyIf,
 											alive,
 											A2($author$project$Main$mouseInput, screen, mouse),
-											world.di)))))))));
+											world.dk)))))))));
 		return A2(
 			$author$project$Main$updateLastFrameTime,
 			time,
@@ -11136,16 +11325,16 @@ var $author$project$Main$updatePlaying = F3(
 										}))
 							}) : newWorld);
 					case 1:
-						return mouse.bo ? $author$project$Main$spawnPlaying(
+						return mouse.bn ? $author$project$Main$spawnPlaying(
 							_Utils_update(
 								newWorld,
 								{
-									di: $author$project$Components$empty,
+									dk: $author$project$Components$empty,
 									x: $author$project$Main$Playing(
 										{
 											aK: time.n,
 											az: 0,
-											bg: time.n,
+											bL: time.n,
 											Y: $author$project$Main$CountingDown(3)
 										})
 								})) : world;
@@ -11154,10 +11343,10 @@ var $author$project$Main$updatePlaying = F3(
 							$justgook$elm_game_logic$Logic$System$foldl2,
 							F3(
 								function (_v2, health, n) {
-									return (health.c6 > 0) ? (n + 1) : n;
+									return (health.c8 > 0) ? (n + 1) : n;
 								}),
-							$author$project$Components$userInputs.c(newWorld.di),
-							$author$project$Components$healths.c(newWorld.di),
+							$author$project$Components$userInputs.c(newWorld.dk),
+							$author$project$Components$healths.c(newWorld.dk),
 							0);
 						var spawnPredator = function (w) {
 							return ((A2($elm$core$Basics$modBy, 10, (time.n / 1000) | 0) === 1) && (!A2($elm$core$Basics$modBy, 10, (lastFrameTime / 1000) | 0))) ? A2(
@@ -11170,7 +11359,7 @@ var $author$project$Main$updatePlaying = F3(
 										return A2($author$project$Main$predator, pos, 0);
 									},
 									_Utils_Tuple2(
-										w.di,
+										w.dk,
 										$elm$random$Random$initialSeed(time.n))).a) : w;
 						};
 						var spawnGuardian = function (w) {
@@ -11182,7 +11371,7 @@ var $author$project$Main$updatePlaying = F3(
 									1,
 									$author$project$Main$guardian,
 									_Utils_Tuple2(
-										w.di,
+										w.dk,
 										$elm$random$Random$initialSeed(time.n))).a) : w;
 						};
 						var spawnFruit = function (w) {
@@ -11194,7 +11383,7 @@ var $author$project$Main$updatePlaying = F3(
 									1,
 									$author$project$Main$fruit,
 									_Utils_Tuple2(
-										w.di,
+										w.dk,
 										$elm$random$Random$initialSeed(time.n))).a) : w;
 						};
 						var newScore = (_Utils_cmp((time.n / 1000) | 0, (lastFrameTime / 1000) | 0) > 0) ? (score + 1) : score;
@@ -11236,25 +11425,25 @@ var $justgook$webgl_shape$WebGL$Shape2d$Group = function (a) {
 var $author$project$Playground$group = function (shapes) {
 	return {
 		h: 0,
-		k: $justgook$webgl_shape$WebGL$Shape2d$Group(shapes),
+		l: $justgook$webgl_shape$WebGL$Shape2d$Group(shapes),
 		j: 1,
 		e: 1,
 		f: 1,
-		c1: 0,
-		c2: 0,
+		c3: 0,
+		c4: 0,
 		y: 0
 	};
 };
 var $author$project$Playground$scale = F2(
 	function (ns, _v0) {
 		var shape = _v0;
-		var x = shape.c1;
-		var y = shape.c2;
+		var x = shape.c3;
+		var y = shape.c4;
 		var a = shape.h;
 		var sx = shape.e;
 		var sy = shape.f;
 		var o = shape.j;
-		var form = shape.k;
+		var form = shape.l;
 		return _Utils_update(
 			shape,
 			{e: sx * ns, f: sy * ns});
@@ -11288,7 +11477,7 @@ var $justgook$elm_image$Image$fromList = F2(
 				{
 					ao: $justgook$elm_image$Image$Info$FromDataChannel4(3),
 					a7: ($elm$core$List$length(l) / w) | 0,
-					bj: w
+					bi: w
 				}),
 			l);
 	});
@@ -11372,9 +11561,9 @@ var $elm_explorations$webgl$WebGL$Internal$DepthTest = F4(
 		return {$: 1, a: a, b: b, c: c, d: d};
 	});
 var $elm_explorations$webgl$WebGL$Settings$DepthTest$lessOrEqual = function (_v0) {
-	var write = _v0.ey;
-	var near = _v0.dR;
-	var far = _v0.dy;
+	var write = _v0.eA;
+	var near = _v0.dT;
+	var far = _v0.dA;
 	return A4($elm_explorations$webgl$WebGL$Internal$DepthTest, 515, write, near, far);
 };
 var $elm_explorations$webgl$WebGL$Settings$Blend$Factor = $elm$core$Basics$identity;
@@ -11385,13 +11574,13 @@ var $author$project$Playground$Render$defaultEntitySettings = _List_fromArray(
 		A2($elm_explorations$webgl$WebGL$Settings$Blend$add, $elm_explorations$webgl$WebGL$Settings$Blend$srcAlpha, $elm_explorations$webgl$WebGL$Settings$Blend$oneMinusSrcAlpha),
 		A4($elm_explorations$webgl$WebGL$Settings$colorMask, true, true, true, false),
 		$elm_explorations$webgl$WebGL$Settings$DepthTest$lessOrEqual(
-		{dy: 1, dR: 0, ey: true})
+		{dA: 1, dT: 0, eA: true})
 	]);
 var $elm_explorations$webgl$WebGL$entityWith = _WebGL_entity;
 var $author$project$Playground$Extra$Tilemap$fragTilemap = {
 	src: '\nprecision mediump float;\nvarying vec2 uv;\nuniform sampler2D uAtlas;\nuniform sampler2D uLut;\nuniform vec2 uAtlasSize;\nuniform vec2 uLutSize;\nuniform vec2 uTileSize;\nuniform float uA;\n\nfloat color2float(vec4 color) {\n\n    return\n    color.a * 255.0\n    + color.b * 256.0 * 255.0\n    + color.g * 256.0 * 256.0 * 255.0\n    + color.r * 256.0 * 256.0 * 256.0 * 255.0;\n    }\n\n/**\n * Returns accurate MOD when arguments are approximate integers.\n */\nfloat modI(float a,float b) {\n    float m=a-floor((a+0.5)/b)*b;\n    return floor(m+0.5);\n}\n\nvoid main () {\n   vec2 point = floor(uv * uLutSize);\n   vec2 offset = fract(uv * uLutSize);\n\n   //(2i + 1)/(2N) Pixel center\n   vec2 coordinate = (point + 0.5) / uLutSize;\n   float index = color2float(texture2D(uLut, coordinate));\n   if (index <= 0.0) discard;\n   vec2 grid = uAtlasSize / uTileSize;\n   // tile indexes in uAtlas starts from zero, but in lut zero is used for\n   // \"none\" placeholder\n   vec2 tile = vec2(modI((index - 1.), grid.x), int(index - 1.) / int(grid.x));\n   // inverting reading botom to top\n   tile.y = grid.y - tile.y - 1.;\n   vec2 fragmentOffsetPx = floor(offset * uTileSize);\n   //(2i + 1)/(2N) Pixel center\n   vec2 pixel = (floor(tile * uTileSize + fragmentOffsetPx) + 0.5) / uAtlasSize;\n   gl_FragColor = texture2D(uAtlas, pixel);\n   gl_FragColor.a *= float(index != 0.);\n   if(gl_FragColor.a <= 0.025) discard;\n}\n    ',
 	attributes: {},
-	uniforms: {uA: 'eg', uAtlas: 'eh', uAtlasSize: 'ei', uLut: 'ej', uLutSize: 'ek', uTileSize: 'en'}
+	uniforms: {uA: 'ei', uAtlas: 'ej', uAtlasSize: 'ek', uLut: 'el', uLutSize: 'em', uTileSize: 'ep'}
 };
 var $elm$core$Tuple$mapBoth = F3(
 	function (funcA, funcB, _v0) {
@@ -11406,7 +11595,7 @@ var $elm_explorations$webgl$WebGL$Mesh1 = F2(
 		return {$: 0, a: a, b: b};
 	});
 var $elm_explorations$webgl$WebGL$triangleStrip = $elm_explorations$webgl$WebGL$Mesh1(
-	{bW: 1, cc: 0, cy: 5});
+	{bY: 1, ce: 0, cA: 5});
 var $elm_explorations$linear_algebra$Math$Vector2$vec2 = _MJS_v2;
 var $author$project$Playground$Shader$mesh = $elm_explorations$webgl$WebGL$triangleStrip(
 	_List_fromArray(
@@ -11428,19 +11617,19 @@ var $elm_explorations$webgl$WebGL$Texture$size = _Texture_size;
 var $author$project$Playground$Shader$vertImage = {
 	src: '\n            precision mediump float;\n            attribute vec2 aP;\n            uniform vec4 uT;\n            uniform vec2 uP;\n            uniform float z;\n            varying vec2 uv;\n            vec2 edgeFix = vec2(0.0000001, -0.0000001);\n            void main () {\n                uv = aP * .5 + 0.5 + edgeFix;\n                gl_Position = vec4(aP * mat2(uT) + uP, z  * -1.19209304e-7, 1.0);\n            }\n        ',
 	attributes: {aP: 'aZ'},
-	uniforms: {uP: 'el', uT: 'em', z: 'y'}
+	uniforms: {uP: 'en', uT: 'eo', z: 'y'}
 };
 var $author$project$Playground$Extra$Tilemap$tilemap = F4(
 	function (tileW, tileH, tileset, lut) {
 		return {
 			h: 0,
-			k: A2(
+			l: A2(
 				$justgook$webgl_shape$WebGL$Shape2d$Textured,
 				tileset,
 				function (tileset_) {
 					return {
 						h: 0,
-						k: A2(
+						l: A2(
 							$justgook$webgl_shape$WebGL$Shape2d$Textured,
 							lut,
 							function (lut_) {
@@ -11460,7 +11649,7 @@ var $author$project$Playground$Extra$Tilemap$tilemap = F4(
 								var h1 = _v1.b;
 								return {
 									h: 0,
-									k: A3(
+									l: A3(
 										$justgook$webgl_shape$WebGL$Shape2d$Form,
 										w2 * tileW,
 										h2 * tileH,
@@ -11473,38 +11662,38 @@ var $author$project$Playground$Extra$Tilemap$tilemap = F4(
 													$author$project$Playground$Extra$Tilemap$fragTilemap,
 													$author$project$Playground$Shader$mesh,
 													{
-														eg: opacity,
-														eh: tileset_,
-														ei: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, w1, h1),
-														ej: lut_,
-														ek: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, w2, h2),
-														el: translate,
-														em: scaleRotateSkew,
-														en: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, tileW, tileH),
+														ei: opacity,
+														ej: tileset_,
+														ek: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, w1, h1),
+														el: lut_,
+														em: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, w2, h2),
+														en: translate,
+														eo: scaleRotateSkew,
+														ep: A2($elm_explorations$linear_algebra$Math$Vector2$vec2, tileW, tileH),
 														y: z
 													});
 											})),
 									j: 1,
 									e: 1,
 									f: 1,
-									c1: 0,
-									c2: 0,
+									c3: 0,
+									c4: 0,
 									y: 0
 								};
 							}),
 						j: 1,
 						e: 1,
 						f: 1,
-						c1: 0,
-						c2: 0,
+						c3: 0,
+						c4: 0,
 						y: 0
 					};
 				}),
 			j: 1,
 			e: 1,
 			f: 1,
-			c1: 0,
-			c2: 0,
+			c3: 0,
+			c4: 0,
 			y: 0
 		};
 	});
@@ -11871,7 +12060,7 @@ var $elm$bytes$Bytes$Decode$succeed = function (a) {
 var $elm$bytes$Bytes$Decode$unsignedInt8 = _Bytes_read_u8;
 var $danfishgold$base64_bytes$Decode$loopHelp = function (_v0) {
 	var remaining = _v0.bf;
-	var string = _v0.bh;
+	var string = _v0.bg;
 	if (remaining >= 18) {
 		return A2(
 			$elm$bytes$Bytes$Decode$map,
@@ -11879,7 +12068,7 @@ var $danfishgold$base64_bytes$Decode$loopHelp = function (_v0) {
 				return $elm$bytes$Bytes$Decode$Loop(
 					{
 						bf: remaining - 18,
-						bh: _Utils_ap(string, result)
+						bg: _Utils_ap(string, result)
 					});
 			},
 			$danfishgold$base64_bytes$Decode$decode18Bytes);
@@ -11891,7 +12080,7 @@ var $danfishgold$base64_bytes$Decode$loopHelp = function (_v0) {
 					return $elm$bytes$Bytes$Decode$Loop(
 						{
 							bf: remaining - 3,
-							bh: _Utils_ap(
+							bg: _Utils_ap(
 								string,
 								A2($danfishgold$base64_bytes$Decode$bitsToChars, combined, 0))
 						});
@@ -11930,7 +12119,7 @@ var $danfishgold$base64_bytes$Decode$loopHelp = function (_v0) {
 var $danfishgold$base64_bytes$Decode$decoder = function (width) {
 	return A2(
 		$elm$bytes$Bytes$Decode$loop,
-		{bf: width, bh: ''},
+		{bf: width, bg: ''},
 		$danfishgold$base64_bytes$Decode$loopHelp);
 };
 var $elm$bytes$Bytes$width = _Bytes_width;
@@ -11944,7 +12133,7 @@ var $danfishgold$base64_bytes$Decode$fromBytes = function (bytes) {
 var $danfishgold$base64_bytes$Base64$fromBytes = $danfishgold$base64_bytes$Decode$fromBytes;
 var $justgook$elm_image$Image$Internal$ImageData$RGBA = 0;
 var $justgook$elm_image$Image$Internal$ImageData$RightDown = 0;
-var $justgook$elm_image$Image$Internal$ImageData$defaultOptions = {b_: 0, cG: 0};
+var $justgook$elm_image$Image$Internal$ImageData$defaultOptions = {b0: 0, cI: 0};
 var $elm$bytes$Bytes$Encode$encode = _Bytes_encode;
 var $elm$bytes$Bytes$Encode$Bytes = function (a) {
 	return {$: 10, a: a};
@@ -12123,7 +12312,7 @@ var $folkertdev$elm_flate$Flate$Dynamic = function (a) {
 var $folkertdev$elm_flate$Flate$WithWindowSize = function (a) {
 	return {$: 1, a: a};
 };
-var $folkertdev$elm_flate$Checksum$Adler32$a32 = {bl: 65521, cB: 5552};
+var $folkertdev$elm_flate$Checksum$Adler32$a32 = {bk: 65521, cD: 5552};
 var $folkertdev$elm_flate$Checksum$Adler32$step8Bytes = F5(
 	function (remaining, s1, s2, word1, word2) {
 		var byte8 = 255 & word2;
@@ -12169,14 +12358,14 @@ var $folkertdev$elm_flate$Checksum$Adler32$processChunkHelp = function (_v0) {
 		},
 		$elm$bytes$Bytes$Decode$unsignedInt8) : $elm$bytes$Bytes$Decode$succeed(
 		$elm$bytes$Bytes$Decode$Done(
-			{F: s1 % $folkertdev$elm_flate$Checksum$Adler32$a32.bl, G: s2 % $folkertdev$elm_flate$Checksum$Adler32$a32.bl})));
+			{F: s1 % $folkertdev$elm_flate$Checksum$Adler32$a32.bk, G: s2 % $folkertdev$elm_flate$Checksum$Adler32$a32.bk})));
 };
 var $folkertdev$elm_flate$Checksum$Adler32$processChunk = function (config) {
 	return A2($elm$bytes$Bytes$Decode$loop, config, $folkertdev$elm_flate$Checksum$Adler32$processChunkHelp);
 };
 var $folkertdev$elm_flate$Checksum$Adler32$chunkedFold = function (_v0) {
-	var bufferSize = _v0.bR;
-	var maxBlockSize = _v0.cw;
+	var bufferSize = _v0.bT;
+	var maxBlockSize = _v0.cy;
 	var go = function (_v1) {
 		var remainingLength = _v1.bH;
 		var s1 = _v1.F;
@@ -12206,8 +12395,8 @@ var $folkertdev$elm_flate$Checksum$Adler32$adler32 = function (buffer) {
 		$elm$bytes$Bytes$Decode$decode,
 		$folkertdev$elm_flate$Checksum$Adler32$chunkedFold(
 			{
-				bR: $elm$bytes$Bytes$width(buffer),
-				cw: $folkertdev$elm_flate$Checksum$Adler32$a32.cB
+				bT: $elm$bytes$Bytes$width(buffer),
+				cy: $folkertdev$elm_flate$Checksum$Adler32$a32.cD
 			}),
 		buffer);
 	if (_v0.$ === 1) {
@@ -12471,7 +12660,7 @@ var $elm$core$Array$fromListHelp = F3(
 				return A2(
 					$elm$core$Array$builderToArray,
 					true,
-					{p: nodeList, l: nodeListSize, o: jsArray});
+					{q: nodeList, m: nodeListSize, p: jsArray});
 			} else {
 				var $temp$list = remainingItems,
 					$temp$nodeList = A2(
@@ -12512,9 +12701,9 @@ var $elm$core$Array$indexedMap = F2(
 		var tree = _v0.c;
 		var tail = _v0.d;
 		var initialBuilder = {
-			p: _List_Nil,
-			l: 0,
-			o: A3(
+			q: _List_Nil,
+			m: 0,
+			p: A3(
 				$elm$core$Elm$JsArray$indexedMap,
 				func,
 				$elm$core$Array$tailIndex(len),
@@ -12527,13 +12716,13 @@ var $elm$core$Array$indexedMap = F2(
 					return A3($elm$core$Elm$JsArray$foldl, helper, builder, subTree);
 				} else {
 					var leaf = node.a;
-					var offset = builder.l * $elm$core$Array$branchFactor;
+					var offset = builder.m * $elm$core$Array$branchFactor;
 					var mappedLeaf = $elm$core$Array$Leaf(
 						A3($elm$core$Elm$JsArray$indexedMap, func, offset, leaf));
 					return {
-						p: A2($elm$core$List$cons, mappedLeaf, builder.p),
-						l: builder.l + 1,
-						o: builder.o
+						q: A2($elm$core$List$cons, mappedLeaf, builder.q),
+						m: builder.m + 1,
+						p: builder.p
 					};
 				}
 			});
@@ -12796,7 +12985,7 @@ var $folkertdev$elm_flate$Huffman$new = function (n) {
 		$elm$core$Array$repeat,
 		n,
 		$folkertdev$elm_flate$Huffman$codeFromRecord(
-			{a: 0, bj: 0}));
+			{a: 0, bi: 0}));
 };
 var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
 var $folkertdev$elm_flate$Huffman$inverseEndianLoop = F4(
@@ -12819,10 +13008,10 @@ var $folkertdev$elm_flate$Huffman$inverseEndianLoop = F4(
 		}
 	});
 var $folkertdev$elm_flate$Huffman$inverseEndian = function (_v0) {
-	var width = _v0.bj;
+	var width = _v0.bi;
 	var bits = _v0.a;
 	var inverseBits = A4($folkertdev$elm_flate$Huffman$inverseEndianLoop, 0, width, bits, 0);
-	return {a: inverseBits, bj: width};
+	return {a: inverseBits, bi: width};
 };
 var $folkertdev$elm_flate$Huffman$setMapping = F3(
 	function (symbol, code, _v0) {
@@ -12859,7 +13048,7 @@ var $folkertdev$elm_flate$Huffman$restoreCanonicalHuffmanCodes = F2(
 				var prevWidth = _v2.b;
 				var currentTree = _v2.c;
 				var newBits = code << (bitWidth - prevWidth);
-				var nextCode = {a: newBits, bj: bitWidth};
+				var nextCode = {a: newBits, bi: bitWidth};
 				return _Utils_Tuple3(
 					newBits + 1,
 					bitWidth,
@@ -13523,7 +13712,7 @@ var $folkertdev$elm_flate$Experimental$ByteArray$fromBytes = function (buffer) {
 };
 var $folkertdev$elm_flate$LZ77$encodeWithOptions = F2(
 	function (_v0, buffer) {
-		var windowSize = _v0.ew;
+		var windowSize = _v0.ey;
 		return A2(
 			$folkertdev$elm_flate$LZ77$flush,
 			windowSize,
@@ -13602,7 +13791,7 @@ var $folkertdev$elm_flate$Deflate$Internal$compress = F2(
 					$folkertdev$elm_flate$Deflate$Internal$codeToSymbol,
 					A2(
 						$folkertdev$elm_flate$LZ77$encodeWithOptions,
-						{ew: windowSize},
+						{ey: windowSize},
 						buf)));
 		}
 	});
@@ -13633,7 +13822,7 @@ var $folkertdev$elm_flate$Huffman$encode = F2(
 		if (_v1.$ === 1) {
 			return A2($folkertdev$elm_flate$Deflate$BitWriter$writeBits, 0, 0);
 		} else {
-			var width = _v1.a.bj;
+			var width = _v1.a.bi;
 			var bits = _v1.a.a;
 			return A2($folkertdev$elm_flate$Deflate$BitWriter$writeBits, width, bits);
 		}
@@ -13773,7 +13962,7 @@ var $folkertdev$elm_flate$Deflate$Symbol$calculateCodes = function (runLengths) 
 	return A3($elm$core$Array$foldl, folder, $elm$core$Array$empty, runLengths);
 };
 var $folkertdev$elm_flate$Huffman$getWidth = function (_v0) {
-	var width = _v0.bj;
+	var width = _v0.bi;
 	return width;
 };
 var $folkertdev$elm_flate$Huffman$lookup = F2(
@@ -14038,7 +14227,7 @@ var $folkertdev$elm_flate$Huffman$usedMaxSymbol = function (_v0) {
 			$folkertdev$elm_flate$Huffman$positionFromTheEnd,
 			function (_v1) {
 				var value = _v1;
-				return value.bj > 0;
+				return value.bi > 0;
 			},
 			array));
 };
@@ -14302,9 +14491,9 @@ var $elm$core$Array$sliceLeft = F2(
 					var rest = nodesToInsert.b;
 					var firstSlice = from - (skipNodes * $elm$core$Array$branchFactor);
 					var initialBuilder = {
-						p: _List_Nil,
-						l: 0,
-						o: A3(
+						q: _List_Nil,
+						m: 0,
+						p: A3(
 							$elm$core$Elm$JsArray$slice,
 							firstSlice,
 							$elm$core$Elm$JsArray$length(head),
@@ -14561,328 +14750,328 @@ var $folkertdev$elm_flate$Huffman$hardcodedStaticHuffmanTree = {
 	aa: $folkertdev$elm_flate$Huffman$fromList(
 		_List_fromArray(
 			[
-				{a: 0, bj: 5},
-				{a: 16, bj: 5},
-				{a: 8, bj: 5},
-				{a: 24, bj: 5},
-				{a: 4, bj: 5},
-				{a: 20, bj: 5},
-				{a: 12, bj: 5},
-				{a: 28, bj: 5},
-				{a: 2, bj: 5},
-				{a: 18, bj: 5},
-				{a: 10, bj: 5},
-				{a: 26, bj: 5},
-				{a: 6, bj: 5},
-				{a: 22, bj: 5},
-				{a: 14, bj: 5},
-				{a: 30, bj: 5},
-				{a: 1, bj: 5},
-				{a: 17, bj: 5},
-				{a: 9, bj: 5},
-				{a: 25, bj: 5},
-				{a: 5, bj: 5},
-				{a: 21, bj: 5},
-				{a: 13, bj: 5},
-				{a: 29, bj: 5},
-				{a: 3, bj: 5},
-				{a: 19, bj: 5},
-				{a: 11, bj: 5},
-				{a: 27, bj: 5},
-				{a: 7, bj: 5},
-				{a: 23, bj: 5}
+				{a: 0, bi: 5},
+				{a: 16, bi: 5},
+				{a: 8, bi: 5},
+				{a: 24, bi: 5},
+				{a: 4, bi: 5},
+				{a: 20, bi: 5},
+				{a: 12, bi: 5},
+				{a: 28, bi: 5},
+				{a: 2, bi: 5},
+				{a: 18, bi: 5},
+				{a: 10, bi: 5},
+				{a: 26, bi: 5},
+				{a: 6, bi: 5},
+				{a: 22, bi: 5},
+				{a: 14, bi: 5},
+				{a: 30, bi: 5},
+				{a: 1, bi: 5},
+				{a: 17, bi: 5},
+				{a: 9, bi: 5},
+				{a: 25, bi: 5},
+				{a: 5, bi: 5},
+				{a: 21, bi: 5},
+				{a: 13, bi: 5},
+				{a: 29, bi: 5},
+				{a: 3, bi: 5},
+				{a: 19, bi: 5},
+				{a: 11, bi: 5},
+				{a: 27, bi: 5},
+				{a: 7, bi: 5},
+				{a: 23, bi: 5}
 			])),
 	ad: $folkertdev$elm_flate$Huffman$fromList(
 		_List_fromArray(
 			[
-				{a: 12, bj: 8},
-				{a: 140, bj: 8},
-				{a: 76, bj: 8},
-				{a: 204, bj: 8},
-				{a: 44, bj: 8},
-				{a: 172, bj: 8},
-				{a: 108, bj: 8},
-				{a: 236, bj: 8},
-				{a: 28, bj: 8},
-				{a: 156, bj: 8},
-				{a: 92, bj: 8},
-				{a: 220, bj: 8},
-				{a: 60, bj: 8},
-				{a: 188, bj: 8},
-				{a: 124, bj: 8},
-				{a: 252, bj: 8},
-				{a: 2, bj: 8},
-				{a: 130, bj: 8},
-				{a: 66, bj: 8},
-				{a: 194, bj: 8},
-				{a: 34, bj: 8},
-				{a: 162, bj: 8},
-				{a: 98, bj: 8},
-				{a: 226, bj: 8},
-				{a: 18, bj: 8},
-				{a: 146, bj: 8},
-				{a: 82, bj: 8},
-				{a: 210, bj: 8},
-				{a: 50, bj: 8},
-				{a: 178, bj: 8},
-				{a: 114, bj: 8},
-				{a: 242, bj: 8},
-				{a: 10, bj: 8},
-				{a: 138, bj: 8},
-				{a: 74, bj: 8},
-				{a: 202, bj: 8},
-				{a: 42, bj: 8},
-				{a: 170, bj: 8},
-				{a: 106, bj: 8},
-				{a: 234, bj: 8},
-				{a: 26, bj: 8},
-				{a: 154, bj: 8},
-				{a: 90, bj: 8},
-				{a: 218, bj: 8},
-				{a: 58, bj: 8},
-				{a: 186, bj: 8},
-				{a: 122, bj: 8},
-				{a: 250, bj: 8},
-				{a: 6, bj: 8},
-				{a: 134, bj: 8},
-				{a: 70, bj: 8},
-				{a: 198, bj: 8},
-				{a: 38, bj: 8},
-				{a: 166, bj: 8},
-				{a: 102, bj: 8},
-				{a: 230, bj: 8},
-				{a: 22, bj: 8},
-				{a: 150, bj: 8},
-				{a: 86, bj: 8},
-				{a: 214, bj: 8},
-				{a: 54, bj: 8},
-				{a: 182, bj: 8},
-				{a: 118, bj: 8},
-				{a: 246, bj: 8},
-				{a: 14, bj: 8},
-				{a: 142, bj: 8},
-				{a: 78, bj: 8},
-				{a: 206, bj: 8},
-				{a: 46, bj: 8},
-				{a: 174, bj: 8},
-				{a: 110, bj: 8},
-				{a: 238, bj: 8},
-				{a: 30, bj: 8},
-				{a: 158, bj: 8},
-				{a: 94, bj: 8},
-				{a: 222, bj: 8},
-				{a: 62, bj: 8},
-				{a: 190, bj: 8},
-				{a: 126, bj: 8},
-				{a: 254, bj: 8},
-				{a: 1, bj: 8},
-				{a: 129, bj: 8},
-				{a: 65, bj: 8},
-				{a: 193, bj: 8},
-				{a: 33, bj: 8},
-				{a: 161, bj: 8},
-				{a: 97, bj: 8},
-				{a: 225, bj: 8},
-				{a: 17, bj: 8},
-				{a: 145, bj: 8},
-				{a: 81, bj: 8},
-				{a: 209, bj: 8},
-				{a: 49, bj: 8},
-				{a: 177, bj: 8},
-				{a: 113, bj: 8},
-				{a: 241, bj: 8},
-				{a: 9, bj: 8},
-				{a: 137, bj: 8},
-				{a: 73, bj: 8},
-				{a: 201, bj: 8},
-				{a: 41, bj: 8},
-				{a: 169, bj: 8},
-				{a: 105, bj: 8},
-				{a: 233, bj: 8},
-				{a: 25, bj: 8},
-				{a: 153, bj: 8},
-				{a: 89, bj: 8},
-				{a: 217, bj: 8},
-				{a: 57, bj: 8},
-				{a: 185, bj: 8},
-				{a: 121, bj: 8},
-				{a: 249, bj: 8},
-				{a: 5, bj: 8},
-				{a: 133, bj: 8},
-				{a: 69, bj: 8},
-				{a: 197, bj: 8},
-				{a: 37, bj: 8},
-				{a: 165, bj: 8},
-				{a: 101, bj: 8},
-				{a: 229, bj: 8},
-				{a: 21, bj: 8},
-				{a: 149, bj: 8},
-				{a: 85, bj: 8},
-				{a: 213, bj: 8},
-				{a: 53, bj: 8},
-				{a: 181, bj: 8},
-				{a: 117, bj: 8},
-				{a: 245, bj: 8},
-				{a: 13, bj: 8},
-				{a: 141, bj: 8},
-				{a: 77, bj: 8},
-				{a: 205, bj: 8},
-				{a: 45, bj: 8},
-				{a: 173, bj: 8},
-				{a: 109, bj: 8},
-				{a: 237, bj: 8},
-				{a: 29, bj: 8},
-				{a: 157, bj: 8},
-				{a: 93, bj: 8},
-				{a: 221, bj: 8},
-				{a: 61, bj: 8},
-				{a: 189, bj: 8},
-				{a: 125, bj: 8},
-				{a: 253, bj: 8},
-				{a: 19, bj: 9},
-				{a: 275, bj: 9},
-				{a: 147, bj: 9},
-				{a: 403, bj: 9},
-				{a: 83, bj: 9},
-				{a: 339, bj: 9},
-				{a: 211, bj: 9},
-				{a: 467, bj: 9},
-				{a: 51, bj: 9},
-				{a: 307, bj: 9},
-				{a: 179, bj: 9},
-				{a: 435, bj: 9},
-				{a: 115, bj: 9},
-				{a: 371, bj: 9},
-				{a: 243, bj: 9},
-				{a: 499, bj: 9},
-				{a: 11, bj: 9},
-				{a: 267, bj: 9},
-				{a: 139, bj: 9},
-				{a: 395, bj: 9},
-				{a: 75, bj: 9},
-				{a: 331, bj: 9},
-				{a: 203, bj: 9},
-				{a: 459, bj: 9},
-				{a: 43, bj: 9},
-				{a: 299, bj: 9},
-				{a: 171, bj: 9},
-				{a: 427, bj: 9},
-				{a: 107, bj: 9},
-				{a: 363, bj: 9},
-				{a: 235, bj: 9},
-				{a: 491, bj: 9},
-				{a: 27, bj: 9},
-				{a: 283, bj: 9},
-				{a: 155, bj: 9},
-				{a: 411, bj: 9},
-				{a: 91, bj: 9},
-				{a: 347, bj: 9},
-				{a: 219, bj: 9},
-				{a: 475, bj: 9},
-				{a: 59, bj: 9},
-				{a: 315, bj: 9},
-				{a: 187, bj: 9},
-				{a: 443, bj: 9},
-				{a: 123, bj: 9},
-				{a: 379, bj: 9},
-				{a: 251, bj: 9},
-				{a: 507, bj: 9},
-				{a: 7, bj: 9},
-				{a: 263, bj: 9},
-				{a: 135, bj: 9},
-				{a: 391, bj: 9},
-				{a: 71, bj: 9},
-				{a: 327, bj: 9},
-				{a: 199, bj: 9},
-				{a: 455, bj: 9},
-				{a: 39, bj: 9},
-				{a: 295, bj: 9},
-				{a: 167, bj: 9},
-				{a: 423, bj: 9},
-				{a: 103, bj: 9},
-				{a: 359, bj: 9},
-				{a: 231, bj: 9},
-				{a: 487, bj: 9},
-				{a: 23, bj: 9},
-				{a: 279, bj: 9},
-				{a: 151, bj: 9},
-				{a: 407, bj: 9},
-				{a: 87, bj: 9},
-				{a: 343, bj: 9},
-				{a: 215, bj: 9},
-				{a: 471, bj: 9},
-				{a: 55, bj: 9},
-				{a: 311, bj: 9},
-				{a: 183, bj: 9},
-				{a: 439, bj: 9},
-				{a: 119, bj: 9},
-				{a: 375, bj: 9},
-				{a: 247, bj: 9},
-				{a: 503, bj: 9},
-				{a: 15, bj: 9},
-				{a: 271, bj: 9},
-				{a: 143, bj: 9},
-				{a: 399, bj: 9},
-				{a: 79, bj: 9},
-				{a: 335, bj: 9},
-				{a: 207, bj: 9},
-				{a: 463, bj: 9},
-				{a: 47, bj: 9},
-				{a: 303, bj: 9},
-				{a: 175, bj: 9},
-				{a: 431, bj: 9},
-				{a: 111, bj: 9},
-				{a: 367, bj: 9},
-				{a: 239, bj: 9},
-				{a: 495, bj: 9},
-				{a: 31, bj: 9},
-				{a: 287, bj: 9},
-				{a: 159, bj: 9},
-				{a: 415, bj: 9},
-				{a: 95, bj: 9},
-				{a: 351, bj: 9},
-				{a: 223, bj: 9},
-				{a: 479, bj: 9},
-				{a: 63, bj: 9},
-				{a: 319, bj: 9},
-				{a: 191, bj: 9},
-				{a: 447, bj: 9},
-				{a: 127, bj: 9},
-				{a: 383, bj: 9},
-				{a: 255, bj: 9},
-				{a: 511, bj: 9},
-				{a: 0, bj: 7},
-				{a: 64, bj: 7},
-				{a: 32, bj: 7},
-				{a: 96, bj: 7},
-				{a: 16, bj: 7},
-				{a: 80, bj: 7},
-				{a: 48, bj: 7},
-				{a: 112, bj: 7},
-				{a: 8, bj: 7},
-				{a: 72, bj: 7},
-				{a: 40, bj: 7},
-				{a: 104, bj: 7},
-				{a: 24, bj: 7},
-				{a: 88, bj: 7},
-				{a: 56, bj: 7},
-				{a: 120, bj: 7},
-				{a: 4, bj: 7},
-				{a: 68, bj: 7},
-				{a: 36, bj: 7},
-				{a: 100, bj: 7},
-				{a: 20, bj: 7},
-				{a: 84, bj: 7},
-				{a: 52, bj: 7},
-				{a: 116, bj: 7},
-				{a: 3, bj: 8},
-				{a: 131, bj: 8},
-				{a: 67, bj: 8},
-				{a: 195, bj: 8},
-				{a: 35, bj: 8},
-				{a: 163, bj: 8},
-				{a: 99, bj: 8},
-				{a: 227, bj: 8}
+				{a: 12, bi: 8},
+				{a: 140, bi: 8},
+				{a: 76, bi: 8},
+				{a: 204, bi: 8},
+				{a: 44, bi: 8},
+				{a: 172, bi: 8},
+				{a: 108, bi: 8},
+				{a: 236, bi: 8},
+				{a: 28, bi: 8},
+				{a: 156, bi: 8},
+				{a: 92, bi: 8},
+				{a: 220, bi: 8},
+				{a: 60, bi: 8},
+				{a: 188, bi: 8},
+				{a: 124, bi: 8},
+				{a: 252, bi: 8},
+				{a: 2, bi: 8},
+				{a: 130, bi: 8},
+				{a: 66, bi: 8},
+				{a: 194, bi: 8},
+				{a: 34, bi: 8},
+				{a: 162, bi: 8},
+				{a: 98, bi: 8},
+				{a: 226, bi: 8},
+				{a: 18, bi: 8},
+				{a: 146, bi: 8},
+				{a: 82, bi: 8},
+				{a: 210, bi: 8},
+				{a: 50, bi: 8},
+				{a: 178, bi: 8},
+				{a: 114, bi: 8},
+				{a: 242, bi: 8},
+				{a: 10, bi: 8},
+				{a: 138, bi: 8},
+				{a: 74, bi: 8},
+				{a: 202, bi: 8},
+				{a: 42, bi: 8},
+				{a: 170, bi: 8},
+				{a: 106, bi: 8},
+				{a: 234, bi: 8},
+				{a: 26, bi: 8},
+				{a: 154, bi: 8},
+				{a: 90, bi: 8},
+				{a: 218, bi: 8},
+				{a: 58, bi: 8},
+				{a: 186, bi: 8},
+				{a: 122, bi: 8},
+				{a: 250, bi: 8},
+				{a: 6, bi: 8},
+				{a: 134, bi: 8},
+				{a: 70, bi: 8},
+				{a: 198, bi: 8},
+				{a: 38, bi: 8},
+				{a: 166, bi: 8},
+				{a: 102, bi: 8},
+				{a: 230, bi: 8},
+				{a: 22, bi: 8},
+				{a: 150, bi: 8},
+				{a: 86, bi: 8},
+				{a: 214, bi: 8},
+				{a: 54, bi: 8},
+				{a: 182, bi: 8},
+				{a: 118, bi: 8},
+				{a: 246, bi: 8},
+				{a: 14, bi: 8},
+				{a: 142, bi: 8},
+				{a: 78, bi: 8},
+				{a: 206, bi: 8},
+				{a: 46, bi: 8},
+				{a: 174, bi: 8},
+				{a: 110, bi: 8},
+				{a: 238, bi: 8},
+				{a: 30, bi: 8},
+				{a: 158, bi: 8},
+				{a: 94, bi: 8},
+				{a: 222, bi: 8},
+				{a: 62, bi: 8},
+				{a: 190, bi: 8},
+				{a: 126, bi: 8},
+				{a: 254, bi: 8},
+				{a: 1, bi: 8},
+				{a: 129, bi: 8},
+				{a: 65, bi: 8},
+				{a: 193, bi: 8},
+				{a: 33, bi: 8},
+				{a: 161, bi: 8},
+				{a: 97, bi: 8},
+				{a: 225, bi: 8},
+				{a: 17, bi: 8},
+				{a: 145, bi: 8},
+				{a: 81, bi: 8},
+				{a: 209, bi: 8},
+				{a: 49, bi: 8},
+				{a: 177, bi: 8},
+				{a: 113, bi: 8},
+				{a: 241, bi: 8},
+				{a: 9, bi: 8},
+				{a: 137, bi: 8},
+				{a: 73, bi: 8},
+				{a: 201, bi: 8},
+				{a: 41, bi: 8},
+				{a: 169, bi: 8},
+				{a: 105, bi: 8},
+				{a: 233, bi: 8},
+				{a: 25, bi: 8},
+				{a: 153, bi: 8},
+				{a: 89, bi: 8},
+				{a: 217, bi: 8},
+				{a: 57, bi: 8},
+				{a: 185, bi: 8},
+				{a: 121, bi: 8},
+				{a: 249, bi: 8},
+				{a: 5, bi: 8},
+				{a: 133, bi: 8},
+				{a: 69, bi: 8},
+				{a: 197, bi: 8},
+				{a: 37, bi: 8},
+				{a: 165, bi: 8},
+				{a: 101, bi: 8},
+				{a: 229, bi: 8},
+				{a: 21, bi: 8},
+				{a: 149, bi: 8},
+				{a: 85, bi: 8},
+				{a: 213, bi: 8},
+				{a: 53, bi: 8},
+				{a: 181, bi: 8},
+				{a: 117, bi: 8},
+				{a: 245, bi: 8},
+				{a: 13, bi: 8},
+				{a: 141, bi: 8},
+				{a: 77, bi: 8},
+				{a: 205, bi: 8},
+				{a: 45, bi: 8},
+				{a: 173, bi: 8},
+				{a: 109, bi: 8},
+				{a: 237, bi: 8},
+				{a: 29, bi: 8},
+				{a: 157, bi: 8},
+				{a: 93, bi: 8},
+				{a: 221, bi: 8},
+				{a: 61, bi: 8},
+				{a: 189, bi: 8},
+				{a: 125, bi: 8},
+				{a: 253, bi: 8},
+				{a: 19, bi: 9},
+				{a: 275, bi: 9},
+				{a: 147, bi: 9},
+				{a: 403, bi: 9},
+				{a: 83, bi: 9},
+				{a: 339, bi: 9},
+				{a: 211, bi: 9},
+				{a: 467, bi: 9},
+				{a: 51, bi: 9},
+				{a: 307, bi: 9},
+				{a: 179, bi: 9},
+				{a: 435, bi: 9},
+				{a: 115, bi: 9},
+				{a: 371, bi: 9},
+				{a: 243, bi: 9},
+				{a: 499, bi: 9},
+				{a: 11, bi: 9},
+				{a: 267, bi: 9},
+				{a: 139, bi: 9},
+				{a: 395, bi: 9},
+				{a: 75, bi: 9},
+				{a: 331, bi: 9},
+				{a: 203, bi: 9},
+				{a: 459, bi: 9},
+				{a: 43, bi: 9},
+				{a: 299, bi: 9},
+				{a: 171, bi: 9},
+				{a: 427, bi: 9},
+				{a: 107, bi: 9},
+				{a: 363, bi: 9},
+				{a: 235, bi: 9},
+				{a: 491, bi: 9},
+				{a: 27, bi: 9},
+				{a: 283, bi: 9},
+				{a: 155, bi: 9},
+				{a: 411, bi: 9},
+				{a: 91, bi: 9},
+				{a: 347, bi: 9},
+				{a: 219, bi: 9},
+				{a: 475, bi: 9},
+				{a: 59, bi: 9},
+				{a: 315, bi: 9},
+				{a: 187, bi: 9},
+				{a: 443, bi: 9},
+				{a: 123, bi: 9},
+				{a: 379, bi: 9},
+				{a: 251, bi: 9},
+				{a: 507, bi: 9},
+				{a: 7, bi: 9},
+				{a: 263, bi: 9},
+				{a: 135, bi: 9},
+				{a: 391, bi: 9},
+				{a: 71, bi: 9},
+				{a: 327, bi: 9},
+				{a: 199, bi: 9},
+				{a: 455, bi: 9},
+				{a: 39, bi: 9},
+				{a: 295, bi: 9},
+				{a: 167, bi: 9},
+				{a: 423, bi: 9},
+				{a: 103, bi: 9},
+				{a: 359, bi: 9},
+				{a: 231, bi: 9},
+				{a: 487, bi: 9},
+				{a: 23, bi: 9},
+				{a: 279, bi: 9},
+				{a: 151, bi: 9},
+				{a: 407, bi: 9},
+				{a: 87, bi: 9},
+				{a: 343, bi: 9},
+				{a: 215, bi: 9},
+				{a: 471, bi: 9},
+				{a: 55, bi: 9},
+				{a: 311, bi: 9},
+				{a: 183, bi: 9},
+				{a: 439, bi: 9},
+				{a: 119, bi: 9},
+				{a: 375, bi: 9},
+				{a: 247, bi: 9},
+				{a: 503, bi: 9},
+				{a: 15, bi: 9},
+				{a: 271, bi: 9},
+				{a: 143, bi: 9},
+				{a: 399, bi: 9},
+				{a: 79, bi: 9},
+				{a: 335, bi: 9},
+				{a: 207, bi: 9},
+				{a: 463, bi: 9},
+				{a: 47, bi: 9},
+				{a: 303, bi: 9},
+				{a: 175, bi: 9},
+				{a: 431, bi: 9},
+				{a: 111, bi: 9},
+				{a: 367, bi: 9},
+				{a: 239, bi: 9},
+				{a: 495, bi: 9},
+				{a: 31, bi: 9},
+				{a: 287, bi: 9},
+				{a: 159, bi: 9},
+				{a: 415, bi: 9},
+				{a: 95, bi: 9},
+				{a: 351, bi: 9},
+				{a: 223, bi: 9},
+				{a: 479, bi: 9},
+				{a: 63, bi: 9},
+				{a: 319, bi: 9},
+				{a: 191, bi: 9},
+				{a: 447, bi: 9},
+				{a: 127, bi: 9},
+				{a: 383, bi: 9},
+				{a: 255, bi: 9},
+				{a: 511, bi: 9},
+				{a: 0, bi: 7},
+				{a: 64, bi: 7},
+				{a: 32, bi: 7},
+				{a: 96, bi: 7},
+				{a: 16, bi: 7},
+				{a: 80, bi: 7},
+				{a: 48, bi: 7},
+				{a: 112, bi: 7},
+				{a: 8, bi: 7},
+				{a: 72, bi: 7},
+				{a: 40, bi: 7},
+				{a: 104, bi: 7},
+				{a: 24, bi: 7},
+				{a: 88, bi: 7},
+				{a: 56, bi: 7},
+				{a: 120, bi: 7},
+				{a: 4, bi: 7},
+				{a: 68, bi: 7},
+				{a: 36, bi: 7},
+				{a: 100, bi: 7},
+				{a: 20, bi: 7},
+				{a: 84, bi: 7},
+				{a: 52, bi: 7},
+				{a: 116, bi: 7},
+				{a: 3, bi: 8},
+				{a: 131, bi: 8},
+				{a: 67, bi: 8},
+				{a: 195, bi: 8},
+				{a: 35, bi: 8},
+				{a: 163, bi: 8},
+				{a: 99, bi: 8},
+				{a: 227, bi: 8}
 			]))
 };
 var $folkertdev$elm_flate$Deflate$Internal$encodeCompressStatic = F3(
@@ -15041,7 +15230,7 @@ var $justgook$elm_image$Image$Internal$PNG$encodePixel32 = F2(
 	});
 var $justgook$elm_image$Image$Internal$PNG$encodeIDAT = F2(
 	function (_v0, arr) {
-		var order = _v0.cG;
+		var order = _v0.cI;
 		var scanLineFilter = $elm$bytes$Bytes$Encode$unsignedInt8(1);
 		var _v1 = function () {
 			switch (order) {
@@ -15092,7 +15281,7 @@ var $justgook$elm_image$Image$Internal$PNG$encodeIDAT = F2(
 	});
 var $justgook$elm_image$Image$Internal$PNG$encodeIHDR = F3(
 	function (width, height, _v0) {
-		var format = _v0.b_;
+		var format = _v0.b0;
 		var interlace = 0;
 		var _v1 = function () {
 			switch (format) {
@@ -15135,21 +15324,21 @@ var $justgook$elm_image$Image$Internal$PNG$encodeSignature = $elm$bytes$Bytes$En
 var $justgook$elm_image$Image$Info$dimensions = function (meta) {
 	switch (meta.$) {
 		case 0:
-			var width = meta.a.bj;
+			var width = meta.a.bi;
 			var height = meta.a.a7;
-			return {a7: height, bj: width};
+			return {a7: height, bi: width};
 		case 1:
-			var width = meta.a.bj;
+			var width = meta.a.bi;
 			var height = meta.a.a7;
-			return {a7: height, bj: width};
+			return {a7: height, bi: width};
 		case 2:
-			var width = meta.a.bj;
+			var width = meta.a.bi;
 			var height = meta.a.a7;
-			return {a7: height, bj: width};
+			return {a7: height, bi: width};
 		default:
-			var width = meta.a.bj;
+			var width = meta.a.bi;
 			var height = meta.a.a7;
-			return {a7: height, bj: width};
+			return {a7: height, bi: width};
 	}
 };
 var $justgook$elm_image$Image$Internal$ImageData$splitAt = F2(
@@ -15269,7 +15458,7 @@ var $justgook$elm_image$Image$Internal$ImageData$toArray2d = function (image) {
 				var l = image.b;
 				return A3(
 					$justgook$elm_image$Image$Internal$ImageData$fromList,
-					$justgook$elm_image$Image$Info$dimensions(meta).bj,
+					$justgook$elm_image$Image$Info$dimensions(meta).bi,
 					l,
 					$elm$core$Array$fromList(
 						_List_fromArray(
@@ -15286,7 +15475,7 @@ var $justgook$elm_image$Image$Internal$ImageData$toArray2d = function (image) {
 				var arr = image.b;
 				return A3(
 					$justgook$elm_image$Image$Internal$ImageData$fromArray,
-					$justgook$elm_image$Image$Info$dimensions(meta).bj,
+					$justgook$elm_image$Image$Info$dimensions(meta).bi,
 					arr,
 					$elm$core$Array$empty);
 			case 3:
@@ -15470,7 +15659,7 @@ var $justgook$elm_image$Image$Internal$Pixel$toBit32 = function (image) {
 					return image;
 			}
 		case 1:
-			var bitsPerPixel = _v0.a.c9;
+			var bitsPerPixel = _v0.a.db;
 			switch (bitsPerPixel) {
 				case 0:
 					return A2($justgook$elm_image$Image$Internal$ImageData$map, $justgook$elm_image$Image$Internal$Pixel$px8to32, image);
@@ -15565,7 +15754,7 @@ var $elm$random$Random$weighted = F2(
 	});
 var $author$project$Main$background = function () {
 	var _v0 = _Utils_Tuple2(
-		2 + $elm$core$Basics$round($author$project$Main$viewport.bj / $author$project$Main$sprites10.H),
+		2 + $elm$core$Basics$round($author$project$Main$viewport.bi / $author$project$Main$sprites10.H),
 		2 + $elm$core$Basics$round($author$project$Main$viewport.a7 / $author$project$Main$sprites10.H));
 	var horizontalTiles = _v0.a;
 	var verticalTiles = _v0.b;
@@ -15575,15 +15764,15 @@ var $author$project$Main$background = function () {
 		numTiles,
 		A2(
 			$elm$random$Random$weighted,
-			_Utils_Tuple2(5, $author$project$Main$sprites10.b0),
+			_Utils_Tuple2(5, $author$project$Main$sprites10.b2),
 			_List_fromArray(
 				[
-					_Utils_Tuple2(10, $author$project$Main$sprites10.b1),
-					_Utils_Tuple2(20, $author$project$Main$sprites10.b2),
-					_Utils_Tuple2(2, $author$project$Main$sprites10.b3),
-					_Utils_Tuple2(2, $author$project$Main$sprites10.b4),
-					_Utils_Tuple2(10, $author$project$Main$sprites10.b5),
-					_Utils_Tuple2(10, $author$project$Main$sprites10.b6)
+					_Utils_Tuple2(10, $author$project$Main$sprites10.b3),
+					_Utils_Tuple2(20, $author$project$Main$sprites10.b4),
+					_Utils_Tuple2(2, $author$project$Main$sprites10.b5),
+					_Utils_Tuple2(2, $author$project$Main$sprites10.b6),
+					_Utils_Tuple2(10, $author$project$Main$sprites10.b7),
+					_Utils_Tuple2(10, $author$project$Main$sprites10.b8)
 				])));
 	var lookupImage = $justgook$elm_image$Image$toPngUrl(
 		A2(
@@ -15593,15 +15782,15 @@ var $author$project$Main$background = function () {
 				$elm$core$List$indexedMap,
 				F2(
 					function (i, x) {
-						return ((!i) || (_Utils_eq(i, horizontalTiles - 1) || (_Utils_eq(i, numTiles - horizontalTiles) || _Utils_eq(i, numTiles - 1)))) ? $author$project$Main$sprites10.bO : ((_Utils_cmp(i, horizontalTiles) < 0) ? $author$project$Main$sprites10.c_ : ((_Utils_cmp(i, numTiles - horizontalTiles) > -1) ? $author$project$Main$sprites10.cX : ((!A2($elm$core$Basics$modBy, horizontalTiles, i)) ? $author$project$Main$sprites10.cY : (_Utils_eq(
+						return ((!i) || (_Utils_eq(i, horizontalTiles - 1) || (_Utils_eq(i, numTiles - horizontalTiles) || _Utils_eq(i, numTiles - 1)))) ? $author$project$Main$sprites10.bP : ((_Utils_cmp(i, horizontalTiles) < 0) ? $author$project$Main$sprites10.c0 : ((_Utils_cmp(i, numTiles - horizontalTiles) > -1) ? $author$project$Main$sprites10.cZ : ((!A2($elm$core$Basics$modBy, horizontalTiles, i)) ? $author$project$Main$sprites10.c_ : (_Utils_eq(
 							A2($elm$core$Basics$modBy, horizontalTiles, i),
-							horizontalTiles - 1) ? $author$project$Main$sprites10.cZ : x))));
+							horizontalTiles - 1) ? $author$project$Main$sprites10.c$ : x))));
 					}),
 				A2(
 					$elm$random$Random$step,
 					randomIndexes,
 					$elm$random$Random$initialSeed(42)).a)));
-	return A4($author$project$Playground$Extra$tilemap, $author$project$Main$sprites10.H, $author$project$Main$sprites10.H, $author$project$Main$sprites10.bu, lookupImage);
+	return A4($author$project$Playground$Extra$tilemap, $author$project$Main$sprites10.H, $author$project$Main$sprites10.H, $author$project$Main$sprites10.bt, lookupImage);
 }();
 var $author$project$Playground$colorClamp = function (n) {
 	return A3(
@@ -15763,7 +15952,7 @@ var $elm$core$List$repeat = F2(
 	});
 var $author$project$Main$fullScreenBackgroundTile = function () {
 	var _v0 = _Utils_Tuple2(
-		$elm$core$Basics$round($author$project$Main$viewport.bj / $author$project$Main$sprites10.H),
+		$elm$core$Basics$round($author$project$Main$viewport.bi / $author$project$Main$sprites10.H),
 		$elm$core$Basics$round($author$project$Main$viewport.a7 / $author$project$Main$sprites10.H));
 	var horizontalTiles = _v0.a;
 	var verticalTiles = _v0.b;
@@ -15771,53 +15960,53 @@ var $author$project$Main$fullScreenBackgroundTile = function () {
 		A2(
 			$justgook$elm_image$Image$fromList,
 			horizontalTiles,
-			A2($elm$core$List$repeat, horizontalTiles * verticalTiles, $author$project$Main$sprites10.bO)));
-	return A4($author$project$Playground$Extra$tilemap, $author$project$Main$sprites10.H, $author$project$Main$sprites10.H, $author$project$Main$sprites10.bu, lookupImage);
+			A2($elm$core$List$repeat, horizontalTiles * verticalTiles, $author$project$Main$sprites10.bP)));
+	return A4($author$project$Playground$Extra$tilemap, $author$project$Main$sprites10.H, $author$project$Main$sprites10.H, $author$project$Main$sprites10.bt, lookupImage);
 }();
 var $author$project$Playground$move = F3(
 	function (dx, dy, _v0) {
 		var shape = _v0;
-		var x = shape.c1;
-		var y = shape.c2;
+		var x = shape.c3;
+		var y = shape.c4;
 		var a = shape.h;
 		var sx = shape.e;
 		var sy = shape.f;
 		var o = shape.j;
-		var form = shape.k;
+		var form = shape.l;
 		return _Utils_update(
 			shape,
-			{c1: x + dx, c2: y + dy});
+			{c3: x + dx, c4: y + dy});
 	});
 var $author$project$Playground$moveDown = F2(
 	function (dy, _v0) {
 		var shape = _v0;
-		var x = shape.c1;
-		var y = shape.c2;
+		var x = shape.c3;
+		var y = shape.c4;
 		var a = shape.h;
 		var sx = shape.e;
 		var sy = shape.f;
 		var o = shape.j;
-		var form = shape.k;
+		var form = shape.l;
 		return _Utils_update(
 			shape,
-			{c2: y - dy});
+			{c4: y - dy});
 	});
 var $author$project$Playground$moveLeft = F2(
 	function (dx, _v0) {
 		var shape = _v0;
-		var x = shape.c1;
-		var y = shape.c2;
+		var x = shape.c3;
+		var y = shape.c4;
 		var a = shape.h;
 		var sx = shape.e;
 		var sy = shape.f;
 		var o = shape.j;
-		var form = shape.k;
+		var form = shape.l;
 		return _Utils_update(
 			shape,
-			{c1: x - dx});
+			{c3: x - dx});
 	});
 var $author$project$Main$fullScreenBackground = function (screen) {
-	var tilesInRow = (($elm$core$Basics$ceiling((screen.bj / 2) / ($author$project$Main$viewport.bj / 2)) - 1) * 2) + 1;
+	var tilesInRow = (($elm$core$Basics$ceiling((screen.bi / 2) / ($author$project$Main$viewport.bi / 2)) - 1) * 2) + 1;
 	var tilesInColumn = (($elm$core$Basics$ceiling((screen.a7 / 2) / ($author$project$Main$viewport.a7 / 2)) - 1) * 2) + 1;
 	var numTiles = tilesInRow * tilesInColumn;
 	var shapes = A2(
@@ -15831,11 +16020,11 @@ var $author$project$Main$fullScreenBackground = function (screen) {
 				var y = _v0.b;
 				return A2(
 					$author$project$Playground$moveLeft,
-					screen.bj / 2,
+					screen.bi / 2,
 					A2(
 						$author$project$Playground$moveDown,
 						screen.a7 / 2,
-						A3($author$project$Playground$move, (x * $author$project$Main$viewport.bj) + ($author$project$Main$viewport.bj / 2), (y * $author$project$Main$viewport.a7) + ($author$project$Main$viewport.a7 / 2), shape)));
+						A3($author$project$Playground$move, (x * $author$project$Main$viewport.bi) + ($author$project$Main$viewport.bi / 2), (y * $author$project$Main$viewport.a7) + ($author$project$Main$viewport.a7 / 2), shape)));
 			}),
 		A2($elm$core$List$repeat, numTiles, $author$project$Main$fullScreenBackgroundTile));
 	return $author$project$Playground$group(shapes);
@@ -15847,31 +16036,31 @@ var $author$project$Playground$lightPurple = A2(
 var $author$project$Playground$moveX = F2(
 	function (dx, _v0) {
 		var shape = _v0;
-		var x = shape.c1;
-		var y = shape.c2;
+		var x = shape.c3;
+		var y = shape.c4;
 		var a = shape.h;
 		var sx = shape.e;
 		var sy = shape.f;
 		var o = shape.j;
-		var form = shape.k;
+		var form = shape.l;
 		return _Utils_update(
 			shape,
-			{c1: x + dx});
+			{c3: x + dx});
 	});
 var $author$project$Playground$moveRight = $author$project$Playground$moveX;
 var $author$project$Playground$moveY = F2(
 	function (dy, _v0) {
 		var shape = _v0;
-		var x = shape.c1;
-		var y = shape.c2;
+		var x = shape.c3;
+		var y = shape.c4;
 		var a = shape.h;
 		var sx = shape.e;
 		var sy = shape.f;
 		var o = shape.j;
-		var form = shape.k;
+		var form = shape.l;
 		return _Utils_update(
 			shape,
-			{c2: y + dy});
+			{c4: y + dy});
 	});
 var $author$project$Playground$moveUp = $author$project$Playground$moveY;
 var $author$project$Playground$moveZ = F2(
@@ -15896,12 +16085,12 @@ var $author$project$Playground$Render$setAlpha = A2(
 	$elm$core$Basics$composeR,
 	$elm_explorations$linear_algebra$Math$Vector3$toRecord,
 	function (a) {
-		return A3($elm_explorations$linear_algebra$Math$Vector4$vec4, a.c1, a.c2, a.y);
+		return A3($elm_explorations$linear_algebra$Math$Vector4$vec4, a.c3, a.c4, a.y);
 	});
 var $author$project$Playground$Shader$vertNone = {
 	src: '\n        precision mediump float;\n        attribute vec2 aP;\n        uniform vec4 uT;\n        uniform vec2 uP;\n        uniform float z;\n        void main () {\n            gl_Position = vec4(aP * mat2(uT) + uP, z * -1.19209304e-7, 1.0);\n        }\n    ',
 	attributes: {aP: 'aZ'},
-	uniforms: {uP: 'el', uT: 'em', z: 'y'}
+	uniforms: {uP: 'en', uT: 'eo', z: 'y'}
 };
 var $author$project$Playground$Render$rect = F5(
 	function (color, uP, uT, z, opacity) {
@@ -15913,8 +16102,8 @@ var $author$project$Playground$Render$rect = F5(
 			$author$project$Playground$Shader$mesh,
 			{
 				ao: A2($author$project$Playground$Render$setAlpha, color, opacity),
-				el: uP,
-				em: uT,
+				en: uP,
+				eo: uT,
 				y: z
 			});
 	});
@@ -15922,7 +16111,7 @@ var $author$project$Playground$rectangle = F3(
 	function (color, width, height) {
 		return {
 			h: 0,
-			k: A3(
+			l: A3(
 				$justgook$webgl_shape$WebGL$Shape2d$Form,
 				width,
 				height,
@@ -15930,8 +16119,8 @@ var $author$project$Playground$rectangle = F3(
 			j: 1,
 			e: 1,
 			f: 1,
-			c1: 0,
-			c2: 0,
+			c3: 0,
+			c4: 0,
 			y: 0
 		};
 	});
@@ -15941,13 +16130,13 @@ var $elm$core$Basics$degrees = function (angleInDegrees) {
 var $author$project$Playground$rotate = F2(
 	function (da, _v0) {
 		var shape = _v0;
-		var x = shape.c1;
-		var y = shape.c2;
+		var x = shape.c3;
+		var y = shape.c4;
 		var a = shape.h;
 		var sx = shape.e;
 		var sy = shape.f;
 		var o = shape.j;
-		var form = shape.k;
+		var form = shape.l;
 		return _Utils_update(
 			shape,
 			{
@@ -15979,12 +16168,12 @@ var $author$project$Playground$Extra$size = function (t) {
 var $author$project$Playground$Shader$fragImage = {
 	src: '\n        precision mediump float;\n        varying vec2 uv;\n        uniform vec2 uImgSize;\n        uniform sampler2D uImg;\n        uniform float uA;\n        void main () {\n            vec2 pixel = (floor(uv * uImgSize) + 0.5) / uImgSize;\n            gl_FragColor = texture2D(uImg, pixel);\n            gl_FragColor.a *= uA;\n            if(gl_FragColor.a <= 0.025) discard;\n        }\n    ',
 	attributes: {},
-	uniforms: {uA: 'eg', uImg: 'aU', uImgSize: 'aV'}
+	uniforms: {uA: 'ei', uImg: 'aU', uImgSize: 'aV'}
 };
 var $author$project$Playground$Shader$vertTile = {
 	src: '\n            precision mediump float;\n            attribute vec2 aP;\n            uniform vec4 uT;\n            uniform vec2 uP;\n            uniform float z;\n            uniform float index;\n            uniform vec2 spriteSize;\n            uniform vec2 uImgSize;\n            varying vec2 uv;\n            vec2 edgeFix = vec2(0.0000001, -0.0000001);\n            void main () {\n                vec2 ratio = spriteSize / uImgSize;\n                float row = (uImgSize.y / spriteSize.y - 1.0) - floor((index + 0.5) * ratio.x);\n                float column = floor(mod((index + 0.5), uImgSize.x / spriteSize.x));\n                vec2 offset = vec2(column, row) * ratio;\n                uv = (aP * 0.5 + 0.5) * ratio + offset + edgeFix;\n                gl_Position = vec4(aP * mat2(uT) + uP, z  * -1.19209304e-7, 1.0);\n            }\n        ',
 	attributes: {aP: 'aZ'},
-	uniforms: {index: 'cb', spriteSize: 'cU', uImgSize: 'aV', uP: 'el', uT: 'em', z: 'y'}
+	uniforms: {index: 'cd', spriteSize: 'cW', uImgSize: 'aV', uP: 'en', uT: 'eo', z: 'y'}
 };
 var $author$project$Playground$Render$tile = F8(
 	function (spriteSheet, spriteSize, imageSize, index, translate, scaleRotateSkew, z, opacity) {
@@ -15994,19 +16183,19 @@ var $author$project$Playground$Render$tile = F8(
 			$author$project$Playground$Shader$vertTile,
 			$author$project$Playground$Shader$fragImage,
 			$author$project$Playground$Shader$mesh,
-			{cb: index, cU: spriteSize, eg: opacity, aU: spriteSheet, aV: imageSize, el: translate, em: scaleRotateSkew, y: z});
+			{cd: index, cW: spriteSize, ei: opacity, aU: spriteSheet, aV: imageSize, en: translate, eo: scaleRotateSkew, y: z});
 	});
 var $author$project$Playground$Extra$tile = F4(
 	function (tileW, tileH, tileset, index) {
 		return {
 			h: 0,
-			k: A2(
+			l: A2(
 				$justgook$webgl_shape$WebGL$Shape2d$Textured,
 				tileset,
 				function (t) {
 					return {
 						h: 0,
-						k: A3(
+						l: A3(
 							$justgook$webgl_shape$WebGL$Shape2d$Form,
 							tileW,
 							tileH,
@@ -16019,16 +16208,16 @@ var $author$project$Playground$Extra$tile = F4(
 						j: 1,
 						e: 1,
 						f: 1,
-						c1: 0,
-						c2: 0,
+						c3: 0,
+						c4: 0,
 						y: 0
 					};
 				}),
 			j: 1,
 			e: 1,
 			f: 1,
-			c1: 0,
-			c2: 0,
+			c3: 0,
+			c4: 0,
 			y: 0
 		};
 	});
@@ -16039,18 +16228,18 @@ var $author$project$Main$viewEntities = F2(
 				$justgook$elm_game_logic$Logic$System$indexedFoldl4,
 				F6(
 					function (id, kind, position, size, health, shapes) {
-						var timeSinceLastHealthUpdate = time.n - health.dL;
+						var timeSinceLastHealthUpdate = time.n - health.dN;
 						var tilesheet = A3($author$project$Playground$Extra$tile, 40, 40, 'sprites20.png');
 						var maybeFacing = A2(
 							$justgook$elm_game_logic$Logic$Component$get,
 							id,
-							$author$project$Components$facings.c(world.di));
+							$author$project$Components$facings.c(world.dk));
 						var maybeAnimationOffset = A2(
 							$justgook$elm_game_logic$Logic$Component$get,
 							id,
-							$author$project$Components$animationOffsets.c(world.di));
-						var dead = health.c6 <= 0;
-						var tileAnimationTime = dead ? health.dL : time.n;
+							$author$project$Components$animationOffsets.c(world.dk));
+						var dead = health.c8 <= 0;
+						var tileAnimationTime = dead ? health.dN : time.n;
 						var shape = function () {
 							var animationOffset = A2($elm$core$Maybe$withDefault, 0, maybeAnimationOffset);
 							switch (kind) {
@@ -16083,7 +16272,7 @@ var $author$project$Main$viewEntities = F2(
 							$elm$core$List$cons,
 							A2(
 								$author$project$Playground$moveZ,
-								$elm$core$Basics$round((-(position.c2 - (size / 2))) + ($author$project$Main$viewport.a7 / 2)),
+								$elm$core$Basics$round((-(position.c4 - (size / 2))) + ($author$project$Main$viewport.a7 / 2)),
 								A3(
 									$justgook$elm_game_logic$Logic$System$applyIf,
 									dead,
@@ -16110,13 +16299,13 @@ var $author$project$Main$viewEntities = F2(
 														},
 														maybeFacing)),
 												$author$project$Playground$flipX,
-												A3($author$project$Playground$move, position.c1, position.c2, shape)))))),
+												A3($author$project$Playground$move, position.c3, position.c4, shape)))))),
 							shapes);
 					}),
-				$author$project$Components$kinds.c(world.di),
-				$author$project$Components$positions.c(world.di),
-				$author$project$Components$sizes.c(world.di),
-				$author$project$Components$healths.c(world.di),
+				$author$project$Components$kinds.c(world.dk),
+				$author$project$Components$positions.c(world.dk),
+				$author$project$Components$sizes.c(world.dk),
+				$author$project$Components$healths.c(world.dk),
 				_List_Nil));
 	});
 var $author$project$Playground$white = A2(
@@ -16138,13 +16327,13 @@ var $author$project$Playground$Render$tileWithColor = F9(
 			$author$project$Playground$Shader$mesh,
 			{
 				ao: A2($author$project$Playground$Render$setAlpha, color, opacity),
-				cb: index,
-				cU: spriteSize,
-				eg: opacity,
+				cd: index,
+				cW: spriteSize,
+				ei: opacity,
 				aU: spriteSheet,
 				aV: imageSize,
-				el: translate,
-				em: scaleRotateSkew,
+				en: translate,
+				eo: scaleRotateSkew,
 				y: z
 			});
 	});
@@ -16152,7 +16341,7 @@ var $author$project$Playground$Extra$Font$char = F8(
 	function (spriteSheet, imageSize, color, w, h, x, y, index) {
 		return {
 			h: 0,
-			k: A3(
+			l: A3(
 				$justgook$webgl_shape$WebGL$Shape2d$Form,
 				w,
 				h,
@@ -16166,22 +16355,22 @@ var $author$project$Playground$Extra$Font$char = F8(
 			j: 1,
 			e: 1,
 			f: 1,
-			c1: x,
-			c2: y,
+			c3: x,
+			c4: y,
 			y: 0
 		};
 	});
 var $author$project$Playground$Extra$Font$outputFold = F6(
 	function (toChar, getIndex, w, h, c, _v0) {
 		var chars = _v0.aG;
-		var x = _v0.c1;
-		var y = _v0.c2;
-		var width = _v0.bj;
+		var x = _v0.c3;
+		var y = _v0.c4;
+		var width = _v0.bi;
 		return (c === '\n') ? {
 			aG: chars,
-			bj: A2($elm$core$Basics$max, width, x),
-			c1: w,
-			c2: y - h
+			bi: A2($elm$core$Basics$max, width, x),
+			c3: w,
+			c4: y - h
 		} : {
 			aG: A2(
 				$elm$core$List$cons,
@@ -16191,20 +16380,20 @@ var $author$project$Playground$Extra$Font$outputFold = F6(
 					y,
 					getIndex(c)),
 				chars),
-			bj: width,
-			c1: x + w,
-			c2: y
+			bi: width,
+			c3: x + w,
+			c4: y
 		};
 	});
 var $author$project$Playground$Extra$Font$tileFont = F3(
 	function (_v0, color, string) {
-		var charW = _v0.df;
-		var charH = _v0.de;
-		var src = _v0.d8;
-		var getIndex = _v0.dD;
+		var charW = _v0.dh;
+		var charH = _v0.dg;
+		var src = _v0.ea;
+		var getIndex = _v0.dF;
 		return {
 			h: 0,
-			k: A2(
+			l: A2(
 				$justgook$webgl_shape$WebGL$Shape2d$Textured,
 				src,
 				function (t) {
@@ -16220,24 +16409,24 @@ var $author$project$Playground$Extra$Font$tileFont = F3(
 					var output = A3(
 						$elm$core$List$foldl,
 						A4($author$project$Playground$Extra$Font$outputFold, toChar, getIndex, charW, charH),
-						{aG: _List_Nil, bj: 0, c1: charW, c2: charH},
+						{aG: _List_Nil, bi: 0, c3: charW, c4: charH},
 						$elm$core$String$toList(string));
 					return {
 						h: 0,
-						k: $justgook$webgl_shape$WebGL$Shape2d$Group(output.aG),
+						l: $justgook$webgl_shape$WebGL$Shape2d$Group(output.aG),
 						j: 1,
 						e: 1,
 						f: 1,
-						c1: A2($elm$core$Basics$max, output.c1, output.bj) * (-0.5),
-						c2: (output.c2 * (-0.5)) + (0.5 * (-charH)),
+						c3: A2($elm$core$Basics$max, output.c3, output.bi) * (-0.5),
+						c4: (output.c4 * (-0.5)) + (0.5 * (-charH)),
 						y: 0
 					};
 				}),
 			j: 1,
 			e: 1,
 			f: 1,
-			c1: 0,
-			c2: 0,
+			c3: 0,
+			c4: 0,
 			y: 0
 		};
 	});
@@ -16291,13 +16480,12 @@ var $author$project$Playground$Font$SimpleMood$letters = function (c) {
 		0,
 		A2($elm$core$Dict$get, c, $author$project$Playground$Font$SimpleMood$letters_));
 };
-var $author$project$Playground$wordsConfig = {de: 16, df: 16, dD: $author$project$Playground$Font$SimpleMood$letters, d8: $author$project$Playground$Font$SimpleMood$image};
+var $author$project$Playground$wordsConfig = {dg: 16, dh: 16, dF: $author$project$Playground$Font$SimpleMood$letters, ea: $author$project$Playground$Font$SimpleMood$image};
 var $author$project$Playground$words = $author$project$Playground$Extra$Font$tileFont($author$project$Playground$wordsConfig);
 var $author$project$Main$viewMenu = F3(
 	function (interactedToEnableAudio, _v0, world) {
 		var time = _v0.g;
 		var screen = _v0.w;
-		var mouse = _v0.i;
 		var titleScale = ($author$project$Main$viewport.a7 / $author$project$Main$defaultFontSize) / 6;
 		var titleShadowOffset = ($author$project$Main$defaultFontSize * titleScale) / 20;
 		var moveTitle = F2(
@@ -16305,7 +16493,7 @@ var $author$project$Main$viewMenu = F3(
 				var t = _Utils_update(
 					time,
 					{n: time.n - delay});
-				var _v1 = _Utils_Tuple2($author$project$Main$viewport.bj / 13, $author$project$Main$viewport.a7 / 20);
+				var _v1 = _Utils_Tuple2($author$project$Main$viewport.bi / 13, $author$project$Main$viewport.a7 / 20);
 				var mx = _v1.a;
 				var my = _v1.b;
 				return A2(
@@ -16397,7 +16585,7 @@ var $author$project$Main$viewMenu = F3(
 										A3(
 										$author$project$Playground$rectangle,
 										A3($author$project$Playground$rgb, 0, 20, 0),
-										screen.bj,
+										screen.bi,
 										screen.a7),
 										A2(
 										$author$project$Playground$moveDown,
@@ -16426,7 +16614,7 @@ var $author$project$Playground$Shader$fragCircle = {
 var $author$project$Playground$Shader$vertRect = {
 	src: '\n            precision mediump float;\n            attribute vec2 aP;\n            uniform vec4 uT;\n            uniform vec2 uP;\n            uniform float z;\n            varying vec2 uv;\n            vec2 edgeFix = vec2(0.0000001, -0.0000001);\n            void main () {\n                uv = aP + edgeFix;\n                gl_Position = vec4(aP * mat2(uT) + uP, z  * -1.19209304e-7, 1.0);\n            }\n        ',
 	attributes: {aP: 'aZ'},
-	uniforms: {uP: 'el', uT: 'em', z: 'y'}
+	uniforms: {uP: 'en', uT: 'eo', z: 'y'}
 };
 var $author$project$Playground$Render$circle = F5(
 	function (color, uP, uT, z, opacity) {
@@ -16438,8 +16626,8 @@ var $author$project$Playground$Render$circle = F5(
 			$author$project$Playground$Shader$mesh,
 			{
 				ao: A2($author$project$Playground$Render$setAlpha, color, opacity),
-				el: uP,
-				em: uT,
+				en: uP,
+				eo: uT,
 				y: z
 			});
 	});
@@ -16447,7 +16635,7 @@ var $author$project$Playground$circle = F2(
 	function (color, radius) {
 		return {
 			h: 0,
-			k: A3(
+			l: A3(
 				$justgook$webgl_shape$WebGL$Shape2d$Form,
 				radius * 2,
 				radius * 2,
@@ -16455,8 +16643,8 @@ var $author$project$Playground$circle = F2(
 			j: 1,
 			e: 1,
 			f: 1,
-			c1: 0,
-			c2: 0,
+			c3: 0,
+			c4: 0,
 			y: 0
 		};
 	});
@@ -16488,7 +16676,7 @@ var $author$project$Main$viewPlaying = F3(
 									[
 										A2(
 										$author$project$Playground$moveY,
-										$author$project$Main$viewport.bN,
+										$author$project$Main$viewport.bO,
 										A2(
 											$author$project$Playground$scale,
 											A4($author$project$Playground$zigzag, 1, 1.3, 1, time),
@@ -16497,15 +16685,15 @@ var $author$project$Main$viewPlaying = F3(
 												$author$project$Playground$white,
 												$elm$core$String$fromInt(score) + ''))),
 										function () {
-										if (mouse.du) {
+										if (mouse.dw) {
 											var coords = A2($author$project$Main$toViewport, screen, mouse);
 											return A2(
 												$author$project$Playground$fade,
 												0.3,
 												A3(
 													$author$project$Playground$move,
-													coords.c1,
-													coords.c2,
+													coords.c3,
+													coords.c4,
 													A2($author$project$Playground$circle, $author$project$Playground$black, 5)));
 										} else {
 											return $author$project$Playground$group(_List_Nil);
@@ -16521,7 +16709,7 @@ var $author$project$Main$viewPlaying = F3(
 										A3(
 											$author$project$Playground$rectangle,
 											A3($author$project$Playground$rgb, 0, 20, 0),
-											screen.bj,
+											screen.bi,
 											screen.a7)),
 										A2(
 										$author$project$Playground$rotate,
@@ -16560,7 +16748,7 @@ var $author$project$Main$viewPlaying = F3(
 										A3(
 											$author$project$Playground$rectangle,
 											A3($author$project$Playground$rgb, 0, 20, 0),
-											screen.bj,
+											screen.bi,
 											screen.a7)),
 										A2(
 										$author$project$Playground$moveUp,
@@ -16628,7 +16816,7 @@ var $author$project$Main$main = A4(
 	'Flee',
 	$author$project$Main$spawnMenu(
 		{
-			di: $author$project$Components$empty,
+			dk: $author$project$Components$empty,
 			x: $author$project$Main$Menu(false)
 		}),
 	$author$project$Main$update,
